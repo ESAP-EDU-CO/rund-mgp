@@ -1,0 +1,8 @@
+<p-card class="chart"
+        [header]="data.nombre">
+  <p-chart class="grafico"
+           [ngClass]="data.tipoChart"
+           [type]="data.tipoChart"
+           [data]="data.data"
+           [options]="data.opciones" />
+</p-card>

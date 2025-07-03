@@ -1,0 +1,122 @@
+<div class="procesa-firma">
+  <div class="col-izq">
+    @if (archivo && imagenProcesadaUrl){
+    <div class="titulo">
+      <h3>Firma</h3>
+      <div class="icono">
+        <i class="pi pi-question-circle"
+           (mouseover)="instrucciones.show($event)"
+           (mouseout)="instrucciones.hide()">
+        </i>
+      </div>
+      <p-popover #instrucciones>
+        <div [style]="{ 'display': 'flex', 'flex-direction': 'column', 'gap': '1.5em'}">
+          <div [style]="{ 'max-width': '30em' }">
+            Use el control deslizante, bajo la firma, para aumentar o disminuir el umbral de transparencia.
+          </div>
+          <div [style]="{ 'max-width': '30em' }">
+            Arrastre los bordes de la imagen para recortar la firma; también puede arrastrar la imagen completa.
+          </div>
+        </div>
+      </p-popover>
+    </div>
+    <div class="firma">
+      <img [src]="imagenProcesadaUrl"
+           #imgFirma
+           (load)="firmaCargada()"
+           class="img-firma"
+           alt="Firma procesada">
+      @if (cropSize){
+      <div class="cropper">
+        <div class="img-crop"
+             [style]="{
+              'background-image':'url(' + imagenProcesadaUrl + ')',
+              'top': cropSize.y + 'px',
+              'left': cropSize.x + 'px',
+              'width': cropSize.width + 'px',
+              'height': cropSize.height + 'px',
+              'background-position-x': '-' + cropSize.x + 'px',
+              'background-position-y': '-' + cropSize.y + 'px',
+              'background-size': imagenHTML?.width + 'px ' + imagenHTML?.height + 'px',
+              }">
+          <div class="top"
+               draggable="true"
+               (dragstart)="haceCrop('top', $event)"
+               (drag)="haceCrop('top', $event)">
+          </div>
+          <div class="right"
+               draggable="true"
+               (dragstart)="haceCrop('right', $event)"
+               (drag)="haceCrop('right', $event)">
+          </div>
+          <div class="bottom"
+               draggable="true"
+               (dragstart)="haceCrop('bottom', $event)"
+               (drag)="haceCrop('bottom', $event)">
+          </div>
+          <div class="left"
+               draggable="true"
+               (dragstart)="haceCrop('left', $event)"
+               (drag)="haceCrop('left', $event)">
+          </div>
+          <div class="over"
+               draggable="true"
+               (dragstart)="haceCrop('free', $event)"
+               (drag)="haceCrop('free', $event)">
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    <div class="umbral">
+      <p-slider [(ngModel)]="umbral"
+                [min]="0"
+                [max]="255"
+                [orientation]="'horizontal'"
+                [range]="false"
+                [step]="1"
+                [style]="{'width':'100%'}"
+                class="slider"
+                (onChange)="cambiaUmbral()">
+      </p-slider>
+    </div>
+    }
+  </div>
+  <div class="col-der">
+    <div class="datos">
+      <h3>Información del firmante</h3>
+      <p-float-label>
+        <input pInputText
+               fluid="true"
+               id="nombres"
+               [(ngModel)]="datos.nombres">
+        <label for="nombres">Nombres</label>
+      </p-float-label>
+      <p-float-label>
+        <input pInputText
+               fluid="true"
+               id="apellidos"
+               [(ngModel)]="datos.apellidos">
+        <label for="apellidos">Apellidos</label>
+      </p-float-label>
+      <p-float-label>
+        <input pInputText
+               fluid="true"
+               id="cargo"
+               [(ngModel)]="datos.cargo">
+        <label for="cargo">Cargo</label>
+      </p-float-label>
+    </div>
+    <div class="controles">
+      <p-button label="Guardar"
+                [disabled]="!datos.nombres || !datos.apellidos || !datos.cargo"
+                (onClick)="guardar()"
+                severity="info"
+                icon="pi pi-save" />
+      <p-button label="Cancelar"
+                (onClick)="cancelar()"
+                severity="danger"
+                icon="pi pi-times" />
+    </div>
+  </div>
+</div>

@@ -1,0 +1,119 @@
+<div class="datos flex-auto flex flex-column gap-3 p-3">
+  @for (elemento of estructura; track elemento.value; let numElemento = $index) {
+  @if (elemento.tipo == 'parrafo') {
+  <!---->
+  <textarea pTextarea
+            class="w-full"
+            [autoResize]="true"
+            [(ngModel)]="elemento.value">
+  </textarea>
+  <!---->
+  <!-- --
+  <p-editor [(ngModel)]="elemento.value"
+            class="w-full">
+    <ng-template #header>
+      <span class="ql-formats">
+        <button type="button"
+                class="ql-bold"
+                aria-label="Bold"></button>
+        <button type="button"
+                class="ql-italic"
+                aria-label="Italic"></button>
+        <button type="button"
+                class="ql-underline"
+                aria-label="Underline"></button>
+      </span>
+    </ng-template>
+  </p-editor>
+  !---->
+  }
+  @if (elemento.tipo == 'tabla') {
+  <p-table [value]="elemento.value.filas">
+    <ng-template #header>
+      <tr>
+        @for (encabezado of elemento.value.encabezados; track $index; let numEncabezado = $index) {
+        <th [pEditableColumn]="encabezado"
+            pEditableColumnField="encabezado">
+          <p-cellEditor>
+            <ng-template #input>
+              <textarea pTextarea
+                        [(ngModel)]="elemento.value.encabezados[numEncabezado]">
+                   </textarea>
+            </ng-template>
+            <ng-template #output>
+              {{encabezado}}
+            </ng-template>
+          </p-cellEditor>
+        </th>
+        }
+      </tr>
+    </ng-template>
+    <ng-template #body
+                 let-fila>
+      <tr>
+        @for (celda of fila; track $index; let numCelda = $index) {
+        <td>
+          @if (celda.length > 20) {
+          <textarea pTextarea
+                    [(ngModel)]="fila[numCelda]">
+          </textarea>
+          } @else {
+          <input pInputText
+                 [(ngModel)]="fila[numCelda]"
+                 type="text" />
+          }
+        </td>
+        }
+      </tr>
+    </ng-template>
+    @if (elemento.value.pie) {
+    <ng-template #summary>
+      <div class="flex gap-3">
+        @for(pie of elemento.value.pie; track $index) {
+        <input class="flex-auto"
+               pInputText
+               [(ngModel)]="pie.texto"
+               type="text" />
+        }
+      </div>
+    </ng-template>
+    }
+  </p-table>
+  }
+  @if (elemento.tipo == 'firma') {
+  <div class="edit-firma">
+    <div class="firma">
+      <p-select [options]="datosFirmas"
+                [optionLabel]="'funcionario'"
+                [style]="{'width': '100%', 'margin-bottom': '1em'}"
+                (ngModelChange)="ajustaFirma($event.uuid)"
+                [(ngModel)]="firmaSeleccionada" />
+    </div>
+    <div class="nombre field grid">
+      <label [for]="'firma-nombre-' + numElemento"
+             class="col-2">
+        Nombre:
+      </label>
+      <input type="text"
+             class="col-10"
+             [id]="'firma-nombre-' + numElemento"
+             disabled
+             pInputText
+             [(ngModel)]="elemento.value.nombre">
+    </div>
+    <div class="cargo field grid">
+      <label [for]="'firma-nombre-' + numElemento"
+             class="col-2">
+        Cargo:
+      </label>
+      <input type="text"
+             class="col-10"
+             [id]="'firma-cargo-' + numElemento"
+             disabled
+             pInputText
+             [(ngModel)]="elemento.value.cargo">
+    </div>
+  </div>
+  }
+  }
+</div>

@@ -1,0 +1,25 @@
+:host {
+  &::ng-deep {
+    .p-element {
+      .p-datatable {
+        .p-datatable-wrapper {
+          .p-datatable-table {
+            font-size: 11px;
+            thead {
+              tr {
+                th {
+                  &.medio {
+                    min-width: 12em;
+                  }
+                  &.maximo {
+                    min-width: 18em;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

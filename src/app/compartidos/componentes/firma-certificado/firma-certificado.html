@@ -1,0 +1,16 @@
+<div class="firma-certificado">
+  @if (firma) {
+  <div class="nombre"
+       [innerHTML]="firma.nombre">
+  </div>
+  <div class="cargo"
+       [innerHTML]="firma.cargo">
+  </div>
+  <div class="imagen-cont">
+    <div class="imagen">
+      <img [src]="firma.imagen"
+           alt="Firma autorizada">
+    </div>
+  </div>
+  }
+</div>

@@ -1,0 +1,23 @@
+.dashboard {
+  .categorias {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    &.vacio {
+      justify-content: center;
+      align-items: center;
+      height: calc(100vh - 120px);
+    }
+  }
+}
+:host {
+  ::ng-deep {
+    .p-panel {
+      .p-panel-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+<div class="admin-firmas">
+  <p-tabs [(value)]="tabActual">
+    <p-tablist>
+      <p-tab [value]="0"> Añadir</p-tab>
+      <p-tab [value]="1">Editar</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel [value]="0">
+        <mgp-add-firma [activo]="tabActual == 0"
+                       (cerrar)="cierraDialogo()" />
+      </p-tabpanel>
+      <p-tabpanel [value]="1">
+        <mgp-edita-firma [activo]="tabActual == 1" />
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>

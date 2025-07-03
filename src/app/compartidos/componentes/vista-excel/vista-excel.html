@@ -1,0 +1,27 @@
+<div class="vista-excel">
+  <p-table [value]="data"
+           [paginator]="true"
+           [rows]="5"
+           [tableStyle]="{ 'min-width': '50rem' }"
+           [rowsPerPageOptions]="[5, 10, 20]"
+           styleClass="p-datatable-striped p-datatable-gridlines">
+    <ng-template #header>
+      <tr>
+        @for (encabezado of encabezados; track $index; let numTH = $index) {
+        <th [ngClass]="anchoCeldas[numTH]">
+          {{encabezado}}
+        </th>
+        }
+      </tr>
+    </ng-template>
+    <ng-template #body
+                 let-rowData>
+      <tr>
+        @for (celda of rowData; track $index; let numCol = $index) {
+        <!-- <td>{{aCadena(rowData[numCol])}}</td> -->
+        <td>{{rowData[numCol]}}</td>
+        }
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

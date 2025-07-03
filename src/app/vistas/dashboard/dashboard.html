@@ -1,0 +1,32 @@
+<div class="dashboard">
+  <div class="categorias"
+       [class.vacio]="!categorias">
+    @if (categorias) {
+    <p-tabs (onChange)="init()"
+            [value]="0">
+      <p-tablist>
+        @for (superior of categorias; track superior.key) {
+        <p-tab [value]="$index">{{superior.label ?? 'Gráficos'}}</p-tab>
+        }
+      </p-tablist>
+      <p-tabpanels>
+        @for (superior of categorias; track superior.key) {
+        <p-tabpanel [value]="$index">
+          @for (categoria of superior.children; track categoria.key) {
+          <p-panel class="charts shadow-2"
+                   [toggleable]="true"
+                   [header]="categoria.label">
+            @for (nodo of categoria.children; track nodo.key) {
+            <mgp-chart [data]="nodeData(nodo)" />
+            }
+          </p-panel>
+          }
+        </p-tabpanel>
+        }
+      </p-tabpanels>
+    </p-tabs>
+    } @else {
+    <p-progressSpinner ariaLabel="loading" />
+    }
+  </div>
+</div>

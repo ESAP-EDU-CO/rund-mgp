@@ -13,7 +13,33 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
-    "module": "preserve"
+    "module": "preserve",
+    "paths": {
+      "@vistas/*": [
+        "./src/app/vistas/*"
+      ],
+      "@componentes/*": [
+        "./src/app/compartidos/componentes/*"
+      ],
+      "@modulos/*": [
+        "./src/app/compartidos/modulos/*"
+      ],
+      "@servicios/*": [
+        "./src/app/compartidos/servicios/*"
+      ],
+      "@pipes/*": [
+        "./src/app/compartidos/pipes/*"
+      ],
+      "@librerias/*": [
+        "./src/app/compartidos/librerias/*"
+      ],
+      "@compartidos/*": [
+        "./src/app/compartidos/*"
+      ],
+      "@app/*": [
+        "./src/app/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

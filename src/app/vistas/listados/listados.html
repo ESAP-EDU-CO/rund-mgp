@@ -1,0 +1,113 @@
+<p-panel header="Cargar listados"
+         [toggleable]="true">
+  <p-fileUpload class="carga-lista"
+                name="carga-lista"
+                [url]="loadList"
+                (onSelect)="seleccionaFile($event)"
+                (onClear)="borraFile($event)"
+                (onUpload)="cargaFile($event)"
+                (uploadHandler)="cargaHandler($event)"
+                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, xlsx, xls"
+                uploadLabel="Cargar archivo al sistema"
+                cancelLabel="Cancelar"
+                chooseLabel="Seleccionar archivo"
+                maxFileSize="10000000">
+    <ng-template #header
+                 let-files
+                 let-chooseCallback="chooseCallback"
+                 let-uploadCallback="uploadCallback"
+                 let-clearCallback="clearCallback">
+      <div class="flex flex-nowrap gap-3">
+        <p-button (click)="acciones($event, chooseCallback)"
+                  icon="pi pi-file-excel"
+                  [rounded]="true"
+                  [disabled]="files && files.length > 0" />
+        <p-button (click)="acciones($event, uploadCallback)"
+                  icon="pi pi-cloud-upload"
+                  [rounded]="true"
+                  severity="success"
+                  [disabled]="!files || files.length === 0" />
+        <p-button id="call-clear-callback"
+                  (click)="acciones($event, clearCallback)"
+                  icon="pi pi-times"
+                  [rounded]="true"
+                  severity="danger"
+                  [disabled]="!files || files.length === 0" />
+      </div>
+    </ng-template>
+    <ng-template #content
+                 let-clearCallback="clearCallback"
+                 let-files>
+      @for (archivo of files;track $index) {
+      <p-card>
+        <ng-template #header>
+          <div class="mx-4 my-2">
+            @for (prop of listadoProps; track $index) {
+            @if (!propsNoVisibles.includes(prop.label)){
+            <div class="grid gap-3 align-items-center">
+              <div class="col-fixed"
+                   style="width: 7em">
+                <strong>{{prop.label}}:</strong>
+              </div>
+              <div class="col flex flex-column gap-2">
+                @if (prop.label == 'Comentario') {
+                <input type="text"
+                       class="max-w-30rem w-full"
+                       pInputText
+                       [(ngModel)]="varComentario().valor" />
+                <small>Escriba un comentario sobre la nueva versión del documento</small>
+                } @else {
+                <span [innerHTML]="prop.valor"></span>
+                @if (prop.label == 'Nombre') {
+                <small class="text-xs -mt-2 text-400">Nombre normalizado para efectos de registro</small>
+                }
+                }
+              </div>
+            </div>
+            }
+            }
+          </div>
+        </ng-template>
+        <mgp-vista-excel [archivo]="archivo"
+                         (emiteCSV)="recibeCSV($event)"
+                         (reconoceTipo)="reconoceTipoListado($event)" />
+        <ng-template #footer>
+          <div class="flex gap-3 mt-1">
+            <p-button severity="success"
+                      label="Cargar"
+                      (click)="cargaFile($event)"
+                      icon="pi pi-cloud-upload"
+                      class="w-full" />
+            <p-button severity="danger"
+                      label="Cancelar"
+                      icon="pi pi-times"
+                      (click)="borraFile($event)"
+                      class="w-full" />
+          </div>
+        </ng-template>
+      </p-card>
+      }
+    </ng-template>
+    <ng-template #file></ng-template>
+    <ng-template #empty>
+      <div class="cont-label flex w-full p-6 flex-column gap-3 justify-content-center align-items-center">
+        <div class="cont-icon flex justify-content-center align-items-center">
+          <i class="icon pi pi-cloud-upload border-2 border-circle p-5 text-8xl text-400 border-400"></i>
+        </div>
+        <p class="label mt-4 mb-0">Arrastre y suelte para cargar el listado en Excel</p>
+      </div>
+    </ng-template>
+  </p-fileUpload>
+</p-panel>
+<p-confirmDialog class="dialogo-confirmacion" />
+<p-dialog [modal]="true"
+          [closeOnEscape]="false"
+          [closable]="false"
+          [draggable]="false"
+          [(visible)]="loadingDialog"
+          [style]="{ width: '25rem'}">
+  <div class="w-full h-full flex flex-column justify-content-center align-items-center">
+    <h1>Cargando...</h1>
+    <p-progressSpinner ariaLabel="cargando" />
+  </div>
+</p-dialog>

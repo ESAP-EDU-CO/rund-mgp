@@ -1,0 +1,26 @@
+<div class="menu">
+  <p-menu [model]="elementosMenu">
+    <ng-template #item
+                 let-item>
+      @if (permiso(item, usuario?.rol)){
+      <a class="item p-menu-item-link"
+         [class.surface-200]="seccionActual == item.route"
+         [routerLink]="item.route"
+         pRipple>
+        @if (item.tipo == 'PrimeNG') {
+        <span [class]="item.icon"></span>
+        }
+        @if (item.tipo == 'MaterialDesign') {
+        <span [ngClass]="item.estilo">
+          {{ item.icon }}
+        </span>
+        }
+        @if (item.faIcon) {
+        <fa-icon [icon]="item.faIcon"></fa-icon>
+        }
+        <span class="ml-2">{{ item.label }}</span>
+      </a>
+      }
+    </ng-template>
+  </p-menu>
+</div>

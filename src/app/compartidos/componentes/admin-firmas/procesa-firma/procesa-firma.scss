@@ -1,0 +1,134 @@
+.procesa-firma {
+  display: flex;
+  align-items: stretch;
+  gap: 2em;
+  .col-izq {
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    padding: 0 1em 1em;
+    .titulo {
+      display: flex;
+      align-items: flex-start;
+      .icono {
+        background-color: var(--p-primary-color);
+        border-radius: 50%;
+        padding: 4px;
+        width: 1.5em;
+        height: 1.5em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: -0.25em;
+        margin-top: 0.5em;
+        .pi {
+          color: var(--p-primary-contrast-color);
+        }
+      }
+    }
+    .firma {
+      overflow: hidden;
+      max-height: 320px;
+      position: relative;
+      border: 1px solid var(--p-content-border-color);
+      .img-firma {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.1;
+      }
+      .cropper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        .img-crop {
+          position: absolute;
+          background-color: #fff;
+          background-repeat: no-repeat;
+          border: 1px solid;
+          border-color: var(--p-primary-500);
+          &:hover {
+            border-color: var(--p-button-danger-hover-background);
+          }
+          .top,
+          .right,
+          .bottom,
+          .left,
+          .over {
+            position: absolute;
+            background-color: var(--p-button-danger-hover-background);
+            opacity: 0;
+            z-index: 2;
+          }
+          .top,
+          .bottom {
+            width: 100%;
+            height: 16px;
+            left: 0;
+          }
+          .right,
+          .left {
+            height: 100%;
+            width: 16px;
+            top: 0;
+          }
+          .top {
+            top: 0;
+            cursor: n-resize;
+          }
+          .right {
+            right: 0;
+            cursor: e-resize;
+          }
+          .bottom {
+            bottom: 0;
+            cursor: s-resize;
+          }
+          .left {
+            left: 0;
+            cursor: w-resize;
+          }
+          .over {
+            width: 100%;
+            height: 100%;
+            cursor: move;
+            z-index: 1;
+          }
+        }
+      }
+    }
+    .umbral {
+      margin-top: 1em;
+      .slider {
+        padding: 1em;
+      }
+      .instrucciones {
+        font-weight: bold;
+        font-size: 0.75em;
+      }
+    }
+  }
+  .col-der {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1em 1em 0;
+    .datos {
+      display: flex;
+      flex-direction: column;
+      gap: 2em;
+      h3 {
+        margin: 0;
+      }
+    }
+    .controles {
+      margin-top: 2em;
+      display: flex;
+      gap: 1em;
+      justify-content: flex-end;
+    }
+  }
+}

@@ -1,0 +1,39 @@
+<div class="herramientas">
+  @for (herramienta of herramientas; track herramienta.vinculo) {
+  <p-card class="herramienta">
+    <ng-template #title>
+      {{herramienta.titulo}}
+    </ng-template>
+    <ng-template #subtitle>
+      {{herramienta.descripcion}}
+    </ng-template>
+    <div class="card-content"></div>
+    <ng-template #footer>
+      <div class="card-footer">
+        <p-button label="Abrir herramienta"
+                  icon="pi pi-window-maximize"
+                  (onClick)="abreHerramienta(herramienta.vinculo)" />
+      </div>
+    </ng-template>
+  </p-card>
+  }
+  <p-dialog [style]="{width: '70vw'}"
+            [visible]="modalVisible"
+            [modal]="true"
+            [blockScroll]="true"
+            [dismissableMask]="true">
+    <ng-template #closeicon>
+      <i class="pi pi-times"
+         (click)="cierraModal()">
+      </i>
+    </ng-template>
+    <ng-template #header>
+      <h3>{{actualTool?.titulo}}</h3>
+    </ng-template>
+    <ng-template #content>
+      @if (actualTool?.vinculo === 'firmas') {
+      <mgp-admin-firmas (cerrar)="cierraModal()" />
+      }
+    </ng-template>
+  </p-dialog>
+</div>

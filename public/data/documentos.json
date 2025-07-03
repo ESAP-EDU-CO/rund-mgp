@@ -1,0 +1,262 @@
+{
+  "grupos": [
+    {
+      "label": "Certificados",
+      "value": "certificados",
+      "items": [
+        {
+          "label": "Certificación de categorización y evaluación",
+          "value": [
+            0
+          ]
+        },
+        {
+          "label": "Certificación de productividad",
+          "value": [
+            1
+          ]
+        },
+        {
+          "label": "Certificación de categorización docente",
+          "value": [
+            2
+          ]
+        }
+      ]
+    }
+  ],
+  "datos": [
+    {
+      "label": "Documento de identidad",
+      "value": null,
+      "type": "multi",
+      "encabezados": [
+        "Nombre completo",
+        "Documento de identidad",
+        "Categoría",
+        "Última Evaluación"
+      ],
+      "plantilla": {
+        "plantilla": "1050",
+        "estructura": [
+          {
+            "tipo": "parrafo",
+            "fontSize": 12,
+            "fontWeight": "regular",
+            "value": "12_301_1300_60_1050"
+          },
+          {
+            "tipo": "parrafo",
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "value": "LA COORDINADORA DEL GRUPO DE GESTIÓN PROFESORAL, EN CALIDAD DE SECRETARIA TÉCNICA DEL COMITÉ DOCENTE DE LA ESAP",
+            "textAlign": "center",
+            "marginTop": "6em"
+          },
+          {
+            "tipo": "parrafo",
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "value": "CERTIFICA",
+            "textAlign": "center",
+            "marginTop": "3em"
+          },
+          {
+            "tipo": "parrafo",
+            "fontSize": 12,
+            "fontWeight": "regular",
+            "value": "Que, de acuerdo con las bases de datos del Grupo de Gestión Profesoral, la Evaluación y Clasificación Docente aprobada en sesión del Comité Docente de los Profesores No vinculados a la carrera es la que se enuncia a continuación:",
+            "marginTop": "3em"
+          },
+          {
+            "tipo": "tabla",
+            "fontSize": 9,
+            "fontWeight": "regular",
+            "value": null,
+            "marginTop": "1em"
+          },
+          {
+            "tipo": "parrafo",
+            "fontSize": 12,
+            "fontWeight": "regular",
+            "value": "La presente certificación se expide {alDia} del mes de {mes} de {año}.",
+            "marginTop": "1em"
+          },
+          {
+            "tipo": "firma",
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "value": {
+              "nombre": "ANA CATALINA BORRERO MARTINEZ",
+              "cargo": "Coordinadora Grupo de Gestión Profesoral",
+              "imagen": "firma_CatalinaBorrero.png",
+              "uuid": "bd2b50ff-0381-44c2-b046-52c135419aa1"
+            }
+          }
+        ]
+      },
+      "origen": {
+        "categoria": "Listados",
+        "tipo": "Listado de docentes",
+        "nombre": "ListadoGeneralDocente",
+        "formato": "CSV",
+        "extension": ".csv"
+      }
+    },
+    {
+      "label": "Documento de identidad",
+      "value": null,
+      "type": "select",
+      "encabezados": [
+        "No.",
+        "DESCRIPCIÓN DE PRODUCTIVIDAD",
+        "PUNTOS POR BONIFICACIÓN",
+        "NORMATIVIDAD"
+      ],
+      "plantilla": {
+        "plantilla": "1231",
+        "estructura": [
+          {
+            "tipo": "parrafo",
+            "fontSize": 12,
+            "fontWeight": "regular",
+            "value": "12_301_1300_70_1231"
+          },
+          {
+            "tipo": "parrafo",
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "value": "LA COORDINADORA DEL GRUPO DE GESTIÓN PROFESORAL, EN CALIDAD DE SECRETARIA TÉCNICA DEL COMITÉ DOCENTE DE LA ESAP",
+            "textAlign": "center",
+            "marginTop": "2em"
+          },
+          {
+            "tipo": "parrafo",
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "value": "CERTIFICA",
+            "textAlign": "center",
+            "marginTop": "1em"
+          },
+          {
+            "tipo": "parrafo",
+            "fontSize": 12,
+            "fontWeight": "regular",
+            "value": "Que, de conformidad con lo dispuesto en el Capítulo IV, Artículo 19 del Decreto 1279 del 19 de junio de 2002, <em>“Por el cual se establece el régimen salarial y prestacional de los docentes de las Universidades Estatales”</em>, en su Capítulo IV, Artículo 19, se establece que, <em>“Las bonificaciones son remuneraciones que se reconocen por una sola vez, correspondientes a las actividades específicas de productividad académica y no contemplan pagos genéricos indiscriminados. En los actos administrativos mediante los cuales se hacen los reconocimientos de bonificaciones, debe constar el valor del pago y el producto académico que lo origina”.</em>",
+            "marginTop": "1em"
+          },
+          {
+            "tipo": "parrafo",
+            "fontSize": 12,
+            "fontWeight": "regular",
+            "value": "El Comité de Asignación y Reconocimiento de Puntaje – CARP, en sesión N° 10 del 07 de noviembre del 2024, una vez analizadas las solicitudes en relación con la asignación de puntos por bonificación de productividad académica, aprobó para el docente <strong>{nombreCompleto}</strong> identificado con Cédula de Ciudadanía <strong>{cedula}</strong>, lo que se detalla a continuación:",
+            "marginTop": "1em"
+          },
+          {
+            "tipo": "tabla",
+            "fontSize": 9,
+            "fontWeight": "regular",
+            "value": null,
+            "marginTop": "1em"
+          },
+          {
+            "tipo": "parrafo",
+            "fontSize": 12,
+            "fontWeight": "regular",
+            "value": "La presente certificación se expide para efectos de soportar los trámites administrativos pertinentes, en la ciudad de Bogotá D.C., {alDia} del mes de {mes} de {año}.",
+            "marginTop": "1em"
+          },
+          {
+            "tipo": "firma",
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "value": {
+              "nombre": "ANA CATALINA BORRERO MARTINEZ",
+              "cargo": "Coordinadora Grupo de Gestión Profesoral",
+              "imagen": "firma_CatalinaBorrero.png",
+              "uuid": "bd2b50ff-0381-44c2-b046-52c135419aa1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "label": "Documento de identidad",
+      "value": null,
+      "type": "multi",
+      "encabezados": [
+        "No.",
+        "Nombre completo",
+        "Documento de identidad",
+        "Categoría",
+        "Acta"
+      ],
+      "plantilla": {
+        "plantilla": "1051",
+        "estructura": [
+          {
+            "tipo": "parrafo",
+            "fontSize": 12,
+            "fontWeight": "regular",
+            "value": "12_301_1300_60_1051"
+          },
+          {
+            "tipo": "parrafo",
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "value": "LA COORDINADORA DEL GRUPO DE GESTIÓN PROFESORAL, EN CALIDAD DE SECRETARIA TÉCNICA DEL COMITÉ DOCENTE DE LA ESAP",
+            "textAlign": "center",
+            "marginTop": "6em"
+          },
+          {
+            "tipo": "parrafo",
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "value": "CERTIFICA",
+            "textAlign": "center",
+            "marginTop": "3em"
+          },
+          {
+            "tipo": "parrafo",
+            "fontSize": 12,
+            "fontWeight": "regular",
+            "value": "Que, de acuerdo con las bases de datos del Grupo de Gestión Profesoral, la Evaluación y Clasificación Docente aprobada en sesión del Comité Docente de los Profesores No vinculados a la carrera es la que se enuncia a continuación:",
+            "marginTop": "3em"
+          },
+          {
+            "tipo": "tabla",
+            "fontSize": 9,
+            "fontWeight": "regular",
+            "value": null,
+            "marginTop": "1em"
+          },
+          {
+            "tipo": "parrafo",
+            "fontSize": 12,
+            "fontWeight": "regular",
+            "value": "La presente certificación se expide {alDia} del mes de {mes} de {año}.",
+            "marginTop": "1em"
+          },
+          {
+            "tipo": "firma",
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "value": {
+              "nombre": "ANA CATALINA BORRERO MARTINEZ",
+              "cargo": "Coordinadora Grupo de Gestión Profesoral",
+              "imagen": "firma_CatalinaBorrero.png",
+              "uuid": "bd2b50ff-0381-44c2-b046-52c135419aa1"
+            }
+          }
+        ]
+      },
+      "origen": {
+        "categoria": "Listados",
+        "tipo": "Listado de docentes",
+        "nombre": "ListadoGeneralDocente",
+        "formato": "CSV",
+        "extension": ".csv"
+      }
+    }
+  ]
+}

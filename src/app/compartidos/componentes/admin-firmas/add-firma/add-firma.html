@@ -1,0 +1,101 @@
+<div class="add-firma">
+  @if (etapa == 'carga') {
+  <p-fileupload @cortina
+                class="up-firma"
+                (onSelect)="seleccionaImagen($event)"
+                (onBeforeUpload)="procesaImagen($event)"
+                (onClear)="eliminaImagen($event)"
+                (onRemove)="eliminaImagen($event)"
+                name="firmas"
+                multiple="false"
+                maxFileSize="1000000"
+                chooseLabel="Examinar"
+                uploadLabel="Procesar"
+                cancelLabel="Cancelar"
+                chooseIcon="pi pi-search"
+                uploadIcon="pi pi-cog"
+                [mode]="'advanced'"
+                fileLimit="1"
+                cancelStyleClass="p-button-danger"
+                uploadStyleClass="p-button-warn"
+                previewWidth="200"
+                accept=".jpg, .png, .gif, .jpeg">
+    <ng-template #empty>
+      <div class="drag-drop">
+        <div class="icono">
+          <i class="pi pi-cloud-upload"></i>
+        </div>
+        <div class="texto">Arrastre y suelte una imagen con la firma escaneada para procesarla.</div>
+      </div>
+    </ng-template>
+  </p-fileupload>
+  }
+  @if (etapa == 'procesamiento') {
+  <mgp-procesa-firma @cortina
+                     [archivo]="archivo"
+                     (cancela)="eliminaImagen(null)"
+                     (procesa)="guardarFirma($event)" />
+  }
+  @if (etapa == 'cargando') {
+  <div class="cargando">
+    <p-progress-spinner />
+  </div>
+  }
+  @if (etapa == 'grabado' && urlImagenFinal) {
+  <div class="grabado">
+    @if (!erroresCarga.json && !erroresCarga.png) {
+    <h3>Los siguientes datos han sido almacenados correctamente:</h3>
+    <div class="firma-final">
+      <div class="firma">
+        <img [src]="urlImagenFinal">
+      </div>
+      <div class="datos">
+        <div class="nombres">
+          <span>Nombres:</span>
+          <span>{{datosFirma?.nombres}}</span>
+        </div>
+        <div class="apellidos">
+          <span>Apellidos:</span>
+          <span>{{datosFirma?.apellidos}}</span>
+        </div>
+        <div class="cargo">
+          <span>Cargo:</span>
+          <span>{{datosFirma?.cargo}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="controles">
+      <p-button severity="success"
+                icon="pi pi-check"
+                label="Aceptar"
+                (onClick)="cierraDialogo()" />
+    </div>
+    } @else {
+    <h3>Hubo un error en la carga de la firma:</h3>
+    <div class="errores">
+      @if (erroresCarga.png) {
+      <div class="png">
+        <p [innerHTML]="erroresCarga.png"></p>
+      </div>
+      }
+      @if (erroresCarga.json) {
+      <div class="json">
+        <p [innerHTML]="erroresCarga.json"></p>
+      </div>
+      }
+      <h4>Si este error se ha presentado anteriormente, consulte con el administrador del sistema.</h4>
+    </div>
+    <div class="controles">
+      <p-button severity="info"
+                icon="pi pi-replay"
+                label="Reiniciar"
+                (onClick)="eliminaImagen(null)" />
+      <p-button severity="warn"
+                icon="pi pi-times"
+                label="Cerrar"
+                (onClick)="cierraDialogo()" />
+    </div>
+    }
+  </div>
+  }
+</div>

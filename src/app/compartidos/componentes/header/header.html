@@ -1,0 +1,30 @@
+<div class="header">
+  <p-toolbar [style]="{'background-color': '#003287'}">
+    <ng-template #start>
+      <div class="logo-esap">
+        <img src="imgs/logoESAP.svg" />
+      </div>
+    </ng-template>
+    <ng-template #center>
+      <div class="titulo">
+        <h3>RUND - Módulo de consultas docentes</h3>
+      </div>
+    </ng-template>
+    <ng-template #end>
+      @if (usuario) {
+      <div class="nombre">
+        <span [innerHTML]="usuario.nombre"></span>
+      </div>
+      <p-button severity="secondary"
+                (onClick)="logout()"
+                icon="pi pi-sign-out" />
+      } @else {
+      @for (tipo of ['admin', 'servicio', 'consulta', 'usuario']; track tipo){
+      <p-button (onClick)="login(tipo)"
+                [label]="tipo"
+                [style]="{'margin-left': '1em', 'text-transform': 'uppercase'}" />
+      }
+      }
+    </ng-template>
+  </p-toolbar>
+</div>

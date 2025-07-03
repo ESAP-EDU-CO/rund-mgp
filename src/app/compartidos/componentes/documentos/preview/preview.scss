@@ -1,0 +1,26 @@
+.preview {
+  .vista {
+    aspect-ratio: 612/792;
+    max-width: 612px;
+    min-width: 220px;
+    /*width: 50%;*/
+    background-size: contain;
+    background-repeat: no-repeat;
+    .contenido {
+      margin: 0 4em 4em;
+      color: var(--p-surface-950);
+      .tabla {
+        border-spacing: 0;
+        border-collapse: collapse;
+        td,
+        th {
+          padding: 0.75em;
+          border: 1px solid black;
+        }
+        th {
+          background-color: rgba(106, 153, 208, 1);
+        }
+      }
+    }
+  }
+}

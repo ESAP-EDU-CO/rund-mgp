@@ -1,0 +1,24 @@
+.contenido {
+  display: flex;
+  padding-top: 24px;
+  gap: 16px;
+  .content {
+    flex: 1 1 auto;
+    max-width: calc(100vw - 232px);
+    &.vacio {
+      height: calc(100vh - 120px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}
+.autenticandose,
+.no-autenticado {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 24px;
+  gap: 16px;
+}

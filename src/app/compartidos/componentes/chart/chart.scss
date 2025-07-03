@@ -1,0 +1,15 @@
+:host {
+  ::ng-deep {
+    .p-card {
+      background-color: var(--p-surface-100);
+    }
+    .grafico {
+      &.bar {
+        div {
+          width: 50rem;
+          aspect-ratio: 2/1;
+        }
+      }
+    }
+  }
+}

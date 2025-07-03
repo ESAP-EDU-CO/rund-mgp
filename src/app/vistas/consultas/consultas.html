@@ -1,0 +1,107 @@
+<div class="consultas">
+  <div class="paneles">
+    @for (panel of dataConsulta; let nPanel = $index; track nPanel) {
+    <p-panel class="categorias"
+             [class.vacio]="!panel.opciones"
+             [toggleable]="true"
+             [header]="panel.label">
+      <ng-template #icons>
+        <p-button class="p-panel-header-icon p-link mr-2"
+                  [disabled]="!panel.dataChart"
+                  (click)="menu.toggle($event)">
+          <span class="pi pi-download"></span>
+        </p-button>
+        <p-menu #menu
+                id="config_menu"
+                (onShow)="numPanel = nPanel"
+                [model]="menuDescarga"
+                [popup]="true" />
+      </ng-template>
+      @if (panel.opciones) {
+      <div class="contenido-panel-categorias flex flex-wrap gap-5">
+        <div class="variables flex flex-column justify-content-start align-content-between gap-5 pt-3">
+          @for (eje of panel.seleccion; track $index; let index = $index) {
+          <p-floatlabel>
+            <p-select [options]="panel.opciones"
+                      [(ngModel)]="panel.seleccion[index]"
+                      [group]="true"
+                      (ngModelChange)="creaTabla(panel)"
+                      inputId="float-label"
+                      placeholder="Selecciona una opción">
+              <ng-template #group
+                           let-group>
+                <span class="pi pi-list"></span>
+                <span class="ml-3"
+                      style="white-space: nowrap;">
+                  {{group.label}}
+                </span>
+              </ng-template>
+              <ng-template #item
+                           let-item>
+                <span>{{item.label}}</span>
+              </ng-template>
+            </p-select>
+            <label for="float-label">{{placeholders[index]}}</label>
+          </p-floatlabel>
+          }
+        </div>
+        @if (!panel.dataTabla && !panel.seleccion.includes('')){
+        <p-progressSpinner ariaLabel="loading" />
+        }
+        @if (panel.dataTabla) {
+        <div class="tabla">
+          <p-table [value]="panel.dataTabla.filas"
+                   styleClass="p-datatable-gridlines">
+            <ng-template #header>
+              <tr>
+                <th class="text-lg text-center"
+                    rowspan="2">
+                  {{panel.dataTabla.nomFil}}
+                </th>
+                <th class="text-lg text-center"
+                    [attr.colspan]="panel.dataTabla.cols.length">
+                  {{panel.dataTabla.nomCol}}
+                </th>
+              </tr>
+              <tr>
+                @for (col of panel.dataTabla.cols; track $index){
+                <th>{{col}}</th>
+                }
+              </tr>
+            </ng-template>
+            <ng-template #body
+                         let-item>
+              <tr>
+                <td class="font-bold">{{item.label}}</td>
+                @for (dataFila of item.data; track $index) {
+                <td>{{dataFila}}</td>
+                }
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+        <div class="chart">
+          <mgp-chart [data]="panel.dataChart" />
+        </div>
+        }
+      </div>
+      } @else {
+      <p-progressSpinner ariaLabel="loading" />
+      }
+    </p-panel>
+    }
+  </div>
+</div>
+<p-dialog class="esperando"
+          modal="true"
+          closeOnEscape="false"
+          [(visible)]="esperando">
+  <ng-template #headless>
+    <div class="w-16rem h-4rem flex flex-column gap-3 justify-content-center align-items-center">
+      <p-progressbar mode="indeterminate"
+                     [style]="{height: '4px'}"
+                     class="w-full" />
+      <span [innerHTML]="mensajeEspera | safe: 'html'"></span>
+    </div>
+  </ng-template>
+</p-dialog>

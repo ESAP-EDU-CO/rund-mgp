@@ -1,0 +1,28 @@
+$margin-firma: 7em;
+.firma-certificado {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: $margin-firma;
+  .imagen-cont {
+    width: 100%;
+    height: 10em;
+    position: absolute;
+    top: $margin-firma * -1;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    .imagen {
+      max-width: 40%;
+      height: 100%;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+:host {
+  ::ng-deep {
+    .p-element {
+      &.dialogo-confirmacion {
+        .p-dialog-content {
+          .p-confirm-dialog-message {
+            .mensaje-confirma-reemplazo {
+              max-width: 50em;
+            }
+            .resalto-confirma-reemplazo {
+              text-align: center;
+              font-weight: 800;
+            }
+          }
+        }
+      }
+      &.p-button {
+        &.separado {
+          .pi {
+            margin-right: 0.5em;
+          }
+        }
+      }
+    }
+    p-fileUpload {
+      &.carga-lista {
+        .p-fileupload {
+          .p-fileupload-content {
+            &.p-fileupload-content {
+              &.p-fileupload-highlight {
+                .p-fileupload-empty {
+                  .cont-label {
+                    .cont-icon {
+                      .icon {
+                        background-color: var(--surface-800) !important;
+                        color: var(--surface-0) !important;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

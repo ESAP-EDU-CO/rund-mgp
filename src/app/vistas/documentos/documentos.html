@@ -1,0 +1,86 @@
+<div class="documentos">
+  <p-panel class="certificados"
+           header="Certificados"
+           [toggleable]="true">
+    <div class="header mt-5 flex">
+      <div class="filtros flex gap-5">
+        <p-floatLabel>
+          <p-select [options]="listaCertificados"
+                    class="tipo-certificados w-25rem"
+                    [(ngModel)]="certificadoSeleccionado[1]"
+                    (ngModelChange)="seleccionaCertificado($event)"
+                    inputId="lista-certificados"
+                    [group]="true" />
+          <label for="lista-certificados">Seleccione un tipo de certificado</label>
+        </p-floatLabel>
+        <div class="filtros flex flex-column">
+          @for (dato of filtros; track $index) {
+          @if (dato.type == 'multi') {
+          <p-floatLabel>
+            <p-multiSelect [options]="dato.options"
+                           [(ngModel)]="dato.value"
+                           [style]="{'min-width': '16em'}"
+                           (ngModelChange)="seleccionaOpcion(dato)"
+                           optionLabel="label"
+                           inputId="multi-select" />
+            <label for="multi-select"
+                   [innerHTML]="dato.label"></label>
+          </p-floatLabel>
+          }
+          @if (dato.type == 'select') {
+          <p-floatLabel>
+            <p-select [options]="dato.options"
+                      [(ngModel)]="dato.value"
+                      [style]="{'min-width': '16em'}"
+                      (ngModelChange)="seleccionaOpcion(dato)"
+                      optionLabel="label"
+                      inputId="select"
+                      [placeholder]="dato.label"
+                      [filter]="true"
+                      filterBy="label" />
+            <label for="select"
+                   [innerHTML]="dato.label"></label>
+          </p-floatLabel>
+          }
+          @if (dato.type == 'number' || dato.type == 'text'){
+          <input [(ngModel)]="dato.value"
+                 [id]="'filtro-' + $index"
+                 [type]="dato.type" />
+          <label [for]="'filtro-' + $index"
+                 [innerHTML]="dato.label">
+          </label>
+          }
+          }
+        </div>
+      </div>
+      <div class="acciones flex gap-3 justify-content-end flex-auto">
+        <p-button icon="pi pi-file-word"
+                  label="Descargar Word"
+                  [disabled]="!preview"
+                  (onClick)="descargaCertificado('docx')" />
+        <p-button icon="pi pi-file-pdf"
+                  label="Descargar PDF"
+                  [disabled]="!preview"
+                  (onClick)="descargaCertificado('pdf')" />
+      </div>
+    </div>
+    @if (preview) {
+    <p-card header="Vista previa del documento"
+            class="certificado-card">
+      <p-splitter styleClass="flex w-full"
+                  [panelSizes]="[65, 35]">
+        <ng-template pTemplate>
+          <mgp-vista-datos style="width:100%;"
+                           [estructura]="preview.estructura"
+                           [listaFirmas]="listaFirmas" />
+        </ng-template>
+        <ng-template pTemplate>
+          <mgp-preview style="width:100%;"
+                       [preview]="preview"
+                       [ruta]="ruta" />
+        </ng-template>
+      </p-splitter>
+    </p-card>
+    }
+  </p-panel>
+</div>
