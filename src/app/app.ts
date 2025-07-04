@@ -1,5 +1,5 @@
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
-import { afterNextRender, Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { afterNextRender, ChangeDetectorRef, Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { EventType, Router, RouterOutlet } from '@angular/router';
 import { Header } from '@componentes/header/header';
 import { Menu } from '@componentes/menu/menu';
@@ -29,6 +29,7 @@ export class App implements OnInit {
     private data: Data,
     private authServicio: Auth,
     private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {
     afterNextRender(() => {
       if (isPlatformBrowser(this.platID)) {
@@ -69,6 +70,7 @@ export class App implements OnInit {
   }
   getRolMinimo(): void {
     this.rolMinimo = this.seccionActual ? this.contenidos.find((item: MenuElemento) => item["route"] == this.seccionActual)?.rol : undefined;
+    this.cdr.detectChanges();
   }
   tienePermiso(): boolean {
     return this.authServicio.tienePermisos(this.rolMinimo as Rol, this.usuario?.rol as Rol);

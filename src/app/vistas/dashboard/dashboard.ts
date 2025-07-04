@@ -1,14 +1,9 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { Chart } from '@componentes/chart/chart';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { ChartData, ChartOptions, DataCategoria, DataChart, Data } from '@servicios/data';
-
-interface Anivel {
-  label: string;
-  superLabel: string;
-}
 
 @Component({
   selector: 'mgp-dashboard',
@@ -22,16 +17,25 @@ interface Anivel {
 })
 export class Dashboard implements OnInit {
   categorias!: DataCategoria[];
-  constructor(@Inject(PLATFORM_ID) private platID: any, private data: Data) { }
+  constructor(
+    @Inject(PLATFORM_ID) private platID: any,
+    private data: Data,
+    private cdr: ChangeDetectorRef,
+  ) { }
   ngOnInit(): void {
     this.init();
   }
   init(): void {
     if (isPlatformBrowser(this.platID)) {
-      console.log(this.categorias);
-      this.data.dataCategorias ?
-        this.categorias = this.data.dataCategorias :
-        this.data.getCategorias().subscribe((resp: DataCategoria[]) => this.categorias = this.data.setCategorias(resp));
+      if (this.data.dataCategorias) {
+        this.categorias = this.data.dataCategorias;
+        this.cdr.detectChanges();
+      } else {
+        this.data.getCategorias().subscribe((resp: DataCategoria[]) => {
+          this.categorias = this.data.setCategorias(resp);
+          this.cdr.detectChanges();
+        });
+      }
     }
   }
   nodeData(nodo: DataCategoria): DataChart {

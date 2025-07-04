@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Chart } from '@componentes/chart/chart';
 import { PipesModule } from '@modulos/pipes/pipes-module';
@@ -36,7 +36,11 @@ export class Consultas implements OnInit {
   ];
   esperando: boolean = false;
   mensajeEspera: string = '';
-  constructor(private data: Data, private file: File) { }
+  constructor(
+    private data: Data,
+    private file: File,
+    private cdr: ChangeDetectorRef,
+  ) { }
   ngOnInit(): void {
     this.data.dataCategorias ?
       this.creaOpciones() :
@@ -65,6 +69,7 @@ export class Consultas implements OnInit {
         dataChart: {} as DataChart,
       });
     });
+    this.cdr.detectChanges();
   }
   creaTabla(panel: DataConsulta): void {
     panel.dataTabla = undefined;
@@ -72,6 +77,7 @@ export class Consultas implements OnInit {
       this.data.getCruce(panel.seleccion.map((s: string) => this.findData(s)?.uuid as string)).subscribe((_dataTabla: DataTabla) => {
         panel.dataTabla = _dataTabla;
         this.creaChart(panel);
+        this.cdr.detectChanges();
       });
     }
   }
@@ -134,6 +140,7 @@ export class Consultas implements OnInit {
     if (tipo === 'pdf') tipoArchivo = 'PDF';
     if (tipo === 'xlsx') tipoArchivo = 'Excel';
     this.esperando = true;
+    this.cdr.detectChanges();
     this.mensajeEspera = 'Descargando ' + tipoArchivo + '...';
     const nombre: string = 'RUND - Consulta de ' + panel.dataTabla?.nomCol + ' contra ' + panel.dataTabla?.nomFil + '.' + tipo;
     this.data.getConsultaFile(tipo, panel.dataTabla as DataTabla).subscribe((blob: Blob) => {
@@ -145,6 +152,7 @@ export class Consultas implements OnInit {
       }
       this.file.descarga(blob, nombre);
       this.esperando = false;
+      this.cdr.detectChanges();
       if (tipo == 'pdf') {
         this.data.delTemp().subscribe((resp: { borrados: string[], aBorrar: string[] }) => {
           if (!resp || resp.borrados.length != resp.aBorrar.length)

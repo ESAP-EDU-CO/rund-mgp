@@ -7,18 +7,20 @@
          [class.surface-200]="seccionActual == item.route"
          [routerLink]="item.route"
          pRipple>
-        @if (item.tipo == 'PrimeNG') {
-        <span [class]="item.icon"></span>
-        }
-        @if (item.tipo == 'MaterialDesign') {
-        <span [ngClass]="item.estilo">
-          {{ item.icon }}
-        </span>
-        }
-        @if (item.faIcon) {
-        <fa-icon [icon]="item.faIcon"></fa-icon>
-        }
-        <span class="ml-2">{{ item.label }}</span>
+        <div class="icono">
+          @if (item.tipo == 'PrimeNG') {
+          <span [class]="item.icon"></span>
+          }
+          @if (item.tipo == 'MaterialDesign') {
+          <span [ngClass]="item.estilo">
+            {{ item.icon }}
+          </span>
+          }
+          @if (item.faIcon) {
+          <fa-icon [icon]="item.faIcon"></fa-icon>
+          }
+        </div>
+        <span class="texto">{{ item.label }}</span>
       </a>
       }
     </ng-template>

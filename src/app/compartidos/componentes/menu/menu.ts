@@ -1,5 +1,5 @@
 import { isPlatformBrowser, NgClass } from '@angular/common';
-import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { EventType, Router, RouterLink } from '@angular/router';
 import { IconsModule } from '@modulos/icons/icons-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
@@ -28,15 +28,20 @@ export class Menu implements OnInit {
     private authServicio: Auth,
     private dataServicio: Data,
     @Inject(PLATFORM_ID) private platID: any,
+    private cdr: ChangeDetectorRef,
   ) {
     this.authServicio.usuario.subscribe((usuario: Usuario | null | undefined) => this.usuario = usuario as Usuario);
   }
   ngOnInit(): void {
     if (isPlatformBrowser(this.platID)) {
       this.seccionActual = this.router.url.split('?')[0];
+      this.cdr.detectChanges();
       this.cargaMenu();
       this.router.events.subscribe((ev: any) => {
-        if (ev.type == EventType.NavigationEnd) this.seccionActual = ev.url.split('?')[0];
+        if (ev.type == EventType.NavigationEnd) {
+          this.seccionActual = ev.url.split('?')[0];
+          this.cdr.detectChanges();
+        }
       });
     }
   }

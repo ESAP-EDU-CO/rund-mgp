@@ -1,4 +1,9 @@
 @import "primeicons/primeicons.css";
 html {
-  font-family: "Montserrat", sans-serif;
+  body {
+    font-family: "Montserrat", sans-serif;
+    .surface-200 {
+      background-color: var(--p-surface-200);
+    }
+  }
 }

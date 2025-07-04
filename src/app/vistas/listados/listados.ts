@@ -22,6 +22,9 @@ type Dupe = {
     VistaExcel,
     FormsModule
   ],
+  providers: [
+    ConfirmationService
+  ],
   templateUrl: './listados.html',
   styleUrl: './listados.scss'
 })
@@ -32,7 +35,10 @@ export class Listados {
   propsNoVisibles: string[] = ['Size', 'Uuid', 'Duplicado'];
   csvData: Array<string | number>[] = [];
   loadingDialog: boolean = false;
-  constructor(private data: Data, private confirmationService: ConfirmationService) {
+  constructor(
+    private data: Data,
+    private confirmationService: ConfirmationService,
+  ) {
     this.loadList = this.data.loadList;
   }
   acciones(ev: any, funcion: Function): void {

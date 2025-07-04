@@ -4,7 +4,7 @@
            [rows]="5"
            [tableStyle]="{ 'min-width': '50rem' }"
            [rowsPerPageOptions]="[5, 10, 20]"
-           styleClass="p-datatable-striped p-datatable-gridlines">
+           class="p-datatable-striped p-datatable-gridlines">
     <ng-template #header>
       <tr>
         @for (encabezado of encabezados; track $index; let numTH = $index) {

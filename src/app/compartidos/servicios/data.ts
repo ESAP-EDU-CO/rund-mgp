@@ -248,14 +248,14 @@ export class Data {
   }
   getCruce(uuids: string[]): Observable<DataTabla> {
     const [x, y] = uuids;
-    return this.http.get<DataTabla>(this.api, { params: { accion: 'getCruce', x: x, y: y } });
+    return this.http.get<DataTabla>(this.host + 'getCruce', { params: { x: x, y: y } });
   }
   getConsultaFile(tipo: any, data: DataTabla): Observable<any> {
     const opciones: any = {
       params: { tipo: tipo },
       responseType: 'blob',
     };
-    return this.http.post<Blob>(this.file, JSON.stringify(data), opciones);
+    return this.http.post<Blob>(this.host + 'getConsultaFile', JSON.stringify(data), opciones);
   }
   loadDocumentos(): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -311,7 +311,7 @@ export class Data {
     return resp;
   }
   delTemp(): Observable<{ borrados: string[], aBorrar: string[] }> {
-    return this.http.get<{ borrados: string[], aBorrar: string[] }>(this.clean);
+    return this.http.get<{ borrados: string[], aBorrar: string[] }>(this.host + 'delReporte');
   }
   apiGet(endpoint: string, params: { [key: string]: any }, opciones: { [key: string]: any } | undefined = undefined): Observable<any> {
     const options: any = opciones ? { params: params, ...opciones } : { params: params };

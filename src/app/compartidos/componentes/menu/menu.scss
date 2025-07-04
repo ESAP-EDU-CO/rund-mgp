@@ -2,5 +2,13 @@
   .item {
     min-width: 16em;
     display: flex;
+    .icono {
+      width: 1.75em;
+      text-align: center;
+      overflow: hidden;
+    }
+    .texto {
+      margin-left: 0.25rem;
+    }
   }
 }
