@@ -252,10 +252,12 @@ export class Data {
   }
   getConsultaFile(tipo: any, data: DataTabla): Observable<any> {
     const opciones: any = {
-      params: { tipo: tipo },
       responseType: 'blob',
     };
-    return this.http.post<Blob>(this.host + 'getConsultaFile', JSON.stringify(data), opciones);
+    const formData: FormData = new FormData();
+    formData.append('tipo', tipo);
+    formData.append('data', JSON.stringify(data));
+    return this.http.post<Blob>(this.host + 'getConsultaFile', formData, opciones);
   }
   loadDocumentos(): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -276,13 +278,9 @@ export class Data {
   postFile(url: string, propiedades: ListadoProps[], accion: string, archivo: File | undefined = undefined): Observable<any> {
     const formData: FormData = new FormData();
     if (archivo) formData.append('archivo', archivo);
-    const opciones: any = {
-      params: {
-        propiedades: JSON.stringify(propiedades),
-        accion: accion
-      },
-    };
-    return this.http.post<any>(url, formData, opciones);
+    formData.append('accion', accion);
+    formData.append('propiedades', JSON.stringify(propiedades));
+    return this.http.post<any>(url, formData);
   }
   getChartBackgroundColors(num: number, hover: boolean = false): string {
     const documentStyle: CSSStyleDeclaration = getComputedStyle(document.documentElement);

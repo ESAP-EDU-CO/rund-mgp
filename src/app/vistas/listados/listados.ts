@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { VistaExcel } from '@componentes/vista-excel/vista-excel';
 import { PipesModule } from '@modulos/pipes/pipes-module';
@@ -38,8 +38,9 @@ export class Listados {
   constructor(
     private data: Data,
     private confirmationService: ConfirmationService,
+    private cdr: ChangeDetectorRef,
   ) {
-    this.loadList = this.data.loadList;
+    this.loadList = this.data.host + 'loadList';
   }
   acciones(ev: any, funcion: Function): void {
     if (funcion.name != 'bound upload') {
@@ -55,6 +56,7 @@ export class Listados {
         this.loadingDialog = false;
         if (!resp.error || resp.error == 0) this.cargaCorrecta();
         else this.errorCarga(resp);
+        this.cdr.detectChanges();
       });
     if (this.csvData) {
       const { archivo, propiedades } = this.generaCSV(this.csvData);
@@ -80,6 +82,7 @@ export class Listados {
   seleccionaFile(ev: any): void {
     this.loadingDialog = true;
     this.archivo = ev.files[0];
+    this.cdr.detectChanges();
   }
   borraFile(ev: any): void {
     this.archivo = undefined;
@@ -96,7 +99,7 @@ export class Listados {
       { label: 'Tamaño', valor: this.formatSize(this.archivo ? this.archivo?.size : 0) },
       { label: 'Size', valor: (this.archivo ? this.archivo?.size : 0) },
     ];
-    this.data.apiGet(this.data.loadList, { accion: 'duplicado', propiedades: JSON.stringify(this.listadoProps) })
+    this.data.apiGet(this.loadList, { accion: 'duplicado', propiedades: JSON.stringify(this.listadoProps) })
       .subscribe((resp: any) => {
         this.loadingDialog = false;
         const dupe: Dupe = resp.duplicado;
@@ -110,6 +113,7 @@ export class Listados {
           this.listadoProps.push({ label: 'Uuid', valor: dupe.uuid });
           this.confirmarReemplazo(mensaje);
         }
+        this.cdr.detectChanges();
       });
   }
   recibeCSV(csv: Array<string | number>[]): void {
@@ -174,6 +178,7 @@ export class Listados {
       acceptLabel: 'Cerrar',
       rejectVisible: false,
     });
+    this.cdr.detectChanges();
   }
   formatSize(bytes: number): string {
     const k: number = 1024;

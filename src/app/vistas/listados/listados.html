@@ -17,7 +17,7 @@
                  let-chooseCallback="chooseCallback"
                  let-uploadCallback="uploadCallback"
                  let-clearCallback="clearCallback">
-      <div class="flex flex-nowrap gap-3">
+      <div class="acciones">
         <p-button (click)="acciones($event, chooseCallback)"
                   icon="pi pi-file-excel"
                   [rounded]="true"
@@ -39,27 +39,27 @@
                  let-clearCallback="clearCallback"
                  let-files>
       @for (archivo of files;track $index) {
-      <p-card>
+      <p-card class="carga-resultado">
         <ng-template #header>
-          <div class="mx-4 my-2">
+          <div class="encabezado">
             @for (prop of listadoProps; track $index) {
-            @if (!propsNoVisibles.includes(prop.label)){
-            <div class="grid gap-3 align-items-center">
-              <div class="col-fixed"
+            @if (!propsNoVisibles.includes(prop.label)) {
+            <div class="columnas mgp-grid">
+              <div class="mgp-col-fixed"
                    style="width: 7em">
                 <strong>{{prop.label}}:</strong>
               </div>
-              <div class="col flex flex-column gap-2">
+              <div class="mgp-col datos">
                 @if (prop.label == 'Comentario') {
                 <input type="text"
-                       class="max-w-30rem w-full"
+                       class="comentario"
                        pInputText
                        [(ngModel)]="varComentario().valor" />
                 <small>Escriba un comentario sobre la nueva versión del documento</small>
                 } @else {
                 <span [innerHTML]="prop.valor"></span>
                 @if (prop.label == 'Nombre') {
-                <small class="text-xs -mt-2 text-400">Nombre normalizado para efectos de registro</small>
+                <small class="nombre">Nombre normalizado para efectos de registro</small>
                 }
                 }
               </div>
@@ -72,17 +72,17 @@
                          (emiteCSV)="recibeCSV($event)"
                          (reconoceTipo)="reconoceTipoListado($event)" />
         <ng-template #footer>
-          <div class="flex gap-3 mt-1">
+          <div class="footer">
             <p-button severity="success"
                       label="Cargar"
                       (click)="cargaFile($event)"
                       icon="pi pi-cloud-upload"
-                      class="w-full" />
+                      class="footer-accion" />
             <p-button severity="danger"
                       label="Cancelar"
                       icon="pi pi-times"
                       (click)="borraFile($event)"
-                      class="w-full" />
+                      class="footer-accion" />
           </div>
         </ng-template>
       </p-card>
@@ -90,11 +90,11 @@
     </ng-template>
     <ng-template #file></ng-template>
     <ng-template #empty>
-      <div class="cont-label flex w-full p-6 flex-column gap-3 justify-content-center align-items-center">
-        <div class="cont-icon flex justify-content-center align-items-center">
-          <i class="icon pi pi-cloud-upload border-2 border-circle p-5 text-8xl text-400 border-400"></i>
+      <div class="cont-label">
+        <div class="cont-icon">
+          <i class="icon pi pi-cloud-upload"></i>
         </div>
-        <p class="label mt-4 mb-0">Arrastre y suelte para cargar el listado en Excel</p>
+        <p class="label">Arrastre y suelte para cargar el listado en Excel</p>
       </div>
     </ng-template>
   </p-fileUpload>
@@ -105,8 +105,8 @@
           [closable]="false"
           [draggable]="false"
           [(visible)]="loadingDialog"
-          [style]="{ width: '25rem'}">
-  <div class="w-full h-full flex flex-column justify-content-center align-items-center">
+          class="dialogo-cargando">
+  <div class="cargando">
     <h1>Cargando...</h1>
     <p-progressSpinner ariaLabel="cargando" />
   </div>

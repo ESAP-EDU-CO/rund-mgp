@@ -1,9 +1,26 @@
 @import "primeicons/primeicons.css";
+$gutter: 1rem;
 html {
   body {
     font-family: "Montserrat", sans-serif;
     .surface-200 {
       background-color: var(--p-surface-200);
+    }
+    .mgp-grid {
+      display: flex;
+      flex-wrap: wrap;
+      margin-right: -0.5rem;
+      margin-left: -0.5rem;
+      margin-top: -0.5rem;
+      .mgp-col {
+        flex-grow: 1;
+        flex-basis: 0;
+        padding: $gutter;
+      }
+      .mgp-col-fixed {
+        flex: 0 0 auto;
+        padding: $gutter;
+      }
     }
   }
 }
