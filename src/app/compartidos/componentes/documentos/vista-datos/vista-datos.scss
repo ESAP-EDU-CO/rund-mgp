@@ -6,3 +6,24 @@
     }
   }
 }
+.datos {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  gap: 1rem;
+  padding: 1rem;
+  //max-width: 800px;
+  width: 100%;
+  .parrafo {
+    width: 100%;
+  }
+  .tabla {
+    .pie-tabla {
+      display: flex;
+      gap: 1rem;
+      .input-pie-tabla {
+        flex: 1 1 auto;
+      }
+    }
+  }
+}

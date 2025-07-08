@@ -269,11 +269,14 @@ export class Data {
     });
   }
   getCertificadoFile(tipo: string, plantilla: string, data: Documento.Estructura[]): Observable<any> {
+    const formData: FormData = new FormData();
+    formData.append('tipo', tipo);
+    formData.append('plantilla', plantilla);
+    formData.append('data', JSON.stringify(data));
     const opciones: any = {
-      params: { tipo: tipo, plantilla: plantilla, accion: 'getCertificado' },
       responseType: 'blob',
     }
-    return this.http.post<Blob>(this.api, JSON.stringify(data), opciones);
+    return this.http.post<Blob>(this.host + 'getCertificado', formData, opciones);
   }
   postFile(url: string, propiedades: ListadoProps[], accion: string, archivo: File | undefined = undefined): Observable<any> {
     const formData: FormData = new FormData();

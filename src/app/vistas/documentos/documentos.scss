@@ -1,0 +1,31 @@
+.documentos {
+  .certificados {
+    .header {
+      display: flex;
+      margin: 2rem 0;
+      .filtros {
+        display: flex;
+        gap: 2rem;
+        .tipo-certificados {
+          width: 25rem;
+        }
+        .filtros-varios {
+          display: flex;
+          flex-direction: column;
+        }
+      }
+      .acciones {
+        display: flex;
+        gap: 1rem;
+        justify-content: end;
+        flex: 1 1 auto;
+      }
+    }
+    .certificado-card {
+      .certificado-splitter {
+        display: flex;
+        width: 100%;
+      }
+    }
+  }
+}

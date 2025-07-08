@@ -21,6 +21,16 @@ html {
         flex: 0 0 auto;
         padding: $gutter;
       }
+      .mgp-col-2 {
+        flex: 0 0 auto;
+        padding: $gutter;
+        width: 16.6667%;
+      }
+      .mgp-col-10 {
+        flex: 0 0 auto;
+        padding: $gutter;
+        width: 83.3333%;
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { VistaDatos } from '@componentes/documentos/vista-datos/vista-datos';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
@@ -41,6 +41,7 @@ export class Documentos implements OnInit {
   ruta: RutaPlantilla = { host: '', plantillas: 'plantillas/', certificados: 'certificados/' };
   preview: Prevista | undefined;
   listaFirmas: Firma.Firma[] = [];
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   constructor(
     private dataServicio: Data,
     private fileServicio: File,
@@ -50,11 +51,15 @@ export class Documentos implements OnInit {
   }
   ngOnInit(): void {
     this.dataServicio.loadDocumentos().then((resp: boolean) => {
-      if (resp) this.listaCertificados = this.dataServicio.documentos.grupos;
+      if (resp) {
+        this.listaCertificados = this.dataServicio.documentos.grupos;
+        this.cdr.detectChanges();
+      }
     });
     this.firmasServicio.getFirmas().subscribe((firmas: Firma.Firma[]) => {
       this.listaFirmas = [];
       if (firmas.length > 0) this.listaFirmas = firmas;
+      this.cdr.detectChanges();
     });
   }
   seleccionaCertificado(origenes: number[]): void {
@@ -62,7 +67,7 @@ export class Documentos implements OnInit {
       this.filtros = undefined;
       this.columnas = {};
       this.preview = undefined;
-      if (dato.origen) this.dataServicio.apiGet(this.dataServicio.api + '?accion=getCsvData', dato.origen)
+      if (dato.origen) this.dataServicio.apiGet(this.dataServicio.host + 'getCsvData', dato.origen)
         .subscribe((resp: any) => {
           this.columnas = resp.columnasCSV;
           this.filtros = origenes.map((origen: number) => {
@@ -75,6 +80,7 @@ export class Documentos implements OnInit {
             });
             return filtro;
           });
+          this.cdr.detectChanges();
         });
     });
   }
@@ -83,7 +89,7 @@ export class Documentos implements OnInit {
     const hoy: Date = new Date();
     const fecha: string = hoy.getFullYear().toString() + ("0" + (hoy.getMonth() + 1)).slice(-2) + ("0" + hoy.getDate()).slice(-2);
     if (this.preview) {
-      console.log(this.preview.estructura[this.preview.estructura.length - 1].value);
+      console.log(tipo, this.preview);
       this.dataServicio.getCertificadoFile(tipo, this.preview.plantilla, this.preview.estructura)
         .subscribe((blob: Blob) => {
           console.log(blob);
@@ -95,6 +101,7 @@ export class Documentos implements OnInit {
           }
           const nombreArchivo: string = labelCert + '_' + fecha + '.' + tipo
           this.fileServicio.descarga(blob, nombreArchivo);
+          this.cdr.detectChanges();
         });
     }
   }
@@ -158,6 +165,7 @@ export class Documentos implements OnInit {
     }
     this.preview.estructura = dato.plantilla.estructura;
     this.preview.plantilla = dato.plantilla.plantilla;
+    this.cdr.detectChanges();
   }
   ajustaCert1231(dato: Documento.Dato, datosCertificado: any): Documento.Plantilla { // Ajusta los datos según esta plantilla particular
     const posTabla: number = dato.plantilla.estructura.findIndex((val: Documento.Estructura) => val.tipo == 'tabla');

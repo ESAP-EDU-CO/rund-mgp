@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Documento } from '@servicios/data';
@@ -17,9 +17,10 @@ interface DatoFirma extends Firma.Firma {
   templateUrl: './vista-datos.html',
   styleUrl: './vista-datos.scss'
 })
-export class VistaDatos implements OnInit {
+export class VistaDatos implements OnInit, AfterViewInit {
   @Input() estructura: Documento.Estructura[] = [];
   @Input() listaFirmas: Firma.Firma[] = [];
+  @ViewChild('vistaDatos') private vistaDatos: ElementRef | undefined;
   datosFirmas: DatoFirma[] = [];
   firmaSeleccionada!: DatoFirma;
   ngOnInit(): void {
@@ -32,6 +33,13 @@ export class VistaDatos implements OnInit {
     );
     this.datosFirmas.sort((a: DatoFirma, b: DatoFirma) => a.funcionario.localeCompare(b.funcionario));
     this.ajustaFirma();
+  }
+  ngAfterViewInit(): void {
+    if (this.vistaDatos && this.vistaDatos.nativeElement) {
+      const ve: HTMLElement = this.vistaDatos.nativeElement as HTMLElement;
+      const anchoMax: number = ve?.parentElement?.parentElement?.parentElement?.parentElement?.offsetWidth as number;
+      ve.style.maxWidth = Math.floor((anchoMax * 65 / 100) - 8) + 'px';
+    }
   }
   ajustaFirma(uuid: string | undefined = undefined): void {
     const posFirma: number = this.estructura.findIndex((el: Documento.Estructura) => el.tipo == 'firma');

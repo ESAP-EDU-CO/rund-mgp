@@ -2,18 +2,18 @@
   <p-panel class="certificados"
            header="Certificados"
            [toggleable]="true">
-    <div class="header mt-5 flex">
-      <div class="filtros flex gap-5">
+    <div class="header">
+      <div class="filtros">
         <p-floatLabel>
           <p-select [options]="listaCertificados"
-                    class="tipo-certificados w-25rem"
+                    class="tipo-certificados"
                     [(ngModel)]="certificadoSeleccionado[1]"
                     (ngModelChange)="seleccionaCertificado($event)"
                     inputId="lista-certificados"
                     [group]="true" />
           <label for="lista-certificados">Seleccione un tipo de certificado</label>
         </p-floatLabel>
-        <div class="filtros flex flex-column">
+        <div class="filtros-varios">
           @for (dato of filtros; track $index) {
           @if (dato.type == 'multi') {
           <p-floatLabel>
@@ -53,7 +53,7 @@
           }
         </div>
       </div>
-      <div class="acciones flex gap-3 justify-content-end flex-auto">
+      <div class="acciones">
         <p-button icon="pi pi-file-word"
                   label="Descargar Word"
                   [disabled]="!preview"
@@ -67,10 +67,10 @@
     @if (preview) {
     <p-card header="Vista previa del documento"
             class="certificado-card">
-      <p-splitter class="flex w-full"
+      <p-splitter class="certificado-splitter"
                   [panelSizes]="[65, 35]">
         <ng-template pTemplate>
-          <mgp-vista-datos style="width:100%;"
+          <mgp-vista-datos style="width:100%"
                            [estructura]="preview.estructura"
                            [listaFirmas]="listaFirmas" />
         </ng-template>

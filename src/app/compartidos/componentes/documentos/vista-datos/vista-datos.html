@@ -1,9 +1,10 @@
-<div class="datos flex-auto flex flex-column gap-3 p-3">
+<div class="datos"
+     #vistaDatos>
   @for (elemento of estructura; track elemento.value; let numElemento = $index) {
   @if (elemento.tipo == 'parrafo') {
   <!---->
   <textarea pTextarea
-            class="w-full"
+            class="parrafo"
             [autoResize]="true"
             [(ngModel)]="elemento.value">
   </textarea>
@@ -28,7 +29,8 @@
   !---->
   }
   @if (elemento.tipo == 'tabla') {
-  <p-table [value]="elemento.value.filas">
+  <p-table class="tabla"
+           [value]="elemento.value.filas">
     <ng-template #header>
       <tr>
         @for (encabezado of elemento.value.encabezados; track $index; let numEncabezado = $index) {
@@ -68,9 +70,9 @@
     </ng-template>
     @if (elemento.value.pie) {
     <ng-template #summary>
-      <div class="flex gap-3">
+      <div class="pie-tabla">
         @for(pie of elemento.value.pie; track $index) {
-        <input class="flex-auto"
+        <input class="input-pie-tabla"
                pInputText
                [(ngModel)]="pie.texto"
                type="text" />
@@ -89,25 +91,25 @@
                 (ngModelChange)="ajustaFirma($event.uuid)"
                 [(ngModel)]="firmaSeleccionada" />
     </div>
-    <div class="nombre field grid">
+    <div class="nombre field mgp-grid">
       <label [for]="'firma-nombre-' + numElemento"
-             class="col-2">
+             class="mgp-col-2">
         Nombre:
       </label>
       <input type="text"
-             class="col-10"
+             class="mgp-col-10"
              [id]="'firma-nombre-' + numElemento"
              disabled
              pInputText
              [(ngModel)]="elemento.value.nombre">
     </div>
-    <div class="cargo field grid">
+    <div class="cargo field mgp-grid">
       <label [for]="'firma-nombre-' + numElemento"
-             class="col-2">
+             class="mgp-col-2">
         Cargo:
       </label>
       <input type="text"
-             class="col-10"
+             class="mgp-col-10"
              [id]="'firma-cargo-' + numElemento"
              disabled
              pInputText
