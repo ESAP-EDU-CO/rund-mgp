@@ -44,7 +44,10 @@ export class App implements OnInit {
     if (isPlatformBrowser(this.platID)) {
       // Si se está ejecutando en el browser
       this.authServicio.getAuth();
-      this.authServicio.usuario.subscribe((usuario: Usuario | null | undefined) => this.usuario = usuario);
+      this.authServicio.usuario.subscribe((usuario: Usuario | null | undefined) => {
+        this.usuario = usuario;
+        this.cdr.detectChanges();
+      });
       this.data.init().subscribe((data: VarData) => {
         this.data.host = data.host;
         //*

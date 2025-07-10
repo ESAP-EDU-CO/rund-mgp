@@ -40,7 +40,7 @@ export class Auth {
       }
     };
     this.usuario.next(undefined);
-    setTimeout(() => this.usuario.next(usuario[tipo]), 2000);
+    setTimeout(() => this.usuario.next(usuario[tipo]), 1000);
   }
   logout(): void {
     // Acciones necesarias para iniciar sesión
