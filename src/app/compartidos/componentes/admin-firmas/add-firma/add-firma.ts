@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, Output, SimpleChanges, EventEmitter } from '@angular/core';
+import { Component, Input, OnChanges, Output, SimpleChanges, EventEmitter, ChangeDetectorRef, inject } from '@angular/core';
 import { ProcesaFirma } from '../procesa-firma/procesa-firma';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Data } from '@servicios/data';
@@ -15,17 +15,6 @@ type Etapa = 'carga' | 'procesamiento' | 'cargando' | 'grabado';
   ],
   templateUrl: './add-firma.html',
   styleUrl: './add-firma.scss',
-  animations: [
-    trigger('cortina', [
-      transition(':enter', [
-        style({ transform: 'translateX(100%)' }),
-        animate('300ms ease-in', style({ transform: 'translateX(0%)' })),
-      ]),
-      transition(':leave', [
-        animate('300ms ease-out', style({ transform: 'translateX(-100%)' })),
-      ]),
-    ]),
-  ]
 })
 export class AddFirma implements OnChanges {
   @Input() activo: boolean = true;
@@ -35,14 +24,10 @@ export class AddFirma implements OnChanges {
   urlImagenFinal: string | undefined;
   datosFirma: Firma.FirmaMetadata | undefined;
   erroresCarga: { png: string | boolean, json: string | boolean } = { png: false, json: false };
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   constructor(private dataServicio: Data) { }
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['activo'].currentValue && !changes['activo'].previousValue) {
-      this.etapa = undefined;
-      setTimeout(() => {
-        this.etapa = 'carga';
-      });
-    }
+    if (changes['activo'].currentValue && !changes['activo'].previousValue) this.cambiaEtapa('carga');
   }
   seleccionaImagen(ev: any): void {
     this.archivo = ev.currentFiles[0];
@@ -66,9 +51,7 @@ export class AddFirma implements OnChanges {
     this.cerrar.emit();
   }
   private cambiaEtapa(etapa: Etapa): void {
-    this.etapa = undefined;
-    setTimeout(() => {
-      this.etapa = etapa;
-    }, 500);
+    this.etapa = etapa;
+    this.cdr.detectChanges();
   }
 }

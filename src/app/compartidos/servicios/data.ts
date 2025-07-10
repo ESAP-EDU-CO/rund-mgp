@@ -330,7 +330,7 @@ export class Data {
         valor: datos[key as keyof Firma.FirmaMetadata]
       };
     });
-    return this.postFile(this.uploadFile, propiedades, 'cargaFirma', archivo);
+    return this.postFile(this.host + 'postFile', propiedades, 'cargaFirma', archivo);
   }
   deleteFile(uuid: string): Observable<any> {
     return this.http.delete(this.api, { params: { accion: 'deleteFile', uuid: uuid } });

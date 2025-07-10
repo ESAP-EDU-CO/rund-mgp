@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Data } from '@servicios/data';
 import { PipesModule } from '@modulos/pipes/pipes-module';
@@ -32,6 +32,7 @@ export class EditaFirma implements OnInit, OnChanges {
   metadatos: Firma.FirmaMetadata[] = [];
   hayFirmas: boolean = false;
   confirmaciones: boolean[] = [];
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   constructor(
     private dataServicio: Data,
     private firmasServicio: Firmas,
@@ -47,7 +48,9 @@ export class EditaFirma implements OnInit, OnChanges {
     this.firmasServicio.getFirmas().subscribe((firmas: Firma.Firma[]) => {
       this.firmas = firmas;
       this.confirmaciones = Array(this.firmas.length).fill(false);
-      setTimeout(() => this.hayFirmas = this.firmas.filter((firma: Firma.Firma) => !firma.metadata).length == 0 && this.firmas.length > 0, 500);
+      //setTimeout(() => this.hayFirmas = this.firmas.filter((firma: Firma.Firma) => !firma.metadata).length == 0 && this.firmas.length > 0, 500);
+      this.hayFirmas = this.firmas.filter((firma: Firma.Firma) => !firma.metadata).length == 0 && this.firmas.length > 0;
+      this.cdr.detectChanges();
     });
   }
   confirmaEliminacion(index: number): void {

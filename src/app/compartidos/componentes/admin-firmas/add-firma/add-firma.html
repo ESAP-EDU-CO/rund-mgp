@@ -1,7 +1,6 @@
 <div class="add-firma">
   @if (etapa == 'carga') {
-  <p-fileupload @cortina
-                class="up-firma"
+  <p-fileupload class="up-firma"
                 (onSelect)="seleccionaImagen($event)"
                 (onBeforeUpload)="procesaImagen($event)"
                 (onClear)="eliminaImagen($event)"
