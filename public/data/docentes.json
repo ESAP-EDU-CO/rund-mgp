@@ -1,0 +1,484 @@
+
+{
+    "data": {
+        "docentes": [
+            { "value": "ACTIVOS", "viewValue": "ACTIVOS" },
+            { "value": "INACTIVOS", "viewValue": "INACTIVOS" },
+            { "value": "NOVEDAD_ADMINISTRATIVA", "viewValue": "NOVEDAD ADMINISTRATIVA" }
+        ],
+        "activos": [
+            { "value": "NO_VINCULADOS", "viewValue": "NO VINCULADOS" },
+            { "value": "PERIODO_PRUEBA", "viewValue": "PERIODO PRUEBA" },
+            { "value": "PROSPECTOS", "viewValue": "PROSPECTOS" },
+            { "value": "VINCULADOS", "viewValue": "VINCULADOS" }
+        ],
+        "vinculados": [
+            { "value": "ASISTENTE", "viewValue": "ASISTENTE" },
+            { "value": "ASOCIADO", "viewValue": "ASOCIADO" },
+            { "value": "AUXILIAR", "viewValue": "AUXILIAR" },
+            { "value": "TITULAR", "viewValue": "TITULAR" }
+        ],
+        "cedula": [
+            {
+                "value": "479678",
+                "viewValue": "ABEL ANTONIO ABELLA BELTRAN"
+            },
+            {
+                "value": "5711867",
+                "viewValue": "ALBERTO FREDY SUAREZ CASTAÑEDA"
+            },
+            {
+                "value": "1070982062",
+                "viewValue": "DUVAN ALEXANDER PEDROZA NARANJO"
+            },
+            {
+                "value": "19195704",
+                "viewValue": "ALBERTO GIRALDO SAAVEDRA"
+            },
+            {
+                "value": "91350046",
+                "viewValue": "ALEXANDER ARCINIEGAS CARREÑO"
+            },
+            {
+                "value": "11186033",
+                "viewValue": "ALEXANDER COTTE POVEDA"
+            },
+            {
+                "value": "88034156",
+                "viewValue": "ALEXANDER PARADA VALENCIA"
+            },
+            {
+                "value": "52377637",
+                "viewValue": "ALICIA MERCEDES RICO ATENCIO"
+            },
+            {
+                "value": "37291100",
+                "viewValue": "ALIX ZULAY HURTADO SOTO"
+            },
+            {
+                "value": "14224261",
+                "viewValue": "ALVARO CRUZ VARON"
+            },
+            {
+                "value": "32692761",
+                "viewValue": "ANA DEL CARMEN HERRERA FLOREZ"
+            },
+            {
+                "value": "28556463",
+                "viewValue": "ANA ESTELA CABRERA PUCHANA"
+            },
+            {
+                "value": "41689873",
+                "viewValue": "ANA MARIA TORRES HERNANDEZ"
+            },
+            {
+                "value": "3228513",
+                "viewValue": "ANDRES DE ZUBIRIA SAMPER"
+            },
+            {
+                "value": "16710079",
+                "viewValue": "ANDRES GOMEZ ROLDAN"
+            },
+            {
+                "value": "80830838",
+                "viewValue": "ANDRES MAURICIO GUZMAN RINCON"
+            },
+            {
+                "value": "30395470",
+                "viewValue": "ANGELA MARIA ALZATE"
+            },
+            {
+                "value": "52423939",
+                "viewValue": "ANGELICA FABIOLA BERNAL OLARTE"
+            },
+            {
+                "value": "8702503",
+                "viewValue": "ANIBAL MENDOZA DAZA"
+            },
+            {
+                "value": "77021522",
+                "viewValue": "ANTONIO YESID PEDROZA ESTRADA"
+            },
+            {
+                "value": "7712669",
+                "viewValue": "ARISTIDES PEÑA ZUÑIGA"
+            },
+            {
+                "value": "59831050",
+                "viewValue": "BEATRIZ ANDREA RENGIFO RENGIFO"
+            },
+            {
+                "value": "70081594",
+                "viewValue": "BELTRAN DE JESUS RESTREPO ARREDONDO"
+            },
+            {
+                "value": "1063720504",
+                "viewValue": "BLAS MELENDEZ CARABALLO"
+            },
+            {
+                "value": "1075211206",
+                "viewValue": "BREIDY FERNANDO CASTRO CAMPOS"
+            },
+            {
+                "value": "93398738",
+                "viewValue": "CAMILO CLAVIJO GARCIA"
+            },
+            {
+                "value": "79579074",
+                "viewValue": "CAMILO JOSE URIBE OTERO"
+            },
+            {
+                "value": "1061712832",
+                "viewValue": "CARLOS ALBERTO GUTIERREZ SALAZAR"
+            },
+            {
+                "value": "19386703",
+                "viewValue": "CARLOS ALFONSO PARDO TORRES"
+            },
+            {
+                "value": "18522517",
+                "viewValue": "CARLOS ANDRES BARCO ROJAS"
+            },
+            {
+                "value": "73578918",
+                "viewValue": "CARLOS ANDRES BROCHET BAYONA"
+            },
+            {
+                "value": "19403423",
+                "viewValue": "CARLOS FERNANDO RIGUEROS SAAVEDRA"
+            },
+            {
+                "value": "1110459627",
+                "viewValue": "CARLOS FERNEY FORERO HERNANDEZ"
+            },
+            {
+                "value": "72160154",
+                "viewValue": "CARLOS GUILLERMO RAMIREZ ARAUJO"
+            },
+            {
+                "value": "16754844",
+                "viewValue": "CARLOS HERNAN FAJARDO TORO"
+            },
+            {
+                "value": "74182096",
+                "viewValue": "CARLOS MAURICIO ROJAS GUEZGUAN"
+            },
+            {
+                "value": "19241494",
+                "viewValue": "CARLOS MORENO OSPINA"
+            },
+            {
+                "value": "30230914",
+                "viewValue": "CAROLINA GARCIA SANCHEZ"
+            },
+            {
+                "value": "9193635",
+                "viewValue": "CAYETANO JIMENEZ MUNIVE"
+            },
+            {
+                "value": "9397297",
+                "viewValue": "CESAR ALEJANDRO RAMIREZ CHAPARRO"
+            },
+            {
+                "value": "79838783",
+                "viewValue": "CESAR ARTURO VANEGAS RODRIGUEZ"
+            },
+            {
+                "value": "10296336",
+                "viewValue": "CHRISTIAN ALEXANDER NARVAEZ ALVAREZ"
+            },
+            {
+                "value": "4615873",
+                "viewValue": "CHRISTIAN FELIPE ORTEGA GOMEZ"
+            },
+            {
+                "value": "30318787",
+                "viewValue": "CLAUDIA JURADO ALVARAN"
+            },
+            {
+                "value": "23622695",
+                "viewValue": "CLAUDIA SOFIA RODRIGUEZ BERNAL"
+            },
+            {
+                "value": "86075572",
+                "viewValue": "DAGOBERTO TORRES FLOREZ"
+            },
+            {
+                "value": "80779449",
+                "viewValue": "DANIEL ESTEBAN UNIGARRO CAGUASANGO"
+            },
+            {
+                "value": "1085288611",
+                "viewValue": "DANIEL OSWALDO MUÑOZ CASTRO"
+            },
+            {
+                "value": "1026263695",
+                "viewValue": "DANIELA MEJIA NARANJO"
+            },
+            {
+                "value": "11447367",
+                "viewValue": "DAVID JULIAN MOLINA BELTRAN"
+            },
+            {
+                "value": "79706077",
+                "viewValue": "DAVID LEONARDO QUITIAN ROLDAN"
+            },
+            {
+                "value": "79041880",
+                "viewValue": "DEAN LERMEN GONZALEZ"
+            },
+            {
+                "value": "1023864005",
+                "viewValue": "DELIO ALEXANDER BALCAZAR CAMACHO"
+            },
+            {
+                "value": "52262920",
+                "viewValue": "DIANA CAROLINA RICO REVELO"
+            },
+            {
+                "value": "40386883",
+                "viewValue": "DIANA VICTORIA RODRIGUEZ VEGA"
+            },
+            {
+                "value": "76318005",
+                "viewValue": "DIEGO ANDRES GUEVARA FLETCHER"
+            },
+            {
+                "value": "7732011",
+                "viewValue": "DIEGO ARMANDO ALDANA SANCHEZ"
+            },
+            {
+                "value": "1089458130",
+                "viewValue": "DIEGO ARMANDO JURADO ZAMBRANO"
+            },
+            {
+                "value": "19486550",
+                "viewValue": "EDGAR ALBERTO PEÑA ESPINOSA"
+            },
+            {
+                "value": "91068392",
+                "viewValue": "EDGAR EDUARDO GUERRERO RODRIGUEZ"
+            },
+            {
+                "value": "7220912",
+                "viewValue": "EDGAR ENRIQUE MARTINEZ CARDENAS"
+            },
+            {
+                "value": "19301408",
+                "viewValue": "EDGAR RODRIGUEZ DIAZ"
+            },
+            {
+                "value": "98383203",
+                "viewValue": "EDUARDO ANDRES BOTERO CEDEÑO"
+            },
+            {
+                "value": "13886142",
+                "viewValue": "EDUARDO YOVANY DELGADO MENESES"
+            },
+            {
+                "value": "80013212",
+                "viewValue": "EDWIN ALEJANDRO BUENHOMBRE MORENO"
+            },
+            {
+                "value": "79964415",
+                "viewValue": "EDWIN MANUEL TAPIA GONGORA"
+            },
+            {
+                "value": "79488901",
+                "viewValue": "EDWIN MURILLO AMARIS"
+            },
+            {
+                "value": "88211500",
+                "viewValue": "EIMER ALEXIS BARAJAS ROMAN"
+            },
+            {
+                "value": "51569906",
+                "viewValue": "ELSY LUZ BARRERA"
+            },
+            {
+                "value": "87718683",
+                "viewValue": "ERLINTO VELASCO ARTEAGA"
+            },
+            {
+                "value": "63445154",
+                "viewValue": "ESTHER PARRA RAMIREZ"
+            },
+            {
+                "value": "38254438",
+                "viewValue": "EUNICE RAMIREZ VARON"
+            },
+            {
+                "value": "1061709480",
+                "viewValue": "FABIAN ENRIQUE SALAZAR VILLANO"
+            },
+            {
+                "value": "1049628159",
+                "viewValue": "FABIAN LEONARDO ROMERO BOLIVAR"
+            },
+            {
+                "value": "73087903",
+                "viewValue": "FERNAN FORTICH PACHECO"
+            },
+            {
+                "value": "79579074",
+                "viewValue": "FRANCISCO ALBERTO BAUTISTA"
+            },
+            {
+                "value": "10089129",
+                "viewValue": "FRANCISCO EDUARDO MEJIA LEMA"
+            },
+            {
+                "value": "10566497",
+                "viewValue": "FRANSISCO JAVIER VARGAS CRUZ"
+            },
+            {
+                "value": "79302631",
+                "viewValue": "FREDY EDUARDO CANTE MALDONADO"
+            },
+            {
+                "value": "7722817",
+                "viewValue": "FREDY WILLIAM ANDRADE PEREZ"
+            },
+            {
+                "value": "12602296",
+                "viewValue": "FREDYS PADILLA GOMEZ"
+            },
+            {
+                "value": "79750179",
+                "viewValue": "GABRIEL VILLALOBOS CAMARGO"
+            },
+            {
+                "value": "80219035",
+                "viewValue": "GERMAN ANDRES MOLINA GARRIDO"
+            },
+            {
+                "value": "79205006",
+                "viewValue": "GERMAN CARVAJAL AHUMADA"
+            },
+            {
+                "value": "94375494",
+                "viewValue": "GERMAN MARIN ZAFRA"
+            },
+            {
+                "value": "1077442112",
+                "viewValue": "GEYDI DAHIANA DEMARCHI SANCHEZ"
+            },
+            {
+                "value": "40029903",
+                "viewValue": "GILMA SOCORRO VANEGAS ROMERO"
+            },
+            {
+                "value": "79856565",
+                "viewValue": "GIOVANNI MAURICIO CASTRO LEGUIZAMON"
+            },
+            {
+                "value": "46382302",
+                "viewValue": "GLADYS ANDREA TORRES ESTEPA"
+            },
+            {
+                "value": "42082755",
+                "viewValue": "GLORIA STELLA SALAZAR YEPES"
+            },
+            {
+                "value": "31873677",
+                "viewValue": "GRACILIANA MORENO ECHAVARRIA"
+            },
+            {
+                "value": "71776491",
+                "viewValue": "GUSTAVO ADOLFO MUÑOZ GAVIRIA"
+            },
+            {
+                "value": "1085247118",
+                "viewValue": "HAMILTON MAURICIO RUIZ"
+            },
+            {
+                "value": "98215205",
+                "viewValue": "HARVEY OLIVER CRIOLLO MANCHABAJOY"
+            },
+            {
+                "value": "79330878",
+                "viewValue": "HECTOR ELIAS PINZON TORRES"
+            },
+            {
+                "value": "79669055",
+                "viewValue": "HELVER JAVIER CADAVID RAMIREZ"
+            },
+            {
+                "value": "7226078",
+                "viewValue": "HENRY ERNESTO GONZALEZ BECERRA"
+            },
+            {
+                "value": "12190874",
+                "viewValue": "HERNANDO PERDOMO GOMEZ"
+            },
+            {
+                "value": "71799891",
+                "viewValue": "HERWIN EDUARDO CARDONA QUITIAN"
+            },
+            {
+                "value": "22435531",
+                "viewValue": "HORTENSIA DEL SOCORRO PEREZ VARGAS"
+            },
+            {
+                "value": "11186033",
+                "viewValue": "HUGO DANIEL ORTIZ VANEGAS"
+            },
+            {
+                "value": "16625079",
+                "viewValue": "ILDEBRANDO AREVALO OSORIO"
+            },
+            {
+                "value": "7305383",
+                "viewValue": "JACINTO PINEDA JIMENEZ"
+            },
+            {
+                "value": "93397140",
+                "viewValue": "JAIDER FREDERICH ACOSTA GUZMAN"
+            },
+            {
+                "value": "13834013",
+                "viewValue": "JAIME MORENO QUIJANO"
+            },
+            {
+                "value": "19104732",
+                "viewValue": "JAIRO ALBERTO DIAZ PINZON"
+            },
+            {
+                "value": "14256213",
+                "viewValue": "JAIRO ALBERTO GOMEZ WALTEROS"
+            },
+            {
+                "value": "19330343",
+                "viewValue": "JAIRO ELIAS RINCON PACHON"
+            },
+            {
+                "value": "19362674",
+                "viewValue": "JAIRO ENRIQUE RODRIGUEZ HERNANDEZ"
+            },
+            {
+                "value": "1075214369",
+                "viewValue": "JAIRO HUMBERTO MUÑOZ CABRERA"
+            },
+            {
+                "value": "13536151",
+                "viewValue": "JAIRO VARGAS LEON"
+            },
+            {
+                "value": "37898365",
+                "viewValue": "JAKELINE VARGAS PARRA"
+            },
+            {
+                "value": "72158172",
+                "viewValue": "JAVIER ENRIQUE DE LA HOZ MERCADO"
+            },
+            {
+                "value": "79371959",
+                "viewValue": "JAVIER FERMIN GACHARNA MUÑOZ"
+            },
+            {
+                "value": "65630864",
+                "viewValue": "JEAMMY JULIETH SIERRA HERNANDEZ"
+            }
+        ]
+    }
+}

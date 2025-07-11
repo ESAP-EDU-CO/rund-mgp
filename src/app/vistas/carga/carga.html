@@ -1,1 +1,84 @@
-<p>carga works!</p>
+<p-card header="Seleccione las siguientes caracteristicas del profesor">
+  <div class="grid">
+    <div class="col-12 md:col-3">
+      <span class="p-float-label">
+        <p-autoComplete [formControl]="$any(formulario.get('cedula'))"
+                        [suggestions]="profesoresFiltrados"
+                        (completeMethod)="filterProfesores($event)"
+                        field="viewValue"
+                        [dropdown]="true">
+        </p-autoComplete>
+        <label>Cedula del profesor</label>
+      </span>
+    </div>
+    <div class="col-12 md:col-3">
+      <p-select class="w-100"
+                [formControl]="$any(formulario.get('docente'))"
+                [options]="docentes"
+                optionLabel="viewValue"
+                optionValue="value"
+                placeholder="Seleccione docente"
+                [(ngModel)]="selectedDocentes">
+      </p-select>
+    </div>
+    <div class="col-12 md:col-3"
+         *ngIf="selectedDocentes === 'ACTIVOS'">
+      <p-select class="w-full dropdown-fixed-width"
+                [formControl]="$any(formulario.get('activo'))"
+                [options]="activos"
+                optionLabel="viewValue"
+                optionValue="value"
+                placeholder="Seleccione activo"
+                [(ngModel)]="selectedActivos">
+      </p-select>
+    </div>
+    <div class="col-12 md:col-3"
+         *ngIf="selectedActivos === 'VINCULADOS'">
+      <p-select class="w-full dropdown-fixed-width"
+                [formControl]="$any(formulario.get('vinculados'))"
+                [options]="vinculados"
+                optionLabel="viewValue"
+                optionValue="value"
+                placeholder="Seleccione vinculado">
+      </p-select>
+    </div>
+  </div>
+  <div class="grid mt-4">
+    <div class="col-12">
+      <h5>Documentos del Docente</h5>
+      <small class="block mb-2">Formatos permitidos: PDF</small>
+      <small class="block mb-3">Máximo {{MAX_FILES}} archivos</small>
+
+      <p-fileUpload [customUpload]="true"
+                    (uploadHandler)="onUpload($event)"
+                    [multiple]="true"
+                    accept="application/pdf"
+                    [maxFileSize]="10000000"
+                    [showCancelButton]="false"
+                    chooseLabel="Seleccionar archivos"
+                    uploadLabel="Subir"
+                    cancelLabel="Cancelar"
+                    (onError)="onError($event)"
+                    (onRemove)="removeFile($event)"
+                    [auto]="true">
+        <ng-template #content>
+          <div class="flex flex-column align-items-center gap-3">
+            <i class="pi pi-upload text-5xl text-primary"></i>
+            <span>Arrastra y suelta archivos aquí</span>
+          </div>
+        </ng-template>
+      </p-fileUpload>
+    </div>
+  </div>
+  <div class="flex gap-2 mt-4">
+    <p-button [label]="loading ? 'Enviando...' : 'Subir'"
+              (onClick)="onSubmit()"
+              [loading]="loading">
+    </p-button>
+    <p-button label="Cancelar"
+              severity="secondary"
+              (onClick)="resetForm()">
+    </p-button>
+  </div>
+</p-card>
+<p-toast />
