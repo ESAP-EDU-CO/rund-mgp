@@ -3,6 +3,7 @@ import { FormsModule, ReactiveFormsModule, FormControl, Validators, FormGroup } 
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
+import { Data } from '@servicios/data';
 import { data } from '../../../../public/data/docentes.json';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 
@@ -29,6 +30,9 @@ export class Carga implements OnInit {
   docentes: Docentes[] = data.docentes;
   activos: Docentes[] = data.activos;
   vinculados: Docentes[] = data.vinculados;
+  arrayCSV: any[] = [];
+  columnasCSV: string[] = [];
+  rawCSV: string = '';
 
   selectedDocentes: string = '';
   selectedActivos: string = '';
@@ -41,6 +45,7 @@ export class Carga implements OnInit {
 
   constructor(
     private http: HttpClient,
+    private dataServicio: Data,
     private messageService: MessageService
   ) {
     this.formulario = new FormGroup({
@@ -51,7 +56,33 @@ export class Carga implements OnInit {
     });
   }
 
-  ngOnInit() { }
+  
+  ngOnInit() {
+    this.cargarCsvDocentes();
+  }
+
+  cargarCsvDocentes(): void {
+    const parametros = {
+      categoria: 'Listados',
+      tipo: 'Listado de docentes',
+      nombre: 'ListadoGeneralDocente',
+      formato: 'CSV',
+      extension: '.csv'
+    };
+
+    this.dataServicio.apiGet(this.dataServicio.host + 'getCsvData', parametros)
+      .subscribe((response: any) => {
+        this.arrayCSV = response.arrayCSV;
+        this.columnasCSV = response.columnasCSV;
+        this.rawCSV = response.rawCSV;
+
+        console.log('CSV por filas:', this.arrayCSV);
+        console.log('Columnas:', this.columnasCSV);
+        console.log('CSV completo:', this.rawCSV);
+      }, error => {
+        console.error('Error al obtener el CSV:', error);
+      });
+  }
 
   filterProfesores(event: any) {
     const query = event.query.toLowerCase();
