@@ -26,6 +26,7 @@ interface Docentes {
 
 export class Carga implements OnInit {
   profesoresFiltrados: Docentes[] = [];
+  docentesOptions: Docentes[] = [];
   cedula: Docentes[] = data.cedula;
   docentes: Docentes[] = data.docentes;
   activos: Docentes[] = data.activos;
@@ -59,7 +60,11 @@ export class Carga implements OnInit {
   
   ngOnInit() {
     this.cargarCsvDocentes();
+
+    console.log('docentesOptions', this.docentesOptions);
+    console.log('cedula', this.cedula);
   }
+
 
   cargarCsvDocentes(): void {
     const parametros = {
@@ -73,20 +78,24 @@ export class Carga implements OnInit {
     this.dataServicio.apiGet(this.dataServicio.host + 'getCsvData', parametros)
       .subscribe((response: any) => {
         this.arrayCSV = response.arrayCSV;
-        this.columnasCSV = response.columnasCSV;
-        this.rawCSV = response.rawCSV;
 
-        console.log('CSV por filas:', this.arrayCSV);
-        console.log('Columnas:', this.columnasCSV);
-        console.log('CSV completo:', this.rawCSV);
+        this.docentesOptions = this.arrayCSV.slice(1).map((fila: string[]) => {
+          return {
+            value: fila[1],
+            viewValue: fila[3]
+          } as Docentes;
+        });
+
       }, error => {
         console.error('Error al obtener el CSV:', error);
       });
   }
 
   filterProfesores(event: any) {
+    console.log('docentesOptions', this.docentesOptions);
+    console.log('cedula', this.cedula);
     const query = event.query.toLowerCase();
-    this.profesoresFiltrados = this.cedula.filter(option =>
+    this.profesoresFiltrados = this.docentesOptions.filter(option =>
       option.viewValue.toLowerCase().includes(query) ||
       option.value.toLowerCase().includes(query)
     );

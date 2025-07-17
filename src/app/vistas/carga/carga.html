@@ -7,7 +7,7 @@
                         [formControl]="$any(formulario.get('cedula'))"
                         [suggestions]="profesoresFiltrados"
                         (completeMethod)="filterProfesores($event)"
-                        field="viewValue"
+                        optionLabel="viewValue"
                         [dropdown]="true"
                         [minLength]="1"
                         placeholder="Buscar por nombre o cédula">
@@ -56,6 +56,4 @@
               (onClick)="resetForm()">
     </p-button>
   </div>
-</p-card>
-
-<p-toast />
+</p-card> s
