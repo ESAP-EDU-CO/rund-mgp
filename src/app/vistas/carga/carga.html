@@ -1,6 +1,5 @@
 <p-card header="Carga de Documentos del Docente" class="shadow-4 border-round-lg p-4">
   <div class="grid formgrid">
-    <!-- AutoComplete Docente -->
     <div class="col-12 md:col-4">
       <span class="p-float-label w-full">
         <p-autoComplete class="w-full"
@@ -14,8 +13,6 @@
         </p-autoComplete>
       </span>
     </div>
-
-    <!-- Información del archivo -->
     <div class="col-12 md:col-8">
       <h5 class="mb-2">Subida de Archivos</h5>
       <p class="text-sm text-secondary mb-1">Formatos permitidos: PDF</p>
@@ -42,8 +39,7 @@
       </p-fileUpload>
     </div>
   </div>
-
-  <!-- Botones de acción -->
+  <br>
   <div class="flex gap-3 mt-5 justify-content-end">
     <p-button [label]="loading ? 'Enviando...' : 'Subir'"
               (onClick)="onSubmit()"
