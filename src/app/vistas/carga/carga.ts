@@ -1,9 +1,191 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, FormControl, Validators, FormGroup } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { MessageService } from 'primeng/api';
+import { Data } from '@servicios/data';
+import { PrimengModule } from '@modulos/primeng/primeng-module';
 
+interface Docentes {
+  value: string;
+  viewValue: string;
+}
 @Component({
   selector: 'mgp-carga',
-  imports: [],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    PrimengModule,
+  ],
+  providers: [MessageService],
   templateUrl: './carga.html',
   styleUrl: './carga.scss'
 })
-export class Carga { }
+
+export class Carga implements OnInit {
+  profesoresFiltrados: Docentes[] = [];
+  docentesOptions: Docentes[] = [];
+  arrayCSV: any[] = [];
+  columnasCSV: string[] = [];
+  rawCSV: string = '';
+
+  selectedDocentes: string = '';
+  selectedActivos: string = '';
+  selectedVinculados: string = '';
+
+  formulario: FormGroup;
+  loading: boolean = false;
+  uploadedFiles: any[] = [];
+  readonly MAX_FILES = 50;
+
+  constructor(
+    private http: HttpClient,
+    private dataServicio: Data,
+    private messageService: MessageService
+  ) {
+    this.formulario = new FormGroup({
+      cedula: new FormControl('', Validators.required),
+      docente: new FormControl('NA'),
+      activo: new FormControl('NA'),
+      vinculados: new FormControl('NA')
+    });
+  }
+
+  
+  ngOnInit() {
+    this.cargarCsvDocentes();
+  }
+
+
+  cargarCsvDocentes(): void {
+    const parametros = {
+      categoria: 'Listados',
+      tipo: 'Listado de docentes',
+      nombre: 'ListadoGeneralDocente',
+      formato: 'CSV',
+      extension: '.csv'
+    };
+
+    this.dataServicio.apiGet(this.dataServicio.host + 'getCsvData', parametros)
+      .subscribe((response: any) => {
+        this.arrayCSV = response.arrayCSV;
+
+        this.docentesOptions = this.arrayCSV.slice(1).map((fila: string[]) => {
+          return {
+            value: fila[1],
+            viewValue: fila[3]
+          } as Docentes;
+        });
+
+      }, error => {
+        console.error('Error al obtener el CSV:', error);
+      });
+  }
+
+  filterProfesores(event: any) {
+    const query = event.query.toLowerCase();
+    this.profesoresFiltrados = this.docentesOptions.filter(option =>
+      option.viewValue.toLowerCase().includes(query) ||
+      option.value.toLowerCase().includes(query)
+    );
+  }
+
+  onUpload(event: any) {
+    for (let file of event.files) {
+      this.uploadedFiles.push(file);
+    }
+
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Archivo Cargado',
+      detail: 'Archivo(s) cargado(s) correctamente'
+    });
+  }
+
+  async uploadSingleFile(file: File, formValues: any): Promise<any> {
+    const formData = new FormData();
+    Object.keys(formValues).forEach(key => {
+      formData.append(key, formValues[key]);
+    });
+    formData.append('file', file);
+
+    const propiedades: any = {
+      cedula: formValues.cedula || 'NA',
+      taxonomia: 'ACTIVO/VINCULADO/TITULAR',
+      categorias: [
+        'TERRITORIALES/Cundinamarca',
+        'PERFIL_DOCENTE/GENERO/MASCULINO',
+        'PROGRAMA_NIVEL_FORMACION/POSGRADO/MAESTRIA',
+        'PERFIL_DOCENTE/GRUPO_ETNICO/SIN_GRUPO',
+        'PERFIL_DOCENTE/NIVEL_EDUCATIVO/DOCTORADO',
+        'PERFIL_DOCENTE/RANGO_ETARIO/51-69',
+        'TERRITORIALES/Sede Central',
+      ],
+      tipoDocumento: 'cedula'
+    };
+
+    return this.dataServicio.postFile(
+      this.dataServicio.host + 'postFile',
+      propiedades,
+      'cargaDocumento',
+      file
+    ).toPromise();
+  }
+
+  async onSubmit() {
+    if (this.formulario.invalid) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Por favor complete todos los campos requeridos'
+      });
+      return;
+    }
+
+    this.loading = true;
+
+    const formValues = {
+      cedula: this.formulario.get('cedula')?.value || 'NA'
+    };
+
+    try {
+      const uploadPromises = this.uploadedFiles.map(file =>
+        this.uploadSingleFile(file, formValues)
+      );
+
+      await Promise.all(uploadPromises);
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Éxito',
+        detail: 'Archivos subidos correctamente'
+      });
+      this.resetForm();
+    } catch (error: any) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: `Error al subir los archivos: ${error.message}`
+      });
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  resetForm() {
+    this.uploadedFiles = [];
+  }
+
+  onError(event: any) {
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Error al cargar el archivo'
+    });
+  }
+
+  removeFile(event: any) {
+    const index = this.uploadedFiles.indexOf(event.file);
+    this.uploadedFiles.splice(index, 1);
+  }
+}

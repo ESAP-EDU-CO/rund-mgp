@@ -1,1 +1,55 @@
-<p>carga works!</p>
+<p-card header="Carga de Documentos del Docente" class="shadow-4 border-round-lg p-4">
+  <div class="grid formgrid">
+    <div class="col-12 md:col-4">
+      <span class="p-float-label w-full">
+        <p-autoComplete class="w-full"
+                        [formControl]="$any(formulario.get('cedula'))"
+                        [suggestions]="profesoresFiltrados"
+                        (completeMethod)="filterProfesores($event)"
+                        optionLabel="viewValue"
+                        [dropdown]="true"
+                        [minLength]="1"
+                        placeholder="Buscar por nombre o cédula">
+        </p-autoComplete>
+      </span>
+    </div>
+    <div class="col-12 md:col-8">
+      <h5 class="mb-2">Subida de Archivos</h5>
+      <p class="text-sm text-secondary mb-1">Formatos permitidos: PDF</p>
+      <p class="text-sm text-secondary mb-3">Máximo {{MAX_FILES}} archivos</p>
+
+      <p-fileUpload [customUpload]="true"
+                    (uploadHandler)="onUpload($event)"
+                    [multiple]="true"
+                    accept="application/pdf"
+                    [maxFileSize]="10000000"
+                    [showCancelButton]="false"
+                    chooseLabel="Seleccionar archivos"
+                    uploadLabel="Subir"
+                    cancelLabel="Cancelar"
+                    [auto]="true"
+                    (onError)="onError($event)"
+                    (onRemove)="removeFile($event)">
+        <ng-template #content>
+          <div class="flex flex-column align-items-center gap-3">
+            <i class="pi pi-upload text-5xl text-primary mr-2"></i>
+            <span> Arrastra y suelta archivos aquí</span>
+          </div>
+        </ng-template>
+      </p-fileUpload>
+    </div>
+  </div>
+  <br>
+  <div class="flex gap-3 mt-5 justify-content-end">
+    <p-button [label]="loading ? 'Enviando...' : 'Subir'"
+              (onClick)="onSubmit()"
+              [loading]="loading"
+              icon="pi pi-upload">
+    </p-button>
+    <p-button label="Cancelar"
+              severity="secondary"
+              icon="pi pi-times"
+              (onClick)="resetForm()">
+    </p-button>
+  </div>
+</p-card> s
