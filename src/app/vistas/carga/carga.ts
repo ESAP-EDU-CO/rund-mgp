@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
 import { Data } from '@servicios/data';
-import { data } from '../../../../public/data/docentes.json';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 
 interface Docentes {
@@ -27,10 +26,6 @@ interface Docentes {
 export class Carga implements OnInit {
   profesoresFiltrados: Docentes[] = [];
   docentesOptions: Docentes[] = [];
-  cedula: Docentes[] = data.cedula;
-  docentes: Docentes[] = data.docentes;
-  activos: Docentes[] = data.activos;
-  vinculados: Docentes[] = data.vinculados;
   arrayCSV: any[] = [];
   columnasCSV: string[] = [];
   rawCSV: string = '';
@@ -60,9 +55,6 @@ export class Carga implements OnInit {
   
   ngOnInit() {
     this.cargarCsvDocentes();
-
-    console.log('docentesOptions', this.docentesOptions);
-    console.log('cedula', this.cedula);
   }
 
 
@@ -92,8 +84,6 @@ export class Carga implements OnInit {
   }
 
   filterProfesores(event: any) {
-    console.log('docentesOptions', this.docentesOptions);
-    console.log('cedula', this.cedula);
     const query = event.query.toLowerCase();
     this.profesoresFiltrados = this.docentesOptions.filter(option =>
       option.viewValue.toLowerCase().includes(query) ||
@@ -120,9 +110,26 @@ export class Carga implements OnInit {
     });
     formData.append('file', file);
 
-    return this.http.post(
-      'http://localhost:3000/api/openkm/add-document',
-      formData
+    const propiedades: any = {
+      cedula: formValues.cedula || 'NA',
+      taxonomia: 'ACTIVO/VINCULADO/TITULAR',
+      categorias: [
+        'TERRITORIALES/Cundinamarca',
+        'PERFIL_DOCENTE/GENERO/MASCULINO',
+        'PROGRAMA_NIVEL_FORMACION/POSGRADO/MAESTRIA',
+        'PERFIL_DOCENTE/GRUPO_ETNICO/SIN_GRUPO',
+        'PERFIL_DOCENTE/NIVEL_EDUCATIVO/DOCTORADO',
+        'PERFIL_DOCENTE/RANGO_ETARIO/51-69',
+        'TERRITORIALES/Sede Central',
+      ],
+      tipoDocumento: 'cedula'
+    };
+
+    return this.dataServicio.postFile(
+      this.dataServicio.host + 'postFile',
+      propiedades,
+      'cargaDocumento',
+      file
     ).toPromise();
   }
 
@@ -139,10 +146,7 @@ export class Carga implements OnInit {
     this.loading = true;
 
     const formValues = {
-      cedula: this.formulario.get('cedula')?.value || 'NA',
-      docente: this.formulario.get('docente')?.value || 'NA',
-      activo: this.formulario.get('activo')?.value || 'NA',
-      vinculados: this.formulario.get('vinculados')?.value || 'NA'
+      cedula: this.formulario.get('cedula')?.value || 'NA'
     };
 
     try {
@@ -169,12 +173,6 @@ export class Carga implements OnInit {
   }
 
   resetForm() {
-    this.formulario.reset({
-      cedula: '',
-      docente: 'NA',
-      activo: 'NA',
-      vinculados: 'NA'
-    });
     this.uploadedFiles = [];
   }
 
