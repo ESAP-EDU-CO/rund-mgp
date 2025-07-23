@@ -25,6 +25,9 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { SliderModule } from 'primeng/slider';
 import { PopoverModule } from 'primeng/popover';
 import { EditorModule } from 'primeng/editor';
+import { DividerModule } from 'primeng/divider';
+import { AvatarModule } from 'primeng/avatar';
+import { AvatarGroupModule } from 'primeng/avatargroup';
 
 @NgModule({
   declarations: [],
@@ -55,6 +58,9 @@ import { EditorModule } from 'primeng/editor';
     SliderModule,
     PopoverModule,
     EditorModule,
+    DividerModule,
+    AvatarModule,
+    AvatarGroupModule,
   ],
   exports: [
     ButtonModule,
@@ -82,6 +88,9 @@ import { EditorModule } from 'primeng/editor';
     SliderModule,
     PopoverModule,
     EditorModule,
+    DividerModule,
+    AvatarModule,
+    AvatarGroupModule,
   ],
 })
 export class PrimengModule { }

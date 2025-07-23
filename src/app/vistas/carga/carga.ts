@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormControl, Validators, FormGroup } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { CommonModule, NgClass } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { Data } from '@servicios/data';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
+import { FichaDocente } from '@componentes/ficha-docente/ficha-docente';
 
 interface Docentes {
   value: string;
@@ -17,6 +17,8 @@ interface Docentes {
     ReactiveFormsModule,
     FormsModule,
     PrimengModule,
+    FichaDocente,
+    NgClass,
   ],
   providers: [MessageService],
   templateUrl: './carga.html',
@@ -30,6 +32,14 @@ export class Carga implements OnInit {
   columnasCSV: string[] = [];
   rawCSV: string = '';
 
+  //*
+  labelsCSV: string[] = []; // La primera línea de arrayCSV, que contiene las etiquetas
+  profesorSeleccionado: string[] = []; // La fila de arrayCSV que corresponde al docente seleccionado
+  clavesCSV: string[] = ['Vinculación', 'Nombre completo', 'Territorial', 'Categoría', 'Nivel de Formación']; // Las etiquetas que se mostrarán en la ficha del docente
+  cdr: ChangeDetectorRef = inject(ChangeDetectorRef); // Para detectar cambios en la vista cuando se usa Angular Zoneless
+  datosValidados: string[] = []; // Indica si los datos del docente han sido validados y se puede iniciar la carga de documentos
+  //*/
+
   selectedDocentes: string = '';
   selectedActivos: string = '';
   selectedVinculados: string = '';
@@ -40,7 +50,6 @@ export class Carga implements OnInit {
   readonly MAX_FILES = 50;
 
   constructor(
-    private http: HttpClient,
     private dataServicio: Data,
     private messageService: MessageService
   ) {
@@ -52,7 +61,7 @@ export class Carga implements OnInit {
     });
   }
 
-  
+
   ngOnInit() {
     this.cargarCsvDocentes();
   }
@@ -71,7 +80,12 @@ export class Carga implements OnInit {
       .subscribe((response: any) => {
         this.arrayCSV = response.arrayCSV;
 
-        this.docentesOptions = this.arrayCSV.slice(1).map((fila: string[]) => {
+        //*
+        this.labelsCSV = this.arrayCSV.shift();
+        this.cdr.detectChanges();
+        //*/
+
+        this.docentesOptions = this.arrayCSV.map((fila: string[]) => {
           return {
             value: fila[1],
             viewValue: fila[3]
@@ -89,6 +103,10 @@ export class Carga implements OnInit {
       option.viewValue.toLowerCase().includes(query) ||
       option.value.toLowerCase().includes(query)
     );
+  }
+  selectProfesor(event: any): void { // Cuando el docente es seleccionado
+    this.profesorSeleccionado = this.arrayCSV.filter(fila => fila[1] === event.value.value)[0];
+    this.cdr.detectChanges();
   }
 
   onUpload(event: any) {
@@ -112,16 +130,7 @@ export class Carga implements OnInit {
 
     const propiedades: any = {
       cedula: formValues.cedula || 'NA',
-      taxonomia: 'ACTIVO/VINCULADO/TITULAR',
-      categorias: [
-        'TERRITORIALES/Cundinamarca',
-        'PERFIL_DOCENTE/GENERO/MASCULINO',
-        'PROGRAMA_NIVEL_FORMACION/POSGRADO/MAESTRIA',
-        'PERFIL_DOCENTE/GRUPO_ETNICO/SIN_GRUPO',
-        'PERFIL_DOCENTE/NIVEL_EDUCATIVO/DOCTORADO',
-        'PERFIL_DOCENTE/RANGO_ETARIO/51-69',
-        'TERRITORIALES/Sede Central',
-      ],
+      categorias: this.datosValidados,
       tipoDocumento: 'cedula'
     };
 

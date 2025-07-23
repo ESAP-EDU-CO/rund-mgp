@@ -1,0 +1,43 @@
+<div class="ficha-docente">
+  @for (panel of categoriasProfesor; let numPanel = $index; track numPanel) {
+  <p-panel>
+    <ng-template #header>
+      <div class="panel-header">
+        <span>{{panel.label}}</span>
+        @if (panel.validado) {
+        <i class="pi pi-check"
+           style="color:green"></i>
+        } @else {
+        <i class="pi pi-times"
+           style="color:red"></i>
+        }
+      </div>
+    </ng-template>
+    <div class="panel">
+      @for (selector of panel.selectores; let numSelector = $index, ultimo = $last; track numSelector) {
+      <div class="selector">
+        <span class="label">{{selector.label}}</span>
+        @if (selector.tipo == 'single'){
+        <p-select class="select"
+                  (onChange)="setCategorias()"
+                  [options]="selector.options"
+                  [(ngModel)]="categoriasProfesor[numPanel].selectores[numSelector].selected"
+                  placeholder="Seleccione una opción"
+                  optionLabel="label"
+                  [inputId]="selector.id" />
+        } @else {
+        <p-multiselect class="select"
+                       (onChange)="setCategorias()"
+                       [options]="selector.options"
+                       [(ngModel)]="categoriasProfesor[numPanel].selectores[numSelector].selected"
+                       placeholder="Seleccione una opción"
+                       optionLabel="label"
+                       [inputId]="selector.id"
+                       [maxSelectedLabels]="2" />
+        }
+      </div>
+      }
+    </div>
+  </p-panel>
+  }
+</div>

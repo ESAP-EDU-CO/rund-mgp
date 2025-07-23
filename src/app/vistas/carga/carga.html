@@ -1,55 +1,85 @@
-<p-card header="Carga de Documentos del Docente" class="shadow-4 border-round-lg p-4">
-  <div class="grid formgrid">
-    <div class="col-12 md:col-4">
-      <span class="p-float-label w-full">
-        <p-autoComplete class="w-full"
-                        [formControl]="$any(formulario.get('cedula'))"
+<p-card header="Carga de Documentos">
+  <div class="carga">
+    <div class="header">
+      <div class="selector">
+        <h4>Seleccione el profesor/a por nombre o cédula</h4>
+        <p-autoComplete [formControl]="$any(formulario.get('cedula'))"
                         [suggestions]="profesoresFiltrados"
                         (completeMethod)="filterProfesores($event)"
                         optionLabel="viewValue"
                         [dropdown]="true"
                         [minLength]="1"
+                        (onSelect)="selectProfesor($event)"
                         placeholder="Buscar por nombre o cédula">
         </p-autoComplete>
-      </span>
+      </div>
+      @if (profesorSeleccionado && profesorSeleccionado.length > 0) {
+      <div class="nombre">
+        <p-avatar icon="pi pi-user"
+                  size="large"
+                  shape="circle" />
+        <h4>{{profesorSeleccionado[3]}}</h4>
+      </div>
+      }
     </div>
-    <div class="col-12 md:col-8">
-      <h5 class="mb-2">Subida de Archivos</h5>
-      <p class="text-sm text-secondary mb-1">Formatos permitidos: PDF</p>
-      <p class="text-sm text-secondary mb-3">Máximo {{MAX_FILES}} archivos</p>
-
-      <p-fileUpload [customUpload]="true"
-                    (uploadHandler)="onUpload($event)"
-                    [multiple]="true"
-                    accept="application/pdf"
-                    [maxFileSize]="10000000"
-                    [showCancelButton]="false"
-                    chooseLabel="Seleccionar archivos"
-                    uploadLabel="Subir"
-                    cancelLabel="Cancelar"
-                    [auto]="true"
-                    (onError)="onError($event)"
-                    (onRemove)="removeFile($event)">
-        <ng-template #content>
-          <div class="flex flex-column align-items-center gap-3">
-            <i class="pi pi-upload text-5xl text-primary mr-2"></i>
-            <span> Arrastra y suelta archivos aquí</span>
-          </div>
-        </ng-template>
-      </p-fileUpload>
+    <div class="cuerpo">
+      <div class="ficha"
+           [ngClass]="{'estrecho': datosValidados && datosValidados.length > 0}">
+        <mgp-ficha-docente (validado)="datosValidados = $event"
+                           [docente]="profesorSeleccionado"
+                           [claves]="clavesCSV"
+                           [labels]="labelsCSV" />
+      </div>
+      @if (datosValidados && datosValidados.length > 0) {
+      <div class="upload">
+        <div class="form">
+          <h5 class="mb-2">Subida de Archivos</h5>
+          <p class="text-sm text-secondary mb-1">Formatos permitidos: PDF</p>
+          <p class="text-sm text-secondary mb-3">Máximo {{MAX_FILES}} archivos</p>
+          <p-fileUpload [customUpload]="true"
+                        (uploadHandler)="onUpload($event)"
+                        [multiple]="true"
+                        accept="application/pdf"
+                        [maxFileSize]="10000000"
+                        [showCancelButton]="false"
+                        chooseLabel="Seleccionar archivos"
+                        uploadLabel="Subir"
+                        cancelLabel="Cancelar"
+                        [auto]="true"
+                        (onError)="onError($event)"
+                        (onRemove)="removeFile($event)">
+            <ng-template #content>
+              <div class="flex flex-column align-items-center gap-3">
+                <i class="pi pi-upload text-5xl text-primary mr-2"></i>
+                <span> Arrastra y suelta archivos aquí</span>
+              </div>
+            </ng-template>
+          </p-fileUpload>
+        </div>
+        <br>
+        <div class="acciones">
+          <p-button [label]="loading ? 'Enviando...' : 'Subir'"
+                    (onClick)="onSubmit()"
+                    [loading]="loading"
+                    icon="pi pi-upload">
+          </p-button>
+          <p-button label="Cancelar"
+                    severity="secondary"
+                    icon="pi pi-times"
+                    (onClick)="resetForm()">
+          </p-button>
+        </div>
+      </div>
+      } @else {
+      @if (profesorSeleccionado && profesorSeleccionado.length > 0) {
+      <p-panel>
+        <p-avatar icon="pi pi-exclamation-circle"
+                  size="xlarge"
+                  shape="circle" />
+        Para poder cargar los documentos, debe validar los datos.
+      </p-panel>
+      }
+      }
     </div>
   </div>
-  <br>
-  <div class="flex gap-3 mt-5 justify-content-end">
-    <p-button [label]="loading ? 'Enviando...' : 'Subir'"
-              (onClick)="onSubmit()"
-              [loading]="loading"
-              icon="pi pi-upload">
-    </p-button>
-    <p-button label="Cancelar"
-              severity="secondary"
-              icon="pi pi-times"
-              (onClick)="resetForm()">
-    </p-button>
-  </div>
-</p-card> s
+</p-card>
