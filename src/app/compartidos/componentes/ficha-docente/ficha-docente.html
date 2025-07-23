@@ -1,4 +1,27 @@
 <div class="ficha-docente">
+  @if (loading){
+  @for (n of [0,1,2,4]; track $index){
+  <p-panel [style]="{'width':'25rem'}">
+    <ng-template #header>
+      <div style="display:flex; gap:1rem; align-items:center">
+        <p-skeleton width="10rem" />
+        <p-skeleton shape="circle"
+                    size="1rem" />
+      </div>
+    </ng-template>
+    <div style="display:flex; gap:1rem; flex-direction:column">
+      @for (n of [0,1,2]; track $index){
+      <div style="display:flex; gap:1rem; align-items:center">
+        <p-skeleton width="6rem"
+                    height="1rem" />
+        <p-skeleton width="16rem"
+                    height="1.5rem" />
+      </div>
+      }
+    </div>
+  </p-panel>
+  }
+  } @else {
   @for (panel of categoriasProfesor; let numPanel = $index; track numPanel) {
   <p-panel>
     <ng-template #header>
@@ -39,5 +62,6 @@
       }
     </div>
   </p-panel>
+  }
   }
 </div>

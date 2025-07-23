@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
@@ -45,6 +45,7 @@ export class FichaDocente implements OnChanges {
   @Input() claves: string[] = [];
   @Output() validado: EventEmitter<string[]> = new EventEmitter<string[]>();
   private data: Data = inject(Data);
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private catPrefix: string = '/okm:categories/RUND/DOCENTES/';
   private categorias: ModeloCategorias[] = [];
   private datosProfesor: { label: string, valor: string }[] = [];
@@ -60,16 +61,20 @@ export class FichaDocente implements OnChanges {
     'VINCULACION_Y_CATEGORIA/VINCULACION',
   ];
   private catProfesor: string[] = [];
+  loading: boolean = true;
   categoriasProfesor: Ficha.Panel[] = [];
   constructor() {
     this.data.getCategorias().subscribe((resp: DataCategoria[]) => {
       const cat: DataCategoria[] = this.data.setCategorias(resp)
         .find((cat: DataCategoria) => cat.label == 'Docentes')?.children || [];
       if (cat.length > 0) this.categorias = this.mapDataCategorias(cat);
+      this.cargarDocente();
+      this.loading = false;
+      this.cdr.detectChanges();
     });
   }
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['docente'] && !changes['docente'].isFirstChange() && this.docente && this.docente.length > 0) {
+    if (changes['docente'] && this.docente && this.docente.length > 0) {
       this.labels = this.labels.map((l: string) => this.convCat[l] || l);
       this.claves = this.claves.map((l: string) => this.convCat[l] || l);
       this.cargarDocente();

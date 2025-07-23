@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormControl, Validators, FormGroup } from '@angular/forms';
-import { CommonModule, NgClass } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { Data } from '@servicios/data';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
@@ -18,7 +18,6 @@ interface Docentes {
     FormsModule,
     PrimengModule,
     FichaDocente,
-    NgClass,
   ],
   providers: [MessageService],
   templateUrl: './carga.html',
@@ -104,10 +103,13 @@ export class Carga implements OnInit {
       option.value.toLowerCase().includes(query)
     );
   }
+
+  //*
   selectProfesor(event: any): void { // Cuando el docente es seleccionado
     this.profesorSeleccionado = this.arrayCSV.filter(fila => fila[1] === event.value.value)[0];
     this.cdr.detectChanges();
   }
+  //*/
 
   onUpload(event: any) {
     for (let file of event.files) {
@@ -130,6 +132,7 @@ export class Carga implements OnInit {
 
     const propiedades: any = {
       cedula: formValues.cedula || 'NA',
+      taxonomia: 'NOMBRE_DE_LA_CARPETA', // Nombre de la carpeta en la que debe ir el documento, dentro de la carpeta principal del profesor
       categorias: this.datosValidados,
       tipoDocumento: 'cedula'
     };
@@ -139,7 +142,7 @@ export class Carga implements OnInit {
       propiedades,
       'cargaDocumento',
       file
-    ).toPromise();
+    );
   }
 
   async onSubmit() {

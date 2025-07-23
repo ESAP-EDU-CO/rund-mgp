@@ -14,17 +14,51 @@
     .nombre {
       display: flex;
       gap: 0.5rem;
+      align-items: center;
     }
   }
   .cuerpo {
     display: flex;
     .ficha {
       &.estrecho {
-        width: 440px;
+        width: 25rem;
       }
     }
-    .upload {
+    .carga-documentos {
+      position: relative;
+      margin-left: 1rem;
+      padding: 0 1rem 1rem 1rem;
       flex: 1 1 auto;
+      .upload {
+        flex: 1 1 auto;
+      }
+      .advertencia {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.25);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .advertencia-card {
+          width: 24rem;
+          display: block;
+          .advertencia-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            .avatar {
+              background-color: var(--p-red-500);
+              color: white;
+            }
+            .mensaje {
+              font-weight: 700;
+              text-align: center;
+            }
+          }
+        }
+      }
     }
   }
 }

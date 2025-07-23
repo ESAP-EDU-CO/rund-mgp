@@ -28,6 +28,7 @@ import { EditorModule } from 'primeng/editor';
 import { DividerModule } from 'primeng/divider';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @NgModule({
   declarations: [],
@@ -61,6 +62,7 @@ import { AvatarGroupModule } from 'primeng/avatargroup';
     DividerModule,
     AvatarModule,
     AvatarGroupModule,
+    SkeletonModule,
   ],
   exports: [
     ButtonModule,
@@ -91,6 +93,7 @@ import { AvatarGroupModule } from 'primeng/avatargroup';
     DividerModule,
     AvatarModule,
     AvatarGroupModule,
+    SkeletonModule,
   ],
 })
 export class PrimengModule { }
