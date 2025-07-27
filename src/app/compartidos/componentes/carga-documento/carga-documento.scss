@@ -1,0 +1,136 @@
+.carga-documento {
+  .contenedor {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    .header {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .zona-drop {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2em;
+      gap: 2em;
+      transition: background-color 0.3s ease;
+      background-color: var(--p-primary-50);
+      margin: 1rem 0;
+      border-radius: var(--p-border-radius-xl);
+      & > .icono {
+        font-size: 1.5em;
+        padding: 1em;
+        border-radius: 50%;
+        border: 1px solid var(--p-dialog-border-color);
+        background-color: var(--p-highlight-background);
+        color: var(--p-primary-400);
+        i {
+          font-size: 3em;
+        }
+      }
+      .lista {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        .archivos {
+          display: flex;
+          flex-direction: column;
+          .archivo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--p-surface-900);
+            margin: 2px 0;
+            background-color: var(--p-primary-200);
+            padding: 12px 8px;
+            border-radius: 8px;
+            .cedula {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 8px;
+              .icono {
+                font-size: 2rem;
+              }
+            }
+            .tipo {
+              font-size: 3rem;
+              width: 3rem;
+            }
+            .identificador {
+              display: flex;
+              flex-direction: column;
+              gap: 0.5rem;
+              flex: 1 1 auto;
+              & > * {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                & > .label {
+                  font-size: 0.7rem;
+                  font-weight: 700;
+                }
+              }
+              .nombre {
+                & > .valor {
+                  font-size: 0.8rem;
+                  overflow-wrap: break-word;
+                }
+              }
+              .carpeta {
+                & > .valor {
+                  width: 100%;
+                  flex: 1 1 auto;
+                }
+              }
+            }
+            .borrar {
+              width: 3rem;
+            }
+            &.es-cedula {
+              .tipo {
+                color: var(--p-primary-500);
+              }
+              .cedula {
+                .icono {
+                  color: var(--p-primary-500);
+                }
+              }
+              background-color: var(--p-surface-300);
+            }
+          }
+        }
+      }
+      &.dragging {
+        background-color: var(--p-primary-100);
+        & > .icono {
+          animation: bounce-y 0.75s infinite alternate;
+        }
+      }
+    }
+    .acciones {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+  .inputs {
+    display: none;
+  }
+  ::ng-deep {
+    .p-dataview-content {
+      background-color: transparent;
+    }
+  }
+}
+@keyframes bounce-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2rem);
+  }
+}

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { faFilePdf, faFileWord, faFileExcel, faFilePowerpoint, faFile } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
   declarations: [],
@@ -9,7 +10,17 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     FontAwesomeModule,
   ],
   exports: [
-    FontAwesomeModule,
+    FontAwesomeModule
   ]
 })
-export class IconsModule { }
+export class IconsModule {
+  constructor(library: FaIconLibrary) {
+    library.addIcons(
+      faFilePdf,
+      faFileWord,
+      faFileExcel,
+      faFilePowerpoint,
+      faFile,
+    );
+  }
+}

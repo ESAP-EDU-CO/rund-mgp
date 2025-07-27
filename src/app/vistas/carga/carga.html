@@ -32,6 +32,8 @@
       </div>
       <div class="carga-documentos">
         <div class="upload">
+          <mgp-carga-documento />
+          <!-- 
           <div class="form">
             <h5 class="mb-2">Subida de Archivos</h5>
             <p class="text-sm text-secondary mb-1">Formatos permitidos: PDF</p>
@@ -69,7 +71,9 @@
                       (onClick)="resetForm()">
             </p-button>
           </div>
+           -->
         </div>
+        <!-- -->
         @if (!datosValidados || datosValidados.length < 1)
           {
           <div
@@ -80,13 +84,12 @@
                         icon="pi pi-exclamation-circle"
                         size="xlarge"
                         shape="circle" />
-              <span class="mensaje">
-                Para poder cargar los documentos, debe validar los datos.
-              </span>
+              <span class="mensaje">Para poder cargar los documentos, debe validar los datos. </span>
             </div>
           </p-card>
       </div>
       }
+      <!--   -->
     </div>
     }
   </div>

@@ -29,6 +29,9 @@ import { DividerModule } from 'primeng/divider';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { SkeletonModule } from 'primeng/skeleton';
+import { DataViewModule } from 'primeng/dataview';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { TooltipModule } from 'primeng/tooltip';
 
 @NgModule({
   declarations: [],
@@ -63,6 +66,9 @@ import { SkeletonModule } from 'primeng/skeleton';
     AvatarModule,
     AvatarGroupModule,
     SkeletonModule,
+    DataViewModule,
+    ToggleSwitchModule,
+    TooltipModule,
   ],
   exports: [
     ButtonModule,
@@ -94,6 +100,9 @@ import { SkeletonModule } from 'primeng/skeleton';
     AvatarModule,
     AvatarGroupModule,
     SkeletonModule,
+    DataViewModule,
+    ToggleSwitchModule,
+    TooltipModule,
   ],
 })
 export class PrimengModule { }

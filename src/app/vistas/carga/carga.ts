@@ -5,6 +5,7 @@ import { MessageService } from 'primeng/api';
 import { Data } from '@servicios/data';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { FichaDocente } from '@componentes/ficha-docente/ficha-docente';
+import { CargaDocumento } from '@componentes/carga-documento/carga-documento';
 
 interface Docentes {
   value: string;
@@ -18,6 +19,7 @@ interface Docentes {
     FormsModule,
     PrimengModule,
     FichaDocente,
+    CargaDocumento,
   ],
   providers: [MessageService],
   templateUrl: './carga.html',
