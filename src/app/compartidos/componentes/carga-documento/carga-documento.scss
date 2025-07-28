@@ -30,76 +30,82 @@
           font-size: 3em;
         }
       }
+      & > .texto {
+        text-align: center;
+      }
       .lista {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         width: 100%;
-        .archivos {
-          display: flex;
-          flex-direction: column;
-          .archivo {
+        .lista-view {
+          width: 100%;
+          .archivos {
             display: flex;
-            align-items: center;
-            gap: 1rem;
-            color: var(--p-surface-900);
-            margin: 2px 0;
-            background-color: var(--p-primary-200);
-            padding: 12px 8px;
-            border-radius: 8px;
-            .cedula {
+            flex-direction: column;
+            .archivo {
               display: flex;
-              flex-direction: column;
               align-items: center;
-              gap: 8px;
-              .icono {
-                font-size: 2rem;
-              }
-            }
-            .tipo {
-              font-size: 3rem;
-              width: 3rem;
-            }
-            .identificador {
-              display: flex;
-              flex-direction: column;
-              gap: 0.5rem;
-              flex: 1 1 auto;
-              & > * {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                & > .label {
-                  font-size: 0.7rem;
-                  font-weight: 700;
-                }
-              }
-              .nombre {
-                & > .valor {
-                  font-size: 0.8rem;
-                  overflow-wrap: break-word;
-                }
-              }
-              .carpeta {
-                & > .valor {
-                  width: 100%;
-                  flex: 1 1 auto;
-                }
-              }
-            }
-            .borrar {
-              width: 3rem;
-            }
-            &.es-cedula {
-              .tipo {
-                color: var(--p-primary-500);
-              }
+              gap: 1rem;
+              color: var(--p-surface-900);
+              margin: 2px 0;
+              background-color: var(--p-primary-200);
+              padding: 12px 8px;
+              border-radius: 8px;
               .cedula {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
                 .icono {
+                  font-size: 2rem;
+                }
+              }
+              .tipo {
+                font-size: 3rem;
+                width: 3rem;
+              }
+              .identificador {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                flex: 1 1 auto;
+                & > * {
+                  display: flex;
+                  align-items: center;
+                  gap: 0.5rem;
+                  & > .label {
+                    font-size: 0.7rem;
+                    font-weight: 700;
+                  }
+                }
+                .nombre {
+                  & > .valor {
+                    font-size: 0.8rem;
+                    overflow-wrap: break-word;
+                  }
+                }
+                .carpeta {
+                  & > .valor {
+                    width: 100%;
+                    flex: 1 1 auto;
+                  }
+                }
+              }
+              .borrar {
+                width: 3rem;
+              }
+              &.es-cedula {
+                .tipo {
                   color: var(--p-primary-500);
                 }
+                .cedula {
+                  .icono {
+                    color: var(--p-primary-500);
+                  }
+                }
+                background-color: var(--p-surface-300);
               }
-              background-color: var(--p-surface-300);
             }
           }
         }
@@ -113,7 +119,10 @@
     }
     .acciones {
       display: flex;
-      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: space-around;
+      align-items: center;
     }
   }
   .inputs {

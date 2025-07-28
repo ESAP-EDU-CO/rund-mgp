@@ -15,19 +15,17 @@
       display: flex;
       gap: 0.5rem;
       align-items: center;
+      justify-content: center;
     }
   }
   .cuerpo {
     display: flex;
     .ficha {
-      &.estrecho {
-        width: 25rem;
-      }
+      padding: 1rem;
     }
     .carga-documentos {
       position: relative;
-      margin-left: 1rem;
-      padding: 0 1rem 1rem 1rem;
+      padding: 1rem;
       flex: 1 1 auto;
       .upload {
         flex: 1 1 auto;

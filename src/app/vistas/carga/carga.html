@@ -24,16 +24,20 @@
     </div>
     <div class="cuerpo">
       @if (profesorSeleccionado && profesorSeleccionado.length > 0) {
-      <div class="ficha estrecho">
-        <mgp-ficha-docente (validado)="datosValidados = $event"
-                           [docente]="profesorSeleccionado"
-                           [claves]="clavesCSV"
-                           [labels]="labelsCSV" />
-      </div>
-      <div class="carga-documentos">
-        <div class="upload">
-          <mgp-carga-documento />
-          <!-- 
+      <p-splitter [panelSizes]="[35, 65]">
+        <ng-template #panel>
+          <div class="ficha">
+            <mgp-ficha-docente (validado)="datosValidados = $event"
+                               [docente]="profesorSeleccionado"
+                               [claves]="clavesCSV"
+                               [labels]="labelsCSV" />
+          </div>
+        </ng-template>
+        <ng-template #panel>
+          <div class="carga-documentos">
+            <div class="upload">
+              <mgp-carga-documento />
+              <!-- 
           <div class="form">
             <h5 class="mb-2">Subida de Archivos</h5>
             <p class="text-sm text-secondary mb-1">Formatos permitidos: PDF</p>
@@ -72,8 +76,8 @@
             </p-button>
           </div>
            -->
-        </div>
-        <!-- -->
+            </div>
+            <!-- ->
         @if (!datosValidados || datosValidados.length < 1)
           {
           <div
@@ -89,9 +93,11 @@
           </p-card>
       </div>
       }
-      <!--   -->
+      <!-  -->
+          </div>
+        </ng-template>
+      </p-splitter>
+      }
     </div>
-    }
-  </div>
   </div>
 </p-card>

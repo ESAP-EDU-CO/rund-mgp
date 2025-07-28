@@ -13,9 +13,11 @@
                 severity="success"
                 icon="pi pi-upload"
                 [rounded]="true"
+                [disabled]="!archivos || archivos.length < 1"
                 [outlined]="true" />
       <p-button (onClick)="limpiar()"
                 severity="danger"
+                [disabled]="!archivos || archivos.length < 1"
                 icon="pi pi-trash"
                 [rounded]="true"
                 [outlined]="true" />
@@ -29,7 +31,8 @@
          (dragend)="dragOut($event)">
       @if (archivos && archivos.length > 0) {
       <div class="lista">
-        <p-dataview [value]="archivos">
+        <p-dataview class="lista-view"
+                    [value]="archivos">
           <ng-template #list
                        let-items>
             <div class="archivos">
@@ -92,16 +95,18 @@
     </div>
     <div class="acciones">
       <p-button icon="pi pi-file"
-                label="Seleccionar archivos"
+                label="Sel. archivos"
                 (onClick)="inputArchivo.click()" />
       <p-button icon="pi pi-folder"
-                label="Seleccionar carpeta"
+                label="Sel. carpeta"
                 (onClick)="inputCarpeta.click()" />
       <p-button icon="pi pi-upload"
+                [disabled]="!archivos || archivos.length < 1"
                 label="Subir al RUND"
                 severity="success"
                 (onClick)="subir()" />
       <p-button icon="pi pi-trash"
+                [disabled]="!archivos || archivos.length < 1"
                 label="Limpiar lista"
                 severity="danger"
                 (onClick)="limpiar()" />
