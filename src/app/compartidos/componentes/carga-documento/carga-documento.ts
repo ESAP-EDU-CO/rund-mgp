@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { simp, compara } from '@librerias/textos';
 import { IconsModule } from '@modulos/icons/icons-module';
@@ -62,19 +62,64 @@ export class CargaDocumento {
     { 'application/vnd.oasis.opendocument.presentation': 'ODP' },
     { 'application/vnd.oasis.opendocument.graphics': 'ODG' },
   ]; // Tipos MIME permitidos
-  archivos: ArchivoDocente[] = []; // Lista de archivos cargados
+  @Input() archivosCargados: number[] = [];; // Archivo docente que ya se ha cargado, para que se elimine de la lista de archivos a cargar
+  @Input() cedulaRequerida: boolean = true; // Indica si se requiere al menos un archivo marcado como cédula
+  @Output() documentos: EventEmitter<ArchivoDocente[]> = new EventEmitter<ArchivoDocente[]>(); // Emite los archivos que se deben cargar al componente padre
+  @Output() cleanArchivos: EventEmitter<boolean> = new EventEmitter<boolean>(); // Emite un evento para limpiar los archivos cargados
+  @Output() todosCargados: EventEmitter<boolean> = new EventEmitter<boolean>(); // Emite un evento cuando todos los archivos han sido cargados
+  archivos: ArchivoDocente[] = []; // Lista de archivos que serán cargados al RUND
   dragging: boolean = false; // Indica si se está arrastrando un archivo
-  subir(): void {
-    console.log(this.archivos);
+  loading: boolean = false; // Indica si se está en el modo de carga de archivos
+  progresoCarga(): number {
+    if (this.archivos.length === 0) return 0; // Evita división por cero
+    const porcentaje: number = Math.floor(this.archivosCargados.length / this.archivos.length * 100);
+    if (porcentaje >= 100) {
+      this.loading = false; // Detiene el modo de carga si se ha alcanzado el 100%
+      this.cdr.detectChanges();
+      this.todosCargados.emit(true); // Emite un evento indicando que todos los archivos han sido cargados
+      return 100; // Asegura que el porcentaje no supere el 100%
+    }
+    return porcentaje;
   }
+  /**
+   * Inicia el proceso de carga de archivos al RUND. Se emite el objeto archivos que es del tipo ArchivoDocente[].
+   */
+  subir(): void {
+    if (!this.hayCedula()) return; // Si es requerido, debe haber al menos un archivo marcado como cédula
+    this.loading = true; // Inicia el modo de carga
+    this.documentos.emit(this.archivos); // Emite los archivos al componente padre
+  }
+  /**
+   * Verifica si hay al menos un archivo marcado como cédula
+   * @return true si hay al menos un archivo marcado como cédula, false en caso contrario
+  */
+  hayCedula(): boolean {
+    return this.cedulaRequerida ? this.archivos.some((a: ArchivoDocente) => a.esCedula) : true;
+  }
+  /**
+   * Limpia uno o todos los archivos de la lista de archivos a cargar
+   * @param num Opcional. Número del archivo a limpiar. Si es null (o no se indica), limpia todos los archivos.
+   */
   limpiar(num: number | null = null): void {
     this.archivos = this.archivos.filter((v: ArchivoDocente, i: number) => i !== (num ?? i));
+    if (this.archivos.length === 0) { // Si se limpian todos los archivos, también se limpia la lista de archivos cargados
+      this.cleanArchivos.emit(true); // Emite un evento para limpiar los archivos cargados
+    }
     this.cdr.detectChanges();
   }
+  /**
+   * Marca un archivo como cédula, actualizando su propiedad esCedula; marca todos los demás archivos como no cédula
+   * @param ev Evento que contiene el índice del archivo seleccionado
+   */
   marcaCedula(ev: any): void {
     this.archivos.forEach((a: ArchivoDocente, i: number) => a.esCedula = i == ev.value);
     this.cdr.detectChanges();
   }
+  /**
+   * Cambia la carpeta de un archivo cargado, actualizando su taxonomía y tipo
+   * @param carpeta La nueva carpeta a la que se moverá el archivo
+   * @param numArchivo El índice del archivo en la lista de archivos cargados
+   */
   cambiaCarpeta(carpeta: DatosCarpeta, numArchivo: number): void {
     if (numArchivo < 0 || numArchivo >= this.archivos.length) return; // Validar índice
     const archivo: ArchivoDocente = this.archivos[numArchivo];
@@ -82,7 +127,24 @@ export class CargaDocumento {
     archivo.tipo = carpeta.categoria;
     this.cdr.detectChanges();
   }
-
+  /**
+   * Devuelve el icono correspondiente al tipo de archivo basado en el valor de la variable mimeTypes
+   * @param ext Extensión del archivo
+   * @returns Nombre del icono a mostrar
+   */
+  icono(ext: string): string {
+    const tipos: string[] = ['pdf', 'word', 'excel', 'powerpoint'];
+    const tipo: string = ext.toLowerCase().split('_')[0];
+    return tipos.includes(tipo) ? 'file-' + tipo : 'file';
+  }
+  /**
+ * Maneja la selección de carpetas usando un input nativo
+ * @param event Evento del input file con webkitdirectory
+ */
+  seleccionaCarpeta(event: any): void {
+    const files: any = event.target.files;
+    if (files) this.procesarArchivosConRuta(Array.from(files));
+  }
   /**
    * Añade un archivo a la lista de archivos cargados infiriendo los valores a partir de la ruta
    * @param archivo El archivo tipo File
@@ -105,19 +167,6 @@ export class CargaDocumento {
       origen: origen,
       esCedula: esCedula,
     });
-  }
-  icono(ext: string): string {
-    const tipos: string[] = ['pdf', 'word', 'excel', 'powerpoint'];
-    const tipo: string = ext.toLowerCase().split('_')[0];
-    return tipos.includes(tipo) ? 'file-' + tipo : 'file';
-  }
-  /**
- * Maneja la selección de carpetas usando un input nativo
- * @param event Evento del input file con webkitdirectory
- */
-  seleccionaCarpeta(event: any): void {
-    const files: any = event.target.files;
-    if (files) this.procesarArchivosConRuta(Array.from(files));
   }
   /**
  * Procesa archivos que ya tienen información de ruta (desde input con webkitdirectory)
@@ -218,30 +267,6 @@ export class CargaDocumento {
     return fileName;
   }
   /**
-   * Método auxiliar para obtener solo los nombres de archivo sin ruta
-   * @returns Array de nombres de archivo
-   */
-  obtenerNombresArchivos(): string[] {
-    return this.archivos.map(item => item.archivo.name);
-  }
-  /**
- * Maneja el evento de drop para carpetas arrastradas
- * @param event Evento de drop
- */
-  async onDrop(event: DragEvent): Promise<void> {
-    event.preventDefault();
-    this.dragging = false;
-    if (!event.dataTransfer) return;
-    const items: DataTransferItemList = event.dataTransfer.items;
-    for (let i = 0; i < items.length; i++) {
-      const item: DataTransferItem = items[i];
-      if (item.kind === 'file') {
-        const entry = item.webkitGetAsEntry();
-        if (entry) await this.procesarEntry(entry);
-      }
-    }
-  }
-  /**
      * Procesa una entrada (archivo o directorio) del sistema de archivos
      * @param entry FileSystemEntry
      * @param path Ruta base
@@ -265,10 +290,35 @@ export class CargaDocumento {
     }
     this.cdr.detectChanges();
   }
+  /**
+ * Maneja el evento de drop para carpetas arrastradas
+ * @param event Evento de drop
+ */
+  async onDrop(event: DragEvent): Promise<void> {
+    event.preventDefault();
+    this.dragging = false;
+    if (!event.dataTransfer) return;
+    const items: DataTransferItemList = event.dataTransfer.items;
+    for (let i = 0; i < items.length; i++) {
+      const item: DataTransferItem = items[i];
+      if (item.kind === 'file') {
+        const entry = item.webkitGetAsEntry();
+        if (entry) await this.procesarEntry(entry);
+      }
+    }
+  }
+  /**
+   * Maneja el evento de arrastre de archivos dentro del área de carga
+   * @param event Evento de arrastre
+   */
   dragIn(event: DragEvent): void {
     event.preventDefault();
     this.dragging = true;
   }
+  /**
+   * Maneja el evento de arrastre de archivos fuera del área de carga
+   * @param event Evento de arrastre
+   */
   dragOut(event: DragEvent): void {
     event.preventDefault();
     this.dragging = false;

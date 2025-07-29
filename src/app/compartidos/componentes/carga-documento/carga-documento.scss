@@ -1,4 +1,5 @@
 .carga-documento {
+  position: relative;
   .contenedor {
     display: flex;
     flex-direction: column;
@@ -64,6 +65,8 @@
               .tipo {
                 font-size: 3rem;
                 width: 3rem;
+                display: flex;
+                justify-content: center;
               }
               .identificador {
                 display: flex;
@@ -94,6 +97,9 @@
               }
               .borrar {
                 width: 3rem;
+                .cargado {
+                  display: none;
+                }
               }
               &.es-cedula {
                 .tipo {
@@ -105,6 +111,35 @@
                   }
                 }
                 background-color: var(--p-surface-300);
+              }
+              &.ya-cargado {
+                background-color: var(--p-green-500);
+                .cedula {
+                  .icono {
+                    font-size: 1.5rem;
+                  }
+                  .toggle-switch {
+                    display: none;
+                  }
+                }
+                .tipo {
+                  font-size: 1.5rem;
+                }
+                .identificador {
+                  .carpeta {
+                    display: none;
+                  }
+                }
+                .borrar {
+                  display: flex;
+                  justify-content: center;
+                  .boton-borrar {
+                    display: none;
+                  }
+                  .cargado {
+                    display: flex;
+                  }
+                }
               }
             }
           }
@@ -127,6 +162,17 @@
   }
   .inputs {
     display: none;
+  }
+  .overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    padding: 1rem;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.35) 30%, rgba(0, 0, 0, 0.25));
+    color: var(--p-surface-0);
+    .mensaje {
+      text-align: center;
+    }
   }
   ::ng-deep {
     .p-dataview-content {

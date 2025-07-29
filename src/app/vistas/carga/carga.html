@@ -36,7 +36,10 @@
         <ng-template #panel>
           <div class="carga-documentos">
             <div class="upload">
-              <mgp-carga-documento />
+              <mgp-carga-documento (documentos)="submitArchivos($event)"
+                                   (cleanArchivos)="limpiaLista()"
+                                   (todosCargados)="todosCargados()"
+                                   [archivosCargados]="archivosYaCargados" />
               <!-- 
           <div class="form">
             <h5 class="mb-2">Subida de Archivos</h5>
@@ -77,27 +80,27 @@
           </div>
            -->
             </div>
-            <!-- ->
-        @if (!datosValidados || datosValidados.length < 1)
-          {
-          <div
-          class="advertencia">
-          <p-card class="advertencia-card">
-            <div class="advertencia-body">
-              <p-avatar class="avatar"
-                        icon="pi pi-exclamation-circle"
-                        size="xlarge"
-                        shape="circle" />
-              <span class="mensaje">Para poder cargar los documentos, debe validar los datos. </span>
-            </div>
-          </p-card>
-      </div>
-      }
-      <!-  -->
+            <!-- -->
+            @if (!datosValidados || datosValidados.length < 1)
+              {
+              <div
+              class="advertencia">
+              <p-card class="advertencia-card">
+                <div class="advertencia-body">
+                  <p-avatar class="avatar"
+                            icon="pi pi-exclamation-circle"
+                            size="xlarge"
+                            shape="circle" />
+                  <span class="mensaje">Para poder cargar los documentos, debe validar los datos. </span>
+                </div>
+              </p-card>
           </div>
-        </ng-template>
-      </p-splitter>
-      }
+          }
+          <!--  -->
     </div>
+    </ng-template>
+    </p-splitter>
+    }
+  </div>
   </div>
 </p-card>

@@ -13,7 +13,7 @@
                 severity="success"
                 icon="pi pi-upload"
                 [rounded]="true"
-                [disabled]="!archivos || archivos.length < 1"
+                [disabled]="!archivos || archivos.length < 1 || !hayCedula()"
                 [outlined]="true" />
       <p-button (onClick)="limpiar()"
                 severity="danger"
@@ -38,12 +38,13 @@
             <div class="archivos">
               @for (item of items;let numArchivo = $index; track item) {
               <div class="archivo"
-                   [ngClass]="{'es-cedula': item.esCedula}">
+                   [ngClass]="{'es-cedula': item.esCedula, 'ya-cargado': archivosCargados.includes(numArchivo)}">
                 <div class="cedula"
                      tooltipPosition="top"
                      pTooltip="¿Este documento es la cédula del profesor?">
                   <i class="pi pi-id-card icono"></i>
-                  <p-toggleswitch (ngModelChange)="marcaCedula($event)"
+                  <p-toggleswitch class="toggle-switch"
+                                  (ngModelChange)="marcaCedula($event)"
                                   [(ngModel)]="archivos[numArchivo].esCedula" />
                 </div>
                 <div class="tipo"
@@ -73,10 +74,12 @@
                 <div class="borrar"
                      tooltipPosition="top"
                      pTooltip="Eliminar este documento de la carga">
-                  <p-button icon="pi pi-times"
+                  <p-button class="boton-borrar"
+                            icon="pi pi-times"
                             severity="danger"
                             [disabled]="!item.archivo"
                             (onClick)="limpiar(numArchivo)" />
+                  <i class="pi pi-check cargado"></i>
                 </div>
               </div>
               }
@@ -101,7 +104,7 @@
                 label="Sel. carpeta"
                 (onClick)="inputCarpeta.click()" />
       <p-button icon="pi pi-upload"
-                [disabled]="!archivos || archivos.length < 1"
+                [disabled]="!archivos || archivos.length < 1 || !hayCedula()"
                 label="Subir al RUND"
                 severity="success"
                 (onClick)="subir()" />
@@ -124,4 +127,10 @@
            multiple
            (change)="seleccionaDocumentos($event)">
   </div>
+  @if (loading){
+  <div class="overlay">
+    <h4 class="mensaje">Cargando los documentos al RUND</h4>
+    <p-progressbar [value]="progresoCarga()" />
+  </div>
+  }
 </p-card>
