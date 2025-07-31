@@ -1,0 +1,136 @@
+<p-card class="carga-documento">
+  <div class="contenedor">
+    <div class="header">
+      <p-button (onClick)="inputArchivo.click()"
+                icon="pi pi-file"
+                [rounded]="true"
+                [outlined]="true" />
+      <p-button (onClick)="inputCarpeta.click()"
+                icon="pi pi-folder"
+                [rounded]="true"
+                [outlined]="true" />
+      <p-button (onClick)="subir()"
+                severity="success"
+                icon="pi pi-upload"
+                [rounded]="true"
+                [disabled]="!archivos || archivos.length < 1 || !hayCedula()"
+                [outlined]="true" />
+      <p-button (onClick)="limpiar()"
+                severity="danger"
+                [disabled]="!archivos || archivos.length < 1"
+                icon="pi pi-trash"
+                [rounded]="true"
+                [outlined]="true" />
+    </div>
+    <div class="zona-drop"
+         [ngClass]="{'dragging':dragging}"
+         (drop)="onDrop($event)"
+         (dragover)="dragIn($event)"
+         (dragenter)="dragIn($event)"
+         (dragleave)="dragOut($event)"
+         (dragend)="dragOut($event)">
+      @if (archivos && archivos.length > 0) {
+      <div class="lista">
+        <p-dataview class="lista-view"
+                    [value]="archivos">
+          <ng-template #list
+                       let-items>
+            <div class="archivos">
+              @for (item of items;let numArchivo = $index; track item) {
+              <div class="archivo"
+                   [ngClass]="{'es-cedula': item.esCedula, 'ya-cargado': archivosCargados.includes(numArchivo)}">
+                <div class="cedula"
+                     tooltipPosition="top"
+                     pTooltip="¿Este documento es la cédula del profesor?">
+                  <i class="pi pi-id-card icono"></i>
+                  <p-toggleswitch class="toggle-switch"
+                                  (ngModelChange)="marcaCedula($event)"
+                                  [(ngModel)]="archivos[numArchivo].esCedula" />
+                </div>
+                <div class="tipo"
+                     tooltipPosition="top"
+                     [pTooltip]="'Documento en formato ' + item.formato">
+                  <fa-icon [icon]="['fas', icono(item.formato)]" />
+                </div>
+                <div class="identificador">
+                  <div class="nombre"
+                       tooltipPosition="top"
+                       pTooltip="Nombre del documento">
+                    <div class="label">Nombre:</div>
+                    <div class="valor">{{item.archivo.name}}</div>
+                  </div>
+                  <div class="carpeta"
+                       tooltipPosition="top"
+                       pTooltip="Carpeta o tipo de documento">
+                    <div class="label">Carpeta:</div>
+                    <p-select class="valor"
+                              size="small"
+                              [options]="carpetas"
+                              optionLabel="label"
+                              (ngModelChange)="cambiaCarpeta($event, numArchivo)"
+                              [(ngModel)]="archivos[numArchivo].taxonomia" />
+                  </div>
+                </div>
+                <div class="borrar"
+                     tooltipPosition="top"
+                     pTooltip="Eliminar este documento de la carga">
+                  <p-button class="boton-borrar"
+                            icon="pi pi-times"
+                            severity="danger"
+                            [disabled]="!item.archivo"
+                            (onClick)="limpiar(numArchivo)" />
+                  <i class="pi pi-check cargado"></i>
+                </div>
+              </div>
+              }
+            </div>
+          </ng-template>
+        </p-dataview>
+      </div>
+      } @else {
+      <div class="icono">
+        <i class="pi pi-cloud-upload"></i>
+      </div>
+      <div class="texto">
+        Arrastre y suelte archivos o carpetas para cargarlos al RUND.
+      </div>
+      }
+    </div>
+    <div class="acciones">
+      <p-button icon="pi pi-file"
+                label="Sel. archivos"
+                (onClick)="inputArchivo.click()" />
+      <p-button icon="pi pi-folder"
+                label="Sel. carpeta"
+                (onClick)="inputCarpeta.click()" />
+      <p-button icon="pi pi-upload"
+                [disabled]="!archivos || archivos.length < 1 || !hayCedula()"
+                label="Subir al RUND"
+                severity="success"
+                (onClick)="subir()" />
+      <p-button icon="pi pi-trash"
+                [disabled]="!archivos || archivos.length < 1"
+                label="Limpiar lista"
+                severity="danger"
+                (onClick)="limpiar()" />
+    </div>
+  </div>
+  <div class="inputs">
+    <input #inputCarpeta
+           type="file"
+           webkitdirectory
+           directory
+           multiple
+           (change)="seleccionaCarpeta($event)">
+    <input #inputArchivo
+           type="file"
+           multiple
+           (change)="seleccionaDocumentos($event)">
+  </div>
+  @if (loading){
+  <div class="overlay">
+    <h4 class="mensaje">Cargando los documentos al RUND</h4>
+    <p-progressbar [value]="progresoCarga()" />
+  </div>
+  }
+</p-card>

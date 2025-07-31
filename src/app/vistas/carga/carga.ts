@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormControl, Validators, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
-import { Data } from '@servicios/data';
+import { Data, ListadoProps } from '@servicios/data';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
+import { FichaDocente } from '@componentes/ficha-docente/ficha-docente';
+import { ArchivoDocente, CargaDocumento } from '@componentes/carga-documento/carga-documento';
 
 interface Docentes {
   value: string;
   viewValue: string;
 }
+
 @Component({
   selector: 'mgp-carga',
   imports: [
@@ -17,6 +19,8 @@ interface Docentes {
     ReactiveFormsModule,
     FormsModule,
     PrimengModule,
+    FichaDocente,
+    CargaDocumento,
   ],
   providers: [MessageService],
   templateUrl: './carga.html',
@@ -30,6 +34,15 @@ export class Carga implements OnInit {
   columnasCSV: string[] = [];
   rawCSV: string = '';
 
+  //*
+  labelsCSV: string[] = []; // La primera línea de arrayCSV, que contiene las etiquetas
+  profesorSeleccionado: string[] = []; // La fila de arrayCSV que corresponde al docente seleccionado
+  clavesCSV: string[] = ['Vinculación', 'Nombre completo', 'Territorial', 'Categoría', 'Nivel de Formación']; // Las etiquetas que se mostrarán en la ficha del docente
+  cdr: ChangeDetectorRef = inject(ChangeDetectorRef); // Para detectar cambios en la vista cuando se usa Angular Zoneless
+  datosValidados: string[] = []; // Indica si los datos del docente han sido validados y se puede iniciar la carga de documentos
+  archivosYaCargados: number[] = []; // Index de los archivos que ya ha sido cargados en el backend, que se le indican a CargaDocumento para que los marque como OK
+  //*/
+
   selectedDocentes: string = '';
   selectedActivos: string = '';
   selectedVinculados: string = '';
@@ -40,7 +53,6 @@ export class Carga implements OnInit {
   readonly MAX_FILES = 50;
 
   constructor(
-    private http: HttpClient,
     private dataServicio: Data,
     private messageService: MessageService
   ) {
@@ -52,7 +64,7 @@ export class Carga implements OnInit {
     });
   }
 
-  
+
   ngOnInit() {
     this.cargarCsvDocentes();
   }
@@ -71,7 +83,12 @@ export class Carga implements OnInit {
       .subscribe((response: any) => {
         this.arrayCSV = response.arrayCSV;
 
-        this.docentesOptions = this.arrayCSV.slice(1).map((fila: string[]) => {
+        //*
+        this.labelsCSV = this.arrayCSV.shift();
+        this.cdr.detectChanges();
+        //*/
+
+        this.docentesOptions = this.arrayCSV.map((fila: string[]) => {
           return {
             value: fila[1],
             viewValue: fila[3]
@@ -90,6 +107,78 @@ export class Carga implements OnInit {
       option.value.toLowerCase().includes(query)
     );
   }
+
+  //*
+  selectProfesor(event: any): void { // Cuando el docente es seleccionado
+    this.profesorSeleccionado = this.arrayCSV.filter(fila => fila[1] === event.value.value)[0];
+    this.limpiaLista();
+    this.cdr.detectChanges();
+  }
+  async submitArchivos(archivos: ArchivoDocente[], numCarga: number = 0): Promise<void> {
+    /**
+     * Cada payload está compuesto por el archivo (tipo File) y un objeto 'propiedades' con la forma {label:string, valor:any} que, a su vez, contiene los nodos:
+     * - taxonomia: string Ruta de la carpeta del documento (vacía si es la cédula)
+     * - tipo: string La carpeta donde se almacenó el documento originalmente (archivo.tipo), o 'cedula' si es la cédula.
+     * - formato: string Formato del documento, tal como viene en archivo.formato.
+     * - origen: string Origen del documento, tal como viene en archivo.origen.
+     * - categorias: string[] Las categorías a las que pertenece el documento siempre y cuando sea la cédula (el array datosValidados); de resto debe ser [].
+     * - esCedula: boolean Indica si el documento es la cédula o no
+     * - cedula: string El valor de la cédula del profesor, que será la carpeta raíz donde se almacenará el documento
+    */
+    if (numCarga >= archivos.length) {
+      this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Todos los archivos han sido subidos.' });
+      return;
+    }
+    const archivo = archivos[numCarga];
+    const propiedades: ListadoProps[] = [
+      { label: 'taxonomia', valor: archivo.esCedula ? '' : archivo.tipo }, // Si es la cédula, no hay subcarpeta, de lo contrario, se usa el tipo del archivo
+      { label: 'tipo', valor: archivo.esCedula ? 'cedula' : archivo.tipo }, // Si es la cédula, se usa 'cedula', de lo contrario, se usa el tipo del archivo
+      { label: 'formato', valor: archivo.formato },
+      { label: 'origen', valor: archivo.origen },
+      { label: 'categorias', valor: archivo.esCedula ? this.datosValidados || [] : [] },
+      { label: 'esCedula', valor: archivo.esCedula || false },
+      { label: 'cedula', valor: this.profesorSeleccionado[1] || 'NA' },
+    ];
+    try {
+      this.dataServicio.postFile(this.dataServicio.host + 'postFile', propiedades, 'cargaDocumento', archivo.archivo)
+        .subscribe({
+          next: (respuesta: any) => {
+            if (respuesta.error) {
+              console.error(`Error al subir el archivo ${archivo.archivo.name}:`, respuesta.error);
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Error de carga',
+                detail: `No se pudo subir el archivo ${archivo.archivo.name}.`
+              });
+            } else {
+              this.archivosYaCargados.push(numCarga);
+              this.cdr.detectChanges();
+            }
+            this.submitArchivos(archivos, numCarga + 1);
+          },
+          error: (error: any) => {
+            console.error(`Error al subir el archivo ${archivo.archivo.name}:`, error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error de carga',
+              detail: `No se pudo subir el archivo ${archivo.archivo.name}.`
+            });
+            this.submitArchivos(archivos, numCarga + 1);
+          }
+        });
+    } catch (error) {
+      console.error('Se cometió un error al preparar la carga del archivo:', error);
+      this.submitArchivos(archivos, numCarga + 1);
+    }
+  }
+  limpiaLista(): void {
+    this.archivosYaCargados = [];
+    this.cdr.detectChanges();
+  }
+  todosCargados(): void {
+    // Todos los archivos han sido cargados!!!
+  }
+  //*/
 
   onUpload(event: any) {
     for (let file of event.files) {
@@ -112,16 +201,8 @@ export class Carga implements OnInit {
 
     const propiedades: any = {
       cedula: formValues.cedula || 'NA',
-      taxonomia: 'ACTIVO/VINCULADO/TITULAR',
-      categorias: [
-        'TERRITORIALES/Cundinamarca',
-        'PERFIL_DOCENTE/GENERO/MASCULINO',
-        'PROGRAMA_NIVEL_FORMACION/POSGRADO/MAESTRIA',
-        'PERFIL_DOCENTE/GRUPO_ETNICO/SIN_GRUPO',
-        'PERFIL_DOCENTE/NIVEL_EDUCATIVO/DOCTORADO',
-        'PERFIL_DOCENTE/RANGO_ETARIO/51-69',
-        'TERRITORIALES/Sede Central',
-      ],
+      taxonomia: 'NOMBRE_DE_LA_CARPETA', // Nombre de la carpeta en la que debe ir el documento, dentro de la carpeta principal del profesor
+      categorias: this.datosValidados,
       tipoDocumento: 'cedula'
     };
 
@@ -130,7 +211,7 @@ export class Carga implements OnInit {
       propiedades,
       'cargaDocumento',
       file
-    ).toPromise();
+    );
   }
 
   async onSubmit() {

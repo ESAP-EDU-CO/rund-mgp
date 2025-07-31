@@ -11,6 +11,7 @@ export interface DataCategoria extends Omit<TreeNode, 'children'> {
   numDocs?: number;
   uuid: string;
   children?: DataCategoria[];
+  path?: string;
 }
 export interface ChartDataset {
   label: string;
@@ -51,9 +52,8 @@ export interface DataTabla {
 }
 export interface VarData {
   host: string;
-  api: string;
-  file: string;
-  clean: string;
+  categorias: CategoriaBase[];
+  labels: { [key: string]: string };
 }
 interface Anivel {
   label: string;
@@ -131,17 +131,25 @@ export interface MenuElemento extends MenuItem {
   faIcon?: IconDefinition;
   rol: Rol;
 }
+export interface CategoriaBase {
+  id: string;
+  items: CategoriaBase[] | string[];
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class Data {
+  /*
   public api: string = 'api.php';
   public file: string = 'file.php';
   public clean: string = 'clean.php';
   public loadList: string = 'loadlist.php';
   public uploadFile: string = 'postFile.php';
+  */
   public host: string = '';
+  public categorias: CategoriaBase[] = [];
+  public labels: { [key: string]: string } = {};
   public dataCategorias: DataCategoria[] | undefined;
   public chartColors: string[] = ['blue', 'yellow', 'green', 'cyan', 'pink', 'indigo', 'orange', 'teal', 'bluegray', 'purple', 'red'];
   private aNivel: Anivel[] = [{ label: 'Direcciones territoriales', superLabel: 'Distribución territorial' }];
@@ -301,7 +309,8 @@ export class Data {
             children: JSON.parse(JSON.stringify(cat.children)),
             key: cat.key + '-0',
             uuid: cat.uuid,
-            numDocs: cat.numDocs
+            numDocs: cat.numDocs,
+            path: cat.path,
           }];
           ghostNodo[0].children?.forEach((subnodo: DataCategoria, numSubNodo: number) => subnodo.key = ghostNodo[0].key + '-' + numSubNodo);
           cat.children = ghostNodo;
@@ -333,7 +342,7 @@ export class Data {
     return this.postFile(this.host + 'postFile', propiedades, 'cargaFirma', archivo);
   }
   deleteFile(uuid: string): Observable<any> {
-    return this.http.delete(this.api, { params: { accion: 'deleteFile', uuid: uuid } });
+    return this.http.delete(this.host + 'deleteFile', { params: { uuid: uuid } });
   }
   private normalizaNombre(nombre: string): string {
     return nombre.trim().replace(/\s+/g, '_').toUpperCase();

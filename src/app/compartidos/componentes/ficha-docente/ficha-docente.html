@@ -1,0 +1,67 @@
+<div class="ficha-docente">
+  @if (loading){
+  @for (n of [0,1,2,4]; track $index){
+  <p-panel [style]="{'width':'25rem'}">
+    <ng-template #header>
+      <div style="display:flex; gap:1rem; align-items:center">
+        <p-skeleton width="10rem" />
+        <p-skeleton shape="circle"
+                    size="1rem" />
+      </div>
+    </ng-template>
+    <div style="display:flex; gap:1rem; flex-direction:column">
+      @for (n of [0,1,2]; track $index){
+      <div style="display:flex; gap:1rem; align-items:center">
+        <p-skeleton width="6rem"
+                    height="1rem" />
+        <p-skeleton width="16rem"
+                    height="1.5rem" />
+      </div>
+      }
+    </div>
+  </p-panel>
+  }
+  } @else {
+  @for (panel of categoriasProfesor; let numPanel = $index; track numPanel) {
+  <p-panel>
+    <ng-template #header>
+      <div class="panel-header">
+        <span>{{panel.label}}</span>
+        @if (panel.validado) {
+        <i class="pi pi-check"
+           style="color:green"></i>
+        } @else {
+        <i class="pi pi-times"
+           style="color:red"></i>
+        }
+      </div>
+    </ng-template>
+    <div class="panel">
+      @for (selector of panel.selectores; let numSelector = $index, ultimo = $last; track numSelector) {
+      <div class="selector">
+        <span class="label">{{selector.label}}</span>
+        @if (selector.tipo == 'single'){
+        <p-select class="select"
+                  (onChange)="setCategorias()"
+                  [options]="selector.options"
+                  [(ngModel)]="categoriasProfesor[numPanel].selectores[numSelector].selected"
+                  placeholder="Seleccione una opción"
+                  optionLabel="label"
+                  [inputId]="selector.id" />
+        } @else {
+        <p-multiselect class="select"
+                       (onChange)="setCategorias()"
+                       [options]="selector.options"
+                       [(ngModel)]="categoriasProfesor[numPanel].selectores[numSelector].selected"
+                       placeholder="Seleccione una opción"
+                       optionLabel="label"
+                       [inputId]="selector.id"
+                       [maxSelectedLabels]="2" />
+        }
+      </div>
+      }
+    </div>
+  </p-panel>
+  }
+  }
+</div>

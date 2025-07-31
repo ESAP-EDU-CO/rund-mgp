@@ -1,0 +1,29 @@
+.ficha-docente {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  max-width: 66rem;
+  .panel-header {
+    display: flex;
+    gap: 1rem;
+  }
+  .panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    .selector {
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      .label {
+        font-weight: 800;
+        font-size: 0.75em;
+        width: 6rem;
+      }
+      .select {
+        width: 16rem;
+      }
+    }
+  }
+}
