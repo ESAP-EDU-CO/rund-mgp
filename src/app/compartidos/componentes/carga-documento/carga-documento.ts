@@ -158,7 +158,12 @@ export class CargaDocumento {
       (c: DatosCarpeta) => c.origen.some((o: string) => compara(simp(o), simp(taxOr)))
     ) || this.carpetas[this.carpetas.length - 1];
     const origen: string = 'ONEDRIVE_ESAP';
-    const esCedula: boolean = simp(archivo.name).includes('CEDULA') && !this.archivos.some((a: ArchivoDocente) => a.esCedula);
+    // Lógica refinada de validación de cédula basada en el nombre del archivo
+    const nombreLimpio = archivo.name.toLowerCase().replace(/\.[^/.]+$/, '');
+    // Validaciones específicas para identificar cédula
+    const contienePalabraClave = nombreLimpio.includes('cc') || nombreLimpio.includes('cedula');
+    const esNumeroCedula = /^\d{6,11}$/.test(nombreLimpio);
+    const esCedula = (contienePalabraClave || esNumeroCedula) && !this.archivos.some((a: ArchivoDocente) => a.esCedula);
     this.archivos.push({
       archivo: archivo,
       taxonomia: carpeta,
