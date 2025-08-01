@@ -158,7 +158,14 @@ export class CargaDocumento {
       (c: DatosCarpeta) => c.origen.some((o: string) => compara(simp(o), simp(taxOr)))
     ) || this.carpetas[this.carpetas.length - 1];
     const origen: string = 'ONEDRIVE_ESAP';
-    const esCedula: boolean = simp(archivo.name).includes('CEDULA') && !this.archivos.some((a: ArchivoDocente) => a.esCedula);
+    // Normalizar el nombre del archivo para evitar problemas con mayúsculas y minúsculas
+    const nombreLimpio = archivo.name.toLowerCase().replace(/\.[^/.]+$/, '');
+    // Verificar si el archivo es una cédula basándose en el nombre del archivo
+    // Se considera cédula si contiene 'cc', 'cedula' o es un número de cédula válido
+    // Un número de cédula válido es un número entre 6 y 11 dígitos
+    const contienePalabraClave = nombreLimpio.includes('cc') || nombreLimpio.includes('cedula');
+    const esNumeroCedula = /^\d{6,11}$/.test(nombreLimpio);
+    const esCedula = (contienePalabraClave || esNumeroCedula) && !this.archivos.some((a: ArchivoDocente) => a.esCedula);
     this.archivos.push({
       archivo: archivo,
       taxonomia: carpeta,
