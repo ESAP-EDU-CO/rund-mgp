@@ -1,11 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { SelectItemGroup, TreeNode } from 'primeng/api';
-import { Observable } from 'rxjs';
+import { catchError, Observable, Subscriber, tap, throwError } from 'rxjs';
 import { Firma } from '@servicios/firmas';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from 'primeng/api';
 import { Rol } from '@servicios/auth';
+import { isPlatformBrowser } from '@angular/common';
 
 export interface DataCategoria extends Omit<TreeNode, 'children'> {
   numDocs?: number;
@@ -147,7 +148,7 @@ export class Data {
   public loadList: string = 'loadlist.php';
   public uploadFile: string = 'postFile.php';
   */
-  public host: string = '';
+  public host: string = 'http://localhost:3000/';
   public categorias: CategoriaBase[] = [];
   public labels: { [key: string]: string } = {};
   public dataCategorias: DataCategoria[] | undefined;
@@ -247,9 +248,39 @@ export class Data {
     { label: 'Documentos', tipo: 'MaterialDesign', estilo: 'material-symbols-outlined', icon: 'contract', route: '/documentos', rol: 'servicio' },
     { label: 'Herramientas', tipo: 'PrimeNG', icon: 'pi pi-wrench', route: '/herramientas', rol: 'servicio' },
   ];
+  private platID: any = inject(PLATFORM_ID);
   constructor(private http: HttpClient) { }
   init(): Observable<VarData> {
-    return this.http.get<VarData>('data/data.json');
+    const data: VarData = {
+      host: this.host,
+      categorias: [],
+      labels: {},
+    };
+    return new Observable<VarData>((observer: Subscriber<VarData>) => {
+      this.http.get<{ [key: string]: string }>(this.host + 'getFile?tipo=data&nombre=labels').pipe(
+        tap((labels: { [key: string]: string }) => {
+          this.labels = labels;
+          data.host = this.host;
+          data.labels = labels;
+          this.http.get<CategoriaBase[]>(this.host + 'getFile?tipo=data&nombre=categorias').pipe(
+            tap((categorias: CategoriaBase[]) => {
+              this.categorias = categorias;
+              data.categorias = categorias;
+              observer.next(data);
+              observer.complete();
+            }),
+            catchError((error) => {
+              observer.error(error);
+              return throwError(() => error);
+            })
+          ).subscribe();
+        }),
+        catchError((error) => {
+          observer.error(error);
+          return throwError(() => error);
+        })
+      ).subscribe();
+    });
   }
   getCategorias(): Observable<DataCategoria[]> {
     return this.http.get<DataCategoria[]>(this.host + 'getCategorias');
@@ -269,7 +300,7 @@ export class Data {
   }
   loadDocumentos(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.http.get<Documento.Listado>('data/documentos.json')
+      this.http.get<Documento.Listado>(this.host + 'getFile?tipo=data&nombre=documentos')
         .subscribe((documentos: Documento.Listado) => {
           this.documentos = documentos;
           resolve(true);
@@ -344,7 +375,39 @@ export class Data {
   deleteFile(uuid: string): Observable<any> {
     return this.http.delete(this.host + 'deleteFile', { params: { uuid: uuid } });
   }
+  getImagen(nombre: string): Observable<string | ArrayBuffer | null> {
+    if (isPlatformBrowser(this.platID)) {
+      const opciones: any = { responseType: 'blob' };
+      const getFile: Observable<any> = this.http.get<any>(this.host + 'getFile?tipo=imagen&nombre=' + nombre, opciones);
+      return new Observable((observador: Subscriber<any>) => {
+        getFile.pipe(
+          tap((imagen: any) => {
+            this.blobToBase64(imagen)
+              .then((img64: string | ArrayBuffer | null) => observador.next(img64))
+              .catch((error: any) => observador.error(error))
+              .finally(() => observador.complete());
+          }),
+          catchError((error) => {
+            observador.error(error);
+            return throwError(() => error);
+          })
+        ).subscribe();
+      });
+    } else {
+      return new Observable();
+    }
+  }
   private normalizaNombre(nombre: string): string {
     return nombre.trim().replace(/\s+/g, '_').toUpperCase();
+  }
+  private blobToBase64(blob: Blob): Promise<string | ArrayBuffer | null> {
+    return new Promise((resolve, reject) => {
+      const reader: FileReader = new FileReader();
+      reader.onerror = reject;
+      reader.onloadend = () => {
+        resolve(reader.result);
+      };
+      reader.readAsDataURL(blob);
+    });
   }
 }

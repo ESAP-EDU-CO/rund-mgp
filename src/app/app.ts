@@ -49,10 +49,10 @@ export class App implements OnInit {
         this.cdr.detectChanges();
       });
       this.data.init().subscribe((data: VarData) => {
+        /*
         this.data.host = data.host;
         this.data.categorias = data.categorias;
         this.data.labels = data.labels;
-        /*
         this.data.api = data.host + this.data.api;
         this.data.file = data.host + this.data.file;
         this.data.clean = data.host + this.data.clean;
