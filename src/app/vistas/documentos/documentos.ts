@@ -89,10 +89,8 @@ export class Documentos implements OnInit {
     const hoy: Date = new Date();
     const fecha: string = hoy.getFullYear().toString() + ("0" + (hoy.getMonth() + 1)).slice(-2) + ("0" + hoy.getDate()).slice(-2);
     if (this.preview) {
-      console.log(tipo, this.preview);
       this.dataServicio.getCertificadoFile(tipo, this.preview.plantilla, this.preview.estructura)
         .subscribe((blob: Blob) => {
-          console.log(blob);
           if (blob.type == 'application/json; charset=utf-8') {
             blob.text()
               .then((v: string) => console.log(v))
@@ -167,7 +165,7 @@ export class Documentos implements OnInit {
     this.preview.plantilla = dato.plantilla.plantilla;
     this.cdr.detectChanges();
   }
-  ajustaCert1231(dato: Documento.Dato, datosCertificado: any): Documento.Plantilla { // Ajusta los datos según esta plantilla particular
+  private ajustaCert1231(dato: Documento.Dato, datosCertificado: any): Documento.Plantilla { // Ajusta los datos según esta plantilla particular
     const posTabla: number = dato.plantilla.estructura.findIndex((val: Documento.Estructura) => val.tipo == 'tabla');
     const posFecha: number = posTabla + 1;
     const posNombre: number = posTabla - 1; // La posición del párrafo con el nombre e identificación del docente
@@ -193,7 +191,7 @@ export class Documentos implements OnInit {
         .replace('{alDia}', alDia).replace('{mes}', mes).replace('{año}', año);
     return dato.plantilla;
   }
-  ajustaCert1050(dato: Documento.Dato, datosCertificado: any): Documento.Plantilla { // Ajusta los datos según esta plantilla particular
+  private ajustaCert1050(dato: Documento.Dato, datosCertificado: any): Documento.Plantilla { // Ajusta los datos según esta plantilla particular
     const posTabla: number = dato.plantilla.estructura.findIndex((val: Documento.Estructura) => val.tipo == 'tabla');
     const posFecha: number = posTabla + 1; // La posición en el array de elementos en la que aparece el texto de "La presente certificación se expide..."
     const encabezados: string[] = [];
@@ -229,7 +227,7 @@ export class Documentos implements OnInit {
         .replace('{alDia}', alDia).replace('{mes}', mes).replace('{año}', año);
     return dato.plantilla;
   }
-  ajustaCert1051(dato: Documento.Dato, datosCertificado: any): Documento.Plantilla { // Ajusta los datos según esta plantilla particular
+  private ajustaCert1051(dato: Documento.Dato, datosCertificado: any): Documento.Plantilla { // Ajusta los datos según esta plantilla particular
     const posTabla: number = dato.plantilla.estructura.findIndex((val: Documento.Estructura) => val.tipo == 'tabla');
     const posFecha: number = posTabla + 1; // La posición en el array de elementos en la que aparece el texto de "La presente certificación se expide..."
     const encabezados: string[] = [];
@@ -248,7 +246,7 @@ export class Documentos implements OnInit {
         .replace('{alDia}', alDia).replace('{mes}', mes).replace('{año}', año);
     return dato.plantilla;
   }
-  numeroMesToPalabra(num: number): string {
+  private numeroMesToPalabra(num: number): string {
     const np: string[] = [
       'cero', 'primer', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve',
       'diez', 'once', 'doce', 'trece', 'catorce', 'quince', 'dieciséis', 'diecisiete',
