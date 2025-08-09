@@ -1,0 +1,64 @@
+<div class="validacion">
+  <p-panel class="certificado"
+           [toggleable]="true"
+           header="Certificado expedidos por el GGP">
+    <div class="solicitud">
+      <div class="campo">
+        <label for="id-certificado">ID del certificado</label>
+        <input pInputText
+               #inputIdCertificado
+               id="id-certificado"
+               aria-describedby="id-certificado-help"
+               [maxlength]="idLen"
+               [minlength]="idLen"
+               required
+               (keypress)="oprimeTecla($event)"
+               (ngModelChange)="validaID()"
+               [(ngModel)]="idCertificado" />
+        <small id="id-certificado-help">El ID del certificado debe tener {{idLen}} caracteres</small>
+      </div>
+      <p-button label="Consultar"
+                (onClick)="validaID()"
+                [disabled]="idCertificado.length != idLen" />
+    </div>
+    @if (certificado) {
+    @if (dataCertificado) {
+    <p-table [value]="dataCertificado"
+             class="tabla-cert">
+      <ng-template #header>
+        <tr>
+          <th>ID</th>
+          <th>Fecha de expedición</th>
+          <th>Tipo de certificado</th>
+          <th>Descargar</th>
+        </tr>
+      </ng-template>
+      <ng-template #body
+                   let-data>
+        <tr>
+          <td>{{data.id}}</td>
+          <td>{{data.fecha | date: 'd/M/yy h:mm a'}}</td>
+          <td>{{data.nombre}}</td>
+          <td>
+            <div class="botones">
+              <p-button label="Word"
+                        (onClick)="descargarCertificado('docx')"
+                        icon="pi pi-file-word" />
+              <p-button label="PDF"
+                        (onClick)="descargarCertificado('pdf')"
+                        icon="pi pi-file-pdf" />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    } @else {
+    <p-card header="NO SE ENCONTRÓ EL CERTIFICADO">
+      <div class="no-cert">
+        El ID solicitado no corresponde a ningún certificado expedido por el GGP.
+      </div>
+    </p-card>
+    }
+    }
+  </p-panel>
+</div>

@@ -89,7 +89,7 @@ export class Documentos implements OnInit {
     const hoy: Date = new Date();
     const fecha: string = hoy.getFullYear().toString() + ("0" + (hoy.getMonth() + 1)).slice(-2) + ("0" + hoy.getDate()).slice(-2);
     if (this.preview) {
-      this.dataServicio.getCertificadoFile(tipo, this.preview.plantilla, this.preview.estructura)
+      this.dataServicio.getCertificadoFile(tipo, this.preview.plantilla, this.preview.estructura, Date.now().toString(), labelCert)
         .subscribe((blob: Blob) => {
           if (blob.type == 'application/json; charset=utf-8') {
             blob.text()

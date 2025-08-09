@@ -7,6 +7,7 @@ import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from 'primeng/api';
 import { Rol } from '@servicios/auth';
 import { isPlatformBrowser } from '@angular/common';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 
 export interface DataCategoria extends Omit<TreeNode, 'children'> {
   numDocs?: number;
@@ -138,7 +139,7 @@ export interface CategoriaBase {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class Data {
   /*
@@ -239,14 +240,21 @@ export class Data {
       }
     ]
   };
-  // Debe obtenerse de un JSON o una fuente de datos centralizada
+  // En el futuro debe obtenerse de un JSON o una fuente de datos centralizada
+  private faIconLibrary: FaIconLibrary = inject(FaIconLibrary);
+  private faCheckDouble: IconDefinition = this.faIconLibrary.getIconDefinition('fas', 'check-double') as IconDefinition;
+  private faGauge: IconDefinition = this.faIconLibrary.getIconDefinition('fas', 'gauge') as IconDefinition;
+  private faMagnifyingGlassChart: IconDefinition = this.faIconLibrary.getIconDefinition('fas', 'magnifying-glass-chart') as IconDefinition;
+  private faFileArrowUp: IconDefinition = this.faIconLibrary.getIconDefinition('fas', 'file-arrow-up') as IconDefinition;
+  private faFileAlt: IconDefinition = this.faIconLibrary.getIconDefinition('fas', 'file-alt') as IconDefinition;
   public elementosMenu: MenuElemento[] = [
-    { label: 'Panel de control', tipo: 'MaterialDesign', estilo: 'material-symbols-outlined', icon: 'dashboard', route: '/dashboard', rol: 'consulta' },
-    { label: 'Consultas', tipo: 'PrimeNG', icon: 'pi pi-search', route: '/consultas', rol: 'consulta' },
+    { label: 'Panel de control', faIcon: this.faGauge, route: '/dashboard', rol: 'consulta' },
+    { label: 'Consultas', faIcon: this.faMagnifyingGlassChart, route: '/consultas', rol: 'consulta' },
     { label: 'Listados', tipo: 'PrimeNG', icon: 'pi pi-list-check', route: '/listados', rol: 'servicio' },
-    { label: 'Carga', tipo: 'MaterialDesign', estilo: 'material-symbols-outlined', icon: 'upload_file', route: '/carga', rol: 'servicio' },
-    { label: 'Documentos', tipo: 'MaterialDesign', estilo: 'material-symbols-outlined', icon: 'contract', route: '/documentos', rol: 'servicio' },
+    { label: 'Carga', faIcon: this.faFileArrowUp, route: '/carga', rol: 'servicio' },
+    { label: 'Documentos', faIcon: this.faFileAlt, route: '/documentos', rol: 'servicio' },
     { label: 'Herramientas', tipo: 'PrimeNG', icon: 'pi pi-wrench', route: '/herramientas', rol: 'servicio' },
+    { label: 'Validación', faIcon: this.faCheckDouble, route: '/validacion', rol: 'usuario' },
   ];
   private platID: any = inject(PLATFORM_ID);
   constructor(private http: HttpClient) { }
@@ -307,11 +315,14 @@ export class Data {
         });
     });
   }
-  getCertificadoFile(tipo: string, plantilla: string, data: Documento.Estructura[]): Observable<any> {
+  getCertificadoFile(tipo: string, plantilla: string, data: Documento.Estructura[], fecha: string, nombre: string, id: string | null = null): Observable<any> {
     const formData: FormData = new FormData();
     formData.append('tipo', tipo);
     formData.append('plantilla', plantilla);
     formData.append('data', JSON.stringify(data));
+    formData.append('fecha', fecha);
+    formData.append('nombre', nombre);
+    if (id) formData.append('id', id);
     const opciones: any = {
       responseType: 'blob',
     }
@@ -396,6 +407,9 @@ export class Data {
     } else {
       return new Observable();
     }
+  }
+  getCertificadoInfo(id: string): Observable<any> {
+    return this.http.get<any>(this.host + 'getCertificadoInfo?id=' + id);
   }
   private normalizaNombre(nombre: string): string {
     return nombre.trim().replace(/\s+/g, '_').toUpperCase();
