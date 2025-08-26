@@ -34,6 +34,9 @@
       @if (actualTool?.vinculo === 'firmas') {
       <mgp-admin-firmas (cerrar)="cierraModal()" />
       }
+      @if (actualTool?.vinculo === 'extraerDatos') {
+      <mgp-extrae-datos (cerrar)="cierraModal()" />
+      }
     </ng-template>
   </p-dialog>
 </div>

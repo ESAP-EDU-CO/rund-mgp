@@ -290,6 +290,9 @@ export class Data {
       ).subscribe();
     });
   }
+  getConfig(): Observable<any> {
+    return this.http.get<any>('/api/config');
+  }
   getCategorias(): Observable<DataCategoria[]> {
     return this.http.get<DataCategoria[]>(this.host + 'getCategorias');
   }
@@ -410,6 +413,14 @@ export class Data {
   }
   getCertificadoInfo(id: string): Observable<any> {
     return this.http.get<any>(this.host + 'getCertificadoInfo?id=' + id);
+  }
+  extraeDatos(accion: string, documento: File, tipoDocumento: string, datosExtraer: string[]): Observable<any> {
+    const formData: FormData = new FormData();
+    formData.append('accion', accion);
+    formData.append('documento', documento);
+    formData.append('tipoDocumento', tipoDocumento);
+    formData.append('datosExtraer', JSON.stringify(datosExtraer));
+    return this.http.post<any>(this.host + 'extraeDatos', formData);
   }
   private normalizaNombre(nombre: string): string {
     return nombre.trim().replace(/\s+/g, '_').toUpperCase();

@@ -43,33 +43,36 @@ export class App implements OnInit {
   ngOnInit(): void {
     if (isPlatformBrowser(this.platID)) {
       // Si se está ejecutando en el browser
-      this.authServicio.getAuth();
-      this.authServicio.usuario.subscribe((usuario: Usuario | null | undefined) => {
-        this.usuario = usuario;
-        this.cdr.detectChanges();
-      });
-      this.data.init().subscribe((data: VarData) => {
-        /*
-        this.data.host = data.host;
-        this.data.categorias = data.categorias;
-        this.data.labels = data.labels;
-        this.data.api = data.host + this.data.api;
-        this.data.file = data.host + this.data.file;
-        this.data.clean = data.host + this.data.clean;
-        this.data.loadList = data.host + this.data.loadList;
-        this.data.uploadFile = data.host + this.data.uploadFile;
-        //*/
-        this.contenidos = this.data.elementosMenu;
-        this.getRolMinimo();
-        this.dataVars = true;
-      });
-      this.seccionActual = this.router.url.split('?')[0];
-      this.getRolMinimo();
-      this.router.events.subscribe((ev: any) => {
-        if (ev.type == EventType.NavigationEnd) {
-          this.seccionActual = ev.url.split('?')[0];
+      this.data.getConfig().subscribe((config: any) => {
+        this.data.host = config.apiBaseUrl + '/';
+        this.authServicio.getAuth();
+        this.authServicio.usuario.subscribe((usuario: Usuario | null | undefined) => {
+          this.usuario = usuario;
+          this.cdr.detectChanges();
+        });
+        this.data.init().subscribe((data: VarData) => {
+          /*
+          this.data.host = data.host;
+          this.data.categorias = data.categorias;
+          this.data.labels = data.labels;
+          this.data.api = data.host + this.data.api;
+          this.data.file = data.host + this.data.file;
+          this.data.clean = data.host + this.data.clean;
+          this.data.loadList = data.host + this.data.loadList;
+          this.data.uploadFile = data.host + this.data.uploadFile;
+          //*/
+          this.contenidos = this.data.elementosMenu;
           this.getRolMinimo();
-        }
+          this.dataVars = true;
+        });
+        this.seccionActual = this.router.url.split('?')[0];
+        this.getRolMinimo();
+        this.router.events.subscribe((ev: any) => {
+          if (ev.type == EventType.NavigationEnd) {
+            this.seccionActual = ev.url.split('?')[0];
+            this.getRolMinimo();
+          }
+        });
       });
     }
   }

@@ -1,0 +1,76 @@
+<div class="extrae-datos">
+  <div class="carga">
+    <div class="selector">
+      <div class="dropdown">
+        <p-floatlabel class="label"
+                      variant="in">
+          <p-select [(ngModel)]="datos"
+                    class="select"
+                    inputId="sel_doc"
+                    [options]="listaDocumentos"
+                    optionLabel="label" />
+          <label for="sel_doc">Tipo de documento</label>
+        </p-floatlabel>
+      </div>
+      @if (datos) {
+      <div class="campos">
+        <h4>Se intentará extraer los siguientes datos:</h4>
+        <ul class="lista-campos">
+          @for (campo of datos.campos; track $index) {
+          <li>{{campo.label}}</li>
+          }
+        </ul>
+      </div>
+      }
+    </div>
+    @if (datos) {
+    <p-fileupload name="upDoc"
+                  accept=".jpg,.jpeg,.pdf,.png"
+                  maxFileSize="99999999"
+                  (onUpload)="enviaDocumento($event)"
+                  (onSelect)="seleccionaDocumento($event)">
+      <ng-template #header
+                   let-files
+                   let-chooseCallback="chooseCallback"
+                   let-clearCallback="clearCallback"
+                   let-uploadCallback="uploadCallback">
+        <div class="flex flex-wrap justify-between items-center flex-1 gap-4">
+          <div class="flex gap-2">
+            <p-button (onClick)="choose($event, chooseCallback)"
+                      icon="pi pi-plus"
+                      [rounded]="true"
+                      [outlined]="true" />
+            <p-button (onClick)="enviaDocumento($event)"
+                      icon="pi pi-cloud-upload"
+                      [rounded]="true"
+                      [outlined]="true"
+                      severity="success"
+                      [disabled]="!files || files.length === 0" />
+            <p-button (onClick)="clearCallback()"
+                      icon="pi pi-times"
+                      [rounded]="true"
+                      [outlined]="true"
+                      severity="danger"
+                      [disabled]="!files || files.length === 0" />
+          </div>
+        </div>
+      </ng-template>
+      <ng-template #content
+                   let-files>
+        @if (files.length > 0) {
+        <div class="documento">
+          <div class="nombre">{{files[0].name}}</div>
+          <div class="tamano">{{files[0].size}}</div>
+          <div class="tipo">{{files[0].type}}</div>
+        </div>
+        }
+      </ng-template>
+    </p-fileupload>
+    }
+  </div>
+  <div class="respuesta">
+    @if (respuestaIA) {
+    {{respuestaIA | json}}
+    }
+  </div>
+</div>
