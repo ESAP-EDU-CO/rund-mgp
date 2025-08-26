@@ -1,7 +1,7 @@
 import { NgStyle } from '@angular/common';
 import { AfterViewInit, Component, Input } from '@angular/core';
 import { FirmaCertificado } from '@componentes/firma-certificado/firma-certificado';
-import { Prevista, RutaPlantilla } from '@vistas/documentos/documentos';
+import { Prevista } from '@vistas/documentos/documentos';
 
 @Component({
   selector: 'mgp-preview',
@@ -14,7 +14,6 @@ import { Prevista, RutaPlantilla } from '@vistas/documentos/documentos';
 })
 export class Preview implements AfterViewInit {
   @Input() preview: Prevista | undefined;
-  @Input() ruta: RutaPlantilla = { host: '', plantillas: 'plantillas/', certificados: 'certificados/' };
   fontSize: string = '10px';
   elemento: HTMLElement = document.querySelector('.preview .vista') as HTMLElement;
   ngAfterViewInit(): void {

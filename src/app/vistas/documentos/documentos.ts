@@ -15,11 +15,6 @@ export interface Prevista {
   paddingTop: string;
   plantilla: string;
 }
-export interface RutaPlantilla {
-  host: string;
-  plantillas: string;
-  certificados: string;
-}
 
 @Component({
   selector: 'mgp-documentos',
@@ -38,17 +33,12 @@ export class Documentos implements OnInit {
   certificadoSeleccionado: number[] = [];
   filtros: Documento.Dato[] | undefined;
   columnas: any;
-  ruta: RutaPlantilla = { host: '', plantillas: 'plantillas/', certificados: 'certificados/' };
   preview: Prevista | undefined;
   listaFirmas: Firma.Firma[] = [];
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  constructor(
-    private dataServicio: Data,
-    private fileServicio: File,
-    private firmasServicio: Firmas,
-  ) {
-    this.ruta.host = this.dataServicio.host;
-  }
+  private dataServicio: Data = inject(Data);
+  private fileServicio: File = inject(File);
+  private firmasServicio: Firmas = inject(Firmas);
   ngOnInit(): void {
     this.dataServicio.loadDocumentos().then((resp: boolean) => {
       if (resp) {
@@ -105,7 +95,7 @@ export class Documentos implements OnInit {
   }
   seleccionaOpcion(dato: Documento.Dato): void {
     this.preview = {
-      background: this.ruta.host + this.ruta.plantillas + this.ruta.certificados + 'base.jpg',
+      background: this.dataServicio.host + 'imagen?ruta=plantillas/certificados/&nombre=base.jpg',
       paddingTop: '7em',
       estructura: {} as Documento.Estructura[],
       plantilla: ''
