@@ -33,6 +33,7 @@ export class Dashboard implements OnInit {
       } else {
         this.data.getCategorias().subscribe((resp: DataCategoria[]) => {
           this.categorias = this.data.setCategorias(resp);
+          console.log(this.categorias);
           this.cdr.detectChanges();
         });
       }
@@ -64,5 +65,19 @@ export class Dashboard implements OnInit {
       }
     };
     return { nombre, data, opciones, tipoChart };
+  }
+  private sumaDocs(nodo: DataCategoria, numDocs: number = 0): number {
+    if (nodo.numDocs) numDocs += nodo.numDocs;
+    if (nodo.children) {
+      nodo.children.forEach((subnodo: DataCategoria) => {
+        numDocs = this.sumaDocs(subnodo, numDocs);
+      });
+    }
+    return numDocs;
+  }
+  suficientesNodos(nodo: DataCategoria): boolean {
+    const hijos: number = nodo.children ? nodo.children.length : 0;
+    const numDocs: number = this.sumaDocs(nodo);
+    return numDocs > (hijos * 5) && hijos > 1;
   }
 }

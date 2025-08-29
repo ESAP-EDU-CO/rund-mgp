@@ -13,11 +13,19 @@
         @for (superior of categorias; track superior.key) {
         <p-tabpanel [value]="$index">
           @for (categoria of superior.children; track categoria.key) {
-          <p-panel class="charts shadow-2"
+          <p-panel class="charts"
                    [toggleable]="true"
                    [header]="categoria.label">
+            @if (suficientesNodos(categoria)) {
             @for (nodo of categoria.children; track nodo.key) {
             <mgp-chart [data]="nodeData(nodo)" />
+            }
+            } @else {
+            <div class="no-suficiente">
+              <div class="texto">
+                No hay suficientes datos para mostrar los gráficos.
+              </div>
+            </div>
             }
           </p-panel>
           }

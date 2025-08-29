@@ -17,6 +17,7 @@
                 [model]="menuDescarga"
                 [popup]="true" />
       </ng-template>
+      @if (datosSuficientes){
       @if (panel.opciones) {
       <div class="contenido-panel-categorias">
         <div class="variables">
@@ -86,6 +87,13 @@
       </div>
       } @else {
       <p-progressSpinner ariaLabel="loading" />
+      }
+      } @else {
+      <div class="no-suficiente">
+        <div class="texto">
+          No hay suficientes datos para mostrar los gráficos.
+        </div>
+      </div>
       }
     </p-panel>
     }

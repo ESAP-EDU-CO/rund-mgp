@@ -36,6 +36,7 @@ export class Consultas implements OnInit {
   ];
   esperando: boolean = false;
   mensajeEspera: string = '';
+  datosSuficientes: boolean = false;
   constructor(
     private data: Data,
     private file: File,
@@ -45,12 +46,15 @@ export class Consultas implements OnInit {
     this.data.dataCategorias ?
       this.creaOpciones() :
       this.data.getCategorias().subscribe((resp: DataCategoria[]) => {
-        this.data.setCategorias(resp);
+        const categorias: DataCategoria[] = this.data.setCategorias(resp);
+        this.datosSuficientes = categorias ? categorias.length > 1 && this.suficientesNodos(categorias[0]) : false;
         this.creaOpciones();
       });
   }
   creaOpciones(): void {
     this.dataConsulta = [];
+    const categorias: DataCategoria[] = this.data.dataCategorias as DataCategoria[];
+    this.datosSuficientes = categorias ? categorias.length > 1 && this.suficientesNodos(categorias[0]) : false;
     this.data.dataCategorias?.forEach((supercat: DataCategoria) => {
       const opciones: SelectItemGroup[] = [];
       supercat.children?.forEach((categoria: DataCategoria) => {
@@ -160,5 +164,19 @@ export class Consultas implements OnInit {
         });
       }
     });
+  }
+  private sumaDocs(nodo: DataCategoria, numDocs: number = 0): number {
+    if (nodo.numDocs) numDocs += nodo.numDocs;
+    if (nodo.children) {
+      nodo.children.forEach((subnodo: DataCategoria) => {
+        numDocs = this.sumaDocs(subnodo, numDocs);
+      });
+    }
+    return numDocs;
+  }
+  private suficientesNodos(nodo: DataCategoria): boolean {
+    const hijos: number = nodo.children ? nodo.children.length : 0;
+    const numDocs: number = this.sumaDocs(nodo);
+    return numDocs > (hijos * 5) && hijos > 1;
   }
 }
