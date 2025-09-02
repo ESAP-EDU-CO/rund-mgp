@@ -2,10 +2,10 @@ import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormControl, Validators, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
-import { Data, ListadoProps } from '@servicios/data';
+import { Data, ListadoProps, ArchivoDocente, DatosProfesor } from '@servicios/data';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { FichaDocente } from '@componentes/ficha-docente/ficha-docente';
-import { ArchivoDocente, CargaDocumento } from '@componentes/carga-documento/carga-documento';
+import { CargaDocumento } from '@componentes/carga-documento/carga-documento';
 
 interface Docentes {
   value: string;
@@ -33,7 +33,6 @@ export class Carga implements OnInit {
   arrayCSV: any[] = [];
   columnasCSV: string[] = [];
   rawCSV: string = '';
-
   //*
   labelsCSV: string[] = []; // La primera línea de arrayCSV, que contiene las etiquetas
   profesorSeleccionado: string[] = []; // La fila de arrayCSV que corresponde al docente seleccionado
@@ -41,17 +40,15 @@ export class Carga implements OnInit {
   cdr: ChangeDetectorRef = inject(ChangeDetectorRef); // Para detectar cambios en la vista cuando se usa Angular Zoneless
   datosValidados: string[] = []; // Indica si los datos del docente han sido validados y se puede iniciar la carga de documentos
   archivosYaCargados: number[] = []; // Index de los archivos que ya ha sido cargados en el backend, que se le indican a CargaDocumento para que los marque como OK
+  infoProfesor: DatosProfesor | undefined;
   //*/
-
   selectedDocentes: string = '';
   selectedActivos: string = '';
   selectedVinculados: string = '';
-
   formulario: FormGroup;
   loading: boolean = false;
   uploadedFiles: any[] = [];
   readonly MAX_FILES = 50;
-
   constructor(
     private dataServicio: Data,
     private messageService: MessageService
@@ -63,13 +60,9 @@ export class Carga implements OnInit {
       vinculados: new FormControl('NA')
     });
   }
-
-
   ngOnInit() {
     this.cargarCsvDocentes();
   }
-
-
   cargarCsvDocentes(): void {
     const parametros = {
       categoria: 'Listados',
@@ -78,28 +71,22 @@ export class Carga implements OnInit {
       formato: 'CSV',
       extension: '.csv'
     };
-
     this.dataServicio.apiGet(this.dataServicio.host + 'getCsvData', parametros)
-      .subscribe((response: any) => {
-        this.arrayCSV = response.arrayCSV;
-
-        //*
-        this.labelsCSV = this.arrayCSV.shift();
-        this.cdr.detectChanges();
-        //*/
-
-        this.docentesOptions = this.arrayCSV.map((fila: string[]) => {
-          return {
-            value: fila[1],
-            viewValue: fila[3]
-          } as Docentes;
-        });
-
-      }, error => {
-        console.error('Error al obtener el CSV:', error);
+      .subscribe({
+        next: (response: any) => {
+          this.arrayCSV = response.arrayCSV;
+          this.labelsCSV = this.arrayCSV.shift();
+          this.docentesOptions = this.arrayCSV.map((fila: string[]) => {
+            return {
+              value: fila[1],
+              viewValue: fila[3]
+            } as Docentes;
+          });
+        },
+        error: (error: any) => console.error('Error al obtener el CSV:', error),
+        complete: () => this.cdr.detectChanges()
       });
   }
-
   filterProfesores(event: any) {
     const query = event.query.toLowerCase();
     this.profesoresFiltrados = this.docentesOptions.filter(option =>
@@ -107,10 +94,10 @@ export class Carga implements OnInit {
       option.value.toLowerCase().includes(query)
     );
   }
-
   //*
-  selectProfesor(event: any): void { // Cuando el docente es seleccionado
+  async selectProfesor(event: any): Promise<void> { // Cuando el docente es seleccionado
     this.profesorSeleccionado = this.arrayCSV.filter(fila => fila[1] === event.value.value)[0];
+    this.infoProfesor = await this.dataServicio.getInfoProfesor(this.profesorSeleccionado[1]);
     this.limpiaLista();
     this.cdr.detectChanges();
   }
@@ -179,7 +166,6 @@ export class Carga implements OnInit {
     // Todos los archivos han sido cargados!!!
   }
   //*/
-
   onUpload(event: any) {
     for (let file of event.files) {
       this.uploadedFiles.push(file);
@@ -191,7 +177,6 @@ export class Carga implements OnInit {
       detail: 'Archivo(s) cargado(s) correctamente'
     });
   }
-
   async uploadSingleFile(file: File, formValues: any): Promise<any> {
     const formData = new FormData();
     Object.keys(formValues).forEach(key => {
@@ -213,7 +198,6 @@ export class Carga implements OnInit {
       file
     );
   }
-
   async onSubmit() {
     if (this.formulario.invalid) {
       this.messageService.add({
@@ -252,11 +236,9 @@ export class Carga implements OnInit {
       this.loading = false;
     }
   }
-
   resetForm() {
     this.uploadedFiles = [];
   }
-
   onError(event: any) {
     this.messageService.add({
       severity: 'error',
@@ -264,7 +246,6 @@ export class Carga implements OnInit {
       detail: 'Error al cargar el archivo'
     });
   }
-
   removeFile(event: any) {
     const index = this.uploadedFiles.indexOf(event.file);
     this.uploadedFiles.splice(index, 1);

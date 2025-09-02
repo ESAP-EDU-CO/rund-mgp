@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, O
 import { FormsModule } from '@angular/forms';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
-import { Data, DataCategoria } from '@servicios/data';
+import { Data, DataCategoria, DatoDemografico, DatosProfesor } from '@servicios/data';
 import { simp, compara } from '@librerias/textos';
 
 interface ModeloCategorias {
@@ -44,6 +44,7 @@ export class FichaDocente implements OnChanges {
   @Input() docente: string[] = [];
   @Input() labels: string[] = [];
   @Input() claves: string[] = [];
+  @Input() infoProfesor: DatoDemografico = { archivosProfesor: [], datosDemograficos: [] }
   @Output() validado: EventEmitter<string[]> = new EventEmitter<string[]>();
   private data: Data = inject(Data);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
@@ -75,11 +76,15 @@ export class FichaDocente implements OnChanges {
     });
   }
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['docente'] && this.docente && this.docente.length > 0) {
-      this.labels = this.labels.map((l: string) => this.convCat[l] || l);
-      this.claves = this.claves.map((l: string) => this.convCat[l] || l);
-      this.cargarDocente();
+    if ((changes['docente'] && this.docente && this.docente.length > 0) || changes['infoProfesor']) {
+      this.actualizaDatos();
     }
+  }
+  private actualizaDatos(): void {
+    this.validado.emit([]);
+    this.labels = this.labels.map((l: string) => this.convCat[l] || l);
+    this.claves = this.claves.map((l: string) => this.convCat[l] || l);
+    this.cargarDocente();
   }
   setCategorias(): void {
     this.catProfesor = [];
@@ -141,7 +146,28 @@ export class FichaDocente implements OnChanges {
           const opcionElegida: boolean = this.datosProfesor.some(dato => {
             return compara(simp(dato.label), simp(selector.label)) && compara(simp(dato.valor), simp(opcion.label));
           });
-          if (opcionElegida) selector.selected = selector.tipo == 'single' ? opcion : [opcion];
+          if (opcionElegida) {
+            selector.selected = selector.tipo == 'single' ? opcion : [opcion];
+          } else {
+            // Evalúa si existe información relacionada con el profesor en infoProfesor
+            const panelLabel: string | undefined = Object.keys(this.infoProfesor).find((key: string) => key == panel.label);
+            if (panelLabel) {
+              const selectorProf: { [key: string]: string | string[] } = this.infoProfesor[panelLabel] as { [key: string]: string | string[]; };
+              const selectorLabel: string | undefined = Object.keys(selectorProf).find((key: string) => key == selector.label);
+              if (selectorLabel) {
+                const opcionProf: string | string[] = selectorProf[selectorLabel];
+                if (!Array.isArray(opcionProf) && selector.tipo == 'single') {
+                  const opcionSel: Ficha.Opcion = selector.options.find((opc: Ficha.Opcion) => compara(simp(opc.label), simp(opcionProf as string))) as Ficha.Opcion;
+                  if (selector.selected === undefined) selector.selected = opcionSel;
+                } else if (Array.isArray(opcionProf) && selector.tipo == 'multiple') {
+                  const opcionSel: Ficha.Opcion[] = opcionProf.map((val: string) => {
+                    return selector.options.find((opc: Ficha.Opcion) => compara(simp(opc.label), simp(val))) as Ficha.Opcion;
+                  });
+                  if (opcionSel.length > 0 && selector.selected === undefined) selector.selected = opcionSel;
+                }
+              }
+            }
+          }
         });
       });
     });

@@ -16,6 +16,11 @@
       gap: 0.5rem;
       align-items: center;
       justify-content: center;
+      .profesor {
+        h4 {
+          margin: 0;
+        }
+      }
     }
   }
   .cuerpo {

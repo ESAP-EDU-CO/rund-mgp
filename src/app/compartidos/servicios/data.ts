@@ -137,6 +137,34 @@ export interface CategoriaBase {
   id: string;
   items: CategoriaBase[] | string[];
 }
+export interface DatosCarpeta {
+  origen: string[]; // Posibles nombres usados para nombrar la carpeta
+  categoria: string; // Categoría del archivo
+  label: string; // Etiqueta de categoría para mostrar
+}
+export interface ArchivoDocente {
+  archivo: File; // Archivo a cargar
+  taxonomia: DatosCarpeta; // Ruta del archivo en la carpeta del docente
+  tipo: string; // La misma taxonomía
+  formato: string; // Formato del archivo (ej. 'PDF', 'DOCX', etc.)
+  origen: string; // En todos los casos, ONEDRIVE_ESAP
+  esCedula: boolean; // Indica si el archivo es la cédula
+}
+export type DatoDemografico = { [key: string]: string[] | { [key: string]: string | string[] } };
+export interface DatoArchivo {
+  nombre: string;
+  formato: string;
+  tipo: string;
+  origen: string;
+}
+interface InfoProfesor {
+  archivosProfesor: { nombre: string, categorias: string[][] }[];
+  datosDemograficos: { nombre: string, categorias: DatoDemografico[] };
+}
+export interface DatosProfesor {
+  archivosProfesor: DatoArchivo[];
+  datosDemograficos: DatoDemografico;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -413,6 +441,46 @@ export class Data {
   }
   getCertificadoInfo(id: string): Observable<any> {
     return this.http.get<any>(this.host + 'getCertificadoInfo?id=' + id);
+  }
+  async getInfoProfesor(cedula: string): Promise<DatosProfesor | undefined> {
+    return new Promise((resolve, reject) => {
+      this.http.get<InfoProfesor | { error: any, resultado: string }>(this.host + 'getInfoProfesor?cedula=' + cedula)
+        .subscribe((info: InfoProfesor | { error: any | null, resultado: string }) => {
+          if ('archivosProfesor' in info && 'datosDemograficos' in info) {
+            const archivosProfesor: DatoArchivo[] = info.archivosProfesor.map((archivo: { nombre: string, categorias: string[][] }) => {
+              const formato: string[] | undefined = archivo.categorias.find((cat: string[]) => cat[0] == 'FORMATO');
+              const tipo: string[] | undefined = archivo.categorias.find((cat: string[]) => cat[0] == 'TIPO');
+              const origen: string[] | undefined = archivo.categorias.find((cat: string[]) => cat[0] == 'ORIGEN');
+              return {
+                nombre: archivo.nombre,
+                formato: formato ? formato[1] : '',
+                tipo: tipo ? tipo[1] : '',
+                origen: origen ? origen[1] : '',
+              };
+            });
+            let datosDemograficos: any = {};
+            Object.entries(info.datosDemograficos.categorias).forEach(([key, value]) => {
+              const elemento: any = {};
+              const ajusteAnivel: Anivel | undefined = this.aNivel.find((nivel: Anivel) => nivel.label == key);
+              if (ajusteAnivel && typeof value === 'object' && Array.isArray(value)) {
+                const categoria: string = ajusteAnivel.superLabel;
+                const valor: any = {};
+                valor[key] = value;
+                datosDemograficos[categoria] = valor;
+              } else {
+                datosDemograficos[key] = value;
+              }
+            });
+            if (archivosProfesor && datosDemograficos) {
+              resolve({ archivosProfesor: archivosProfesor, datosDemograficos: datosDemograficos as DatoDemografico });
+            } else {
+              reject('No pude obtener la información del profesor.');
+            }
+          } else {
+            resolve(undefined);
+          }
+        });
+    });
   }
   extraeDatos(accion: string, documento: File, tipoDocumento: string, datosExtraer: string[]): Observable<any> {
     const formData: FormData = new FormData();

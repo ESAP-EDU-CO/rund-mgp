@@ -18,7 +18,14 @@
         <p-avatar icon="pi pi-user"
                   size="large"
                   shape="circle" />
-        <h4>{{profesorSeleccionado[3]}}</h4>
+        <div class="profesor">
+          <h4>{{profesorSeleccionado[3]}}</h4>
+          @if (infoProfesor){
+          <p-tag severity="warn"
+                 value="Ya en el RUND"
+                 icon="pi pi-exclamation-triangle" />
+          }
+        </div>
       </div>
       }
     </div>
@@ -28,6 +35,7 @@
         <ng-template #panel>
           <div class="ficha">
             <mgp-ficha-docente (validado)="datosValidados = $event"
+                               [infoProfesor]="infoProfesor ? infoProfesor.datosDemograficos : {}"
                                [docente]="profesorSeleccionado"
                                [claves]="clavesCSV"
                                [labels]="labelsCSV" />
@@ -39,48 +47,9 @@
               <mgp-carga-documento (documentos)="submitArchivos($event)"
                                    (cleanArchivos)="limpiaLista()"
                                    (todosCargados)="todosCargados()"
+                                   [archivosProfesor]="infoProfesor ? infoProfesor.archivosProfesor : []"
                                    [archivosCargados]="archivosYaCargados" />
-              <!-- 
-          <div class="form">
-            <h5 class="mb-2">Subida de Archivos</h5>
-            <p class="text-sm text-secondary mb-1">Formatos permitidos: PDF</p>
-            <p class="text-sm text-secondary mb-3">Máximo {{MAX_FILES}} archivos</p>
-            <p-fileUpload [customUpload]="true"
-                          (uploadHandler)="onUpload($event)"
-                          [multiple]="true"
-                          accept="application/pdf"
-                          [maxFileSize]="10000000"
-                          [showCancelButton]="false"
-                          chooseLabel="Seleccionar archivos"
-                          uploadLabel="Subir"
-                          cancelLabel="Cancelar"
-                          [auto]="true"
-                          (onError)="onError($event)"
-                          (onRemove)="removeFile($event)">
-              <ng-template #content>
-                <div class="flex flex-column align-items-center gap-3">
-                  <i class="pi pi-upload text-5xl text-primary mr-2"></i>
-                  <span> Arrastra y suelta archivos aquí</span>
-                </div>
-              </ng-template>
-            </p-fileUpload>
-          </div>
-          <br>
-          <div class="acciones">
-            <p-button [label]="loading ? 'Enviando...' : 'Subir'"
-                      (onClick)="onSubmit()"
-                      [loading]="loading"
-                      icon="pi pi-upload">
-            </p-button>
-            <p-button label="Cancelar"
-                      severity="secondary"
-                      icon="pi pi-times"
-                      (onClick)="resetForm()">
-            </p-button>
-          </div>
-           -->
             </div>
-            <!-- -->
             @if (!datosValidados || datosValidados.length < 1)
               {
               <div
@@ -96,7 +65,6 @@
               </p-card>
           </div>
           }
-          <!--  -->
     </div>
     </ng-template>
     </p-splitter>

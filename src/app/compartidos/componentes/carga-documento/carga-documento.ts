@@ -1,27 +1,11 @@
 import { NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { simp, compara } from '@librerias/textos';
 import { IconsModule } from '@modulos/icons/icons-module';
 import { FormsModule } from '@angular/forms';
-
-interface DocumentoCargado {
-  ruta: string; // Ruta del archivo
-  archivo: File; // Archivo cargado
-}
-interface DatosCarpeta {
-  origen: string[]; // Posibles nombres usados para nombrar la carpeta
-  categoria: string; // Categoría del archivo
-  label: string; // Etiqueta de categoría para mostrar
-}
-export interface ArchivoDocente {
-  archivo: File; // Archivo a cargar
-  taxonomia: DatosCarpeta; // Ruta del archivo en la carpeta del docente
-  tipo: string; // La misma taxonomía
-  formato: string; // Formato del archivo (ej. 'PDF', 'DOCX', etc.)
-  origen: string; // En todos los casos, ONEDRIVE_ESAP
-  esCedula: boolean; // Indica si el archivo es la cédula
-}
+import { DatosCarpeta, ArchivoDocente, DatoArchivo } from '@servicios/data';
+import { PipesModule } from '@modulos/pipes/pipes-module';
 
 @Component({
   selector: 'mgp-carga-documento',
@@ -30,11 +14,12 @@ export interface ArchivoDocente {
     NgClass,
     IconsModule,
     FormsModule,
+    PipesModule,
   ],
   templateUrl: './carga-documento.html',
   styleUrl: './carga-documento.scss'
 })
-export class CargaDocumento {
+export class CargaDocumento implements OnChanges {
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef); // Para detectar cambios en la vista cuando se usa Angular Zoneless
   @Input() carpetas: DatosCarpeta[] = [
     { origen: ['DATOS BASICOS'], categoria: 'DATOS_BASICOS', label: 'Datos básicos' },
@@ -64,12 +49,18 @@ export class CargaDocumento {
   ]; // Tipos MIME permitidos
   @Input() archivosCargados: number[] = [];; // Archivo docente que ya se ha cargado, para que se elimine de la lista de archivos a cargar
   @Input() cedulaRequerida: boolean = true; // Indica si se requiere al menos un archivo marcado como cédula
+  @Input() archivosProfesor: DatoArchivo[] = []; // Archivos que ya tiene el profesor en rund-core, para marcar los que ya han sido cargados
   @Output() documentos: EventEmitter<ArchivoDocente[]> = new EventEmitter<ArchivoDocente[]>(); // Emite los archivos que se deben cargar al componente padre
   @Output() cleanArchivos: EventEmitter<boolean> = new EventEmitter<boolean>(); // Emite un evento para limpiar los archivos cargados
   @Output() todosCargados: EventEmitter<boolean> = new EventEmitter<boolean>(); // Emite un evento cuando todos los archivos han sido cargados
   archivos: ArchivoDocente[] = []; // Lista de archivos que serán cargados al RUND
   dragging: boolean = false; // Indica si se está arrastrando un archivo
   loading: boolean = false; // Indica si se está en el modo de carga de archivos
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['archivosProfesor']) {
+      this.cdr.detectChanges();
+    }
+  }
   progresoCarga(): number {
     if (this.archivos.length === 0) return 0; // Evita división por cero
     const porcentaje: number = Math.floor(this.archivosCargados.length / this.archivos.length * 100);
@@ -94,6 +85,7 @@ export class CargaDocumento {
    * @return true si hay al menos un archivo marcado como cédula, false en caso contrario
   */
   hayCedula(): boolean {
+    if (this.archivosProfesor.some((a: DatoArchivo) => a.tipo === 'CEDULA')) this.cedulaRequerida = false;
     return this.cedulaRequerida ? this.archivos.some((a: ArchivoDocente) => a.esCedula) : true;
   }
   /**
@@ -329,5 +321,17 @@ export class CargaDocumento {
   dragOut(event: DragEvent): void {
     event.preventDefault();
     this.dragging = false;
+  }
+  yaExiste(item: ArchivoDocente): boolean {
+    return this.archivosProfesor
+      .findIndex((a: DatoArchivo) =>
+        a.nombre == item.archivo.name &&
+        a.tipo == item.tipo &&
+        a.formato == item.formato &&
+        a.origen == item.origen
+      ) > -1;
+  }
+  parteCadena(cadena: string): string {
+    return cadena.replace(/(\w)_(\w)/g, '$1<wbr>_$2');
   }
 }

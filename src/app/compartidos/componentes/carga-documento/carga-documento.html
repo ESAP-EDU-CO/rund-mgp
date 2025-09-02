@@ -57,7 +57,9 @@
                        tooltipPosition="top"
                        pTooltip="Nombre del documento">
                     <div class="label">Nombre:</div>
-                    <div class="valor">{{item.archivo.name}}</div>
+                    <div class="valor"
+                         [innerHTML]="parteCadena(item.archivo.name) | safe: 'html'">
+                    </div>
                   </div>
                   <div class="carpeta"
                        tooltipPosition="top"
@@ -70,6 +72,11 @@
                               (ngModelChange)="cambiaCarpeta($event, numArchivo)"
                               [(ngModel)]="archivos[numArchivo].taxonomia" />
                   </div>
+                  @if (yaExiste(item)) {
+                  <p-tag severity="warn"
+                         value="El documento ya existe en el RUND, será reemplazado"
+                         icon="pi pi-exclamation-triangle" />
+                  }
                 </div>
                 <div class="borrar"
                      tooltipPosition="top"

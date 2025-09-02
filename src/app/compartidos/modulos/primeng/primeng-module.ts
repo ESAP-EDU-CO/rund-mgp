@@ -32,6 +32,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { DataViewModule } from 'primeng/dataview';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TooltipModule } from 'primeng/tooltip';
+import { TagModule } from 'primeng/tag';
 
 @NgModule({
   declarations: [],
@@ -69,6 +70,7 @@ import { TooltipModule } from 'primeng/tooltip';
     DataViewModule,
     ToggleSwitchModule,
     TooltipModule,
+    TagModule,
   ],
   exports: [
     ButtonModule,
@@ -103,6 +105,7 @@ import { TooltipModule } from 'primeng/tooltip';
     DataViewModule,
     ToggleSwitchModule,
     TooltipModule,
+    TagModule,
   ],
 })
 export class PrimengModule { }
