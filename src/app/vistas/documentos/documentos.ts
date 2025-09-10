@@ -95,7 +95,7 @@ export class Documentos implements OnInit {
   }
   seleccionaOpcion(dato: Documento.Dato): void {
     this.preview = {
-      background: this.dataServicio.host + 'imagen?ruta=plantillas/certificados/&nombre=base.jpg',
+      background: this.dataServicio.host + 'imagen?ruta=' + encodeURIComponent('plantillas/certificados/') + '&nombre=base.jpg',
       paddingTop: '7em',
       estructura: {} as Documento.Estructura[],
       plantilla: ''
