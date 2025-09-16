@@ -359,6 +359,12 @@ export class Data {
     }
     return this.http.post<Blob>(this.host + 'getCertificado', formData, opciones);
   }
+  postCargaFiles(propiedades: ListadoProps[], archivo: File): Observable<any> {
+    return this.postFile(this.host + 'postFile', propiedades, 'cargaDocumento', archivo);
+  }
+  postLoadList(propiedades: ListadoProps[], archivo: File | undefined): Observable<any> {
+    return this.postFile(this.host + 'loadList', propiedades, 'cargar', archivo);
+  }
   postFile(url: string, propiedades: ListadoProps[], accion: string, archivo: File | undefined = undefined): Observable<any> {
     const formData: FormData = new FormData();
     if (archivo) formData.append('archivo', archivo);
@@ -395,6 +401,15 @@ export class Data {
   }
   delTemp(): Observable<{ borrados: string[], aBorrar: string[] }> {
     return this.http.get<{ borrados: string[], aBorrar: string[] }>(this.host + 'delReporte');
+  }
+  getLoadList(params: { [key: string]: any }): Observable<any> {
+    return this.apiGet(this.host + 'loadList', params);
+  }
+  getCsvData(params: any): Observable<any> {
+    return this.apiGet(this.host + 'getCsvData', params);
+  }
+  getFirmas(params: { [key: string]: any }, opciones: { [key: string]: any } | undefined = undefined): Observable<any[]> {
+    return this.apiGet(this.host + 'getFirmas', params, opciones);
   }
   apiGet(endpoint: string, params: { [key: string]: any }, opciones: { [key: string]: any } | undefined = undefined): Observable<any> {
     const options: any = opciones ? { params: params, ...opciones } : { params: params };

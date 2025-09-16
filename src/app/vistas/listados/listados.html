@@ -1,5 +1,6 @@
 <p-panel header="Cargar listados"
          [toggleable]="true">
+  <!-- El componente <p-fileUpload> requiere que [url] sea la ruta directa, por lo que no pasa por data.ts -->
   <p-fileUpload class="carga-lista"
                 name="carga-lista"
                 [url]="loadList"

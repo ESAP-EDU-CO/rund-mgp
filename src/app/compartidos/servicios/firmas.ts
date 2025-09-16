@@ -35,9 +35,7 @@ export class Firmas {
   private listFirmas(): void {
     this.metadatos = [];
     this.archivos = [];
-    this.dataServicio
-      .apiGet(this.dataServicio.host + 'getFirmas', {})
-      .subscribe((firmas: any[]) => this.getFirma(firmas, 0));
+    this.dataServicio.getFirmas({}).subscribe((firmas: any[]) => this.getFirma(firmas, 0));
   }
   private getFirma(firmas: any[], numFirma: number): void {
     const totalFirmas: number = firmas.length - 1;
@@ -45,8 +43,7 @@ export class Firmas {
       const firma: any = firmas[numFirma];
       const params: { [key: string]: any } = { uuid: firma.uuid, mimeType: firma.mimeType };
       const opciones: { [key: string]: any } | undefined = (firma.mimeType != 'application/json') ? { responseType: 'blob', observe: 'response' } : undefined;
-      this.dataServicio
-        .apiGet(this.dataServicio.host + 'getFirmas', params, opciones)
+      this.dataServicio.getFirmas(params, opciones)
         .subscribe((resp: any) => {
           if (firma.mimeType == 'application/json') {
             const metadato: Firma.FirmaMetadata = this.labelToKey(resp) as Firma.FirmaMetadata;

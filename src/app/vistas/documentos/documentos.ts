@@ -57,7 +57,7 @@ export class Documentos implements OnInit {
       this.filtros = undefined;
       this.columnas = {};
       this.preview = undefined;
-      if (dato.origen) this.dataServicio.apiGet(this.dataServicio.host + 'getCsvData', dato.origen)
+      if (dato.origen) this.dataServicio.getCsvData(dato.origen)
         .subscribe((resp: any) => {
           this.columnas = resp.columnasCSV;
           this.filtros = origenes.map((origen: number) => {
@@ -95,6 +95,7 @@ export class Documentos implements OnInit {
   }
   seleccionaOpcion(dato: Documento.Dato): void {
     this.preview = {
+      // En background se almacena una ruta que es un request directo, sin pasar por data.ts, que usará compartidos/componentes/documentos/preview/preview.html
       background: this.dataServicio.host + 'imagen?ruta=' + encodeURIComponent('plantillas/certificados/') + '&nombre=base.jpg',
       paddingTop: '7em',
       estructura: {} as Documento.Estructura[],

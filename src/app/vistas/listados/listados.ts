@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { VistaExcel } from '@componentes/vista-excel/vista-excel';
 import { PipesModule } from '@modulos/pipes/pipes-module';
@@ -35,11 +35,11 @@ export class Listados {
   propsNoVisibles: string[] = ['Size', 'Uuid', 'Duplicado'];
   csvData: Array<string | number>[] = [];
   loadingDialog: boolean = false;
-  constructor(
-    private data: Data,
-    private confirmationService: ConfirmationService,
-    private cdr: ChangeDetectorRef,
-  ) {
+  private data: Data = inject(Data);
+  private confirmationService: ConfirmationService = inject(ConfirmationService);
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  constructor() {
+    // Se usa para generar una ruta directa, para el componente <p-fileUpload>, sin que pase por data.ts
     this.loadList = this.data.host + 'loadList';
   }
   acciones(ev: any, funcion: Function): void {
@@ -51,7 +51,7 @@ export class Listados {
   }
   cargaFile(ev: any): void {
     this.loadingDialog = true;
-    this.data.postFile(this.loadList, this.listadoProps, 'cargar', this.archivo)
+    this.data.postLoadList(this.listadoProps, this.archivo)
       .subscribe((resp: any) => {
         this.loadingDialog = false;
         if (!resp.error || resp.error == 0) this.cargaCorrecta();
@@ -60,7 +60,7 @@ export class Listados {
       });
     if (this.csvData) {
       const { archivo, propiedades } = this.generaCSV(this.csvData);
-      this.data.apiGet(this.loadList, { accion: 'duplicado', propiedades: JSON.stringify(propiedades) })
+      this.data.getLoadList({ accion: 'duplicado', propiedades: JSON.stringify(propiedades) })
         .subscribe((dupeResp: any) => {
           const dupe: Dupe = dupeResp.duplicado;
           if (Object.values(dupe).findIndex((v: string | boolean) => v != false) > -1) {
@@ -68,7 +68,7 @@ export class Listados {
             propiedades.push({ label: 'Duplicado', valor: true });
             propiedades.push({ label: 'Comentario', valor: this.extraeProp('Comentario') });
           }
-          this.data.postFile(this.loadList, propiedades, 'cargar', archivo)
+          this.data.postLoadList(propiedades, archivo)
             .subscribe((resp: any) => {
               // Se carga el CSV side-car con control de versiones
             });
@@ -99,7 +99,7 @@ export class Listados {
       { label: 'Tamaño', valor: this.formatSize(this.archivo ? this.archivo?.size : 0) },
       { label: 'Size', valor: (this.archivo ? this.archivo?.size : 0) },
     ];
-    this.data.apiGet(this.loadList, { accion: 'duplicado', propiedades: JSON.stringify(this.listadoProps) })
+    this.data.getLoadList({ accion: 'duplicado', propiedades: JSON.stringify(this.listadoProps) })
       .subscribe((resp: any) => {
         this.loadingDialog = false;
         const dupe: Dupe = resp.duplicado;

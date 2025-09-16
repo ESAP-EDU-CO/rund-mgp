@@ -1,5 +1,6 @@
 @if (preview) {
 <div class="preview">
+  <!-- preview.background hace un request directo, sin pasar por data.ts -->
   <div class="vista"
        [ngStyle]="{'background-image': 'url('+preview.background+')', 'font-size': fontSize, 'padding-top': preview.paddingTop}">
     <div class="contenido">

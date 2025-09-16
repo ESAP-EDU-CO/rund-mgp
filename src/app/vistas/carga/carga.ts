@@ -71,7 +71,7 @@ export class Carga implements OnInit {
       formato: 'CSV',
       extension: '.csv'
     };
-    this.dataServicio.apiGet(this.dataServicio.host + 'getCsvData', parametros)
+    this.dataServicio.getCsvData(parametros)
       .subscribe({
         next: (response: any) => {
           this.arrayCSV = response.arrayCSV;
@@ -127,7 +127,7 @@ export class Carga implements OnInit {
       { label: 'cedula', valor: this.profesorSeleccionado[1] || 'NA' },
     ];
     try {
-      this.dataServicio.postFile(this.dataServicio.host + 'postFile', propiedades, 'cargaDocumento', archivo.archivo)
+      this.dataServicio.postCargaFiles(propiedades, archivo.archivo)
         .subscribe({
           next: (respuesta: any) => {
             if (respuesta.error) {
@@ -191,12 +191,7 @@ export class Carga implements OnInit {
       tipoDocumento: 'cedula'
     };
 
-    return this.dataServicio.postFile(
-      this.dataServicio.host + 'postFile',
-      propiedades,
-      'cargaDocumento',
-      file
-    );
+    return this.dataServicio.postCargaFiles(propiedades, file);
   }
   async onSubmit() {
     if (this.formulario.invalid) {
