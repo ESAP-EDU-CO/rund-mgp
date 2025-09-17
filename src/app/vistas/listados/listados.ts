@@ -40,7 +40,9 @@ export class Listados {
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   constructor() {
     // Se usa para generar una ruta directa, para el componente <p-fileUpload>, sin que pase por data.ts
+    // Por ahora mantener v1 hasta completar migración de listados
     this.loadList = this.data.host + 'loadList';
+    // TODO: Migrar a v2 cuando esté completo: this.loadList = this.data.host + 'upload/listados';
   }
   acciones(ev: any, funcion: Function): void {
     if (funcion.name != 'bound upload') {

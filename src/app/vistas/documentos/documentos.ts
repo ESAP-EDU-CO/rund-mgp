@@ -96,7 +96,8 @@ export class Documentos implements OnInit {
   seleccionaOpcion(dato: Documento.Dato): void {
     this.preview = {
       // En background se almacena una ruta que es un request directo, sin pasar por data.ts, que usará compartidos/componentes/documentos/preview/preview.html
-      background: this.dataServicio.host + 'imagen?ruta=' + encodeURIComponent('plantillas/certificados/') + '&nombre=base.jpg',
+      // Usar alias corto v2 para mejor performance y URL más limpia
+      background: this.dataServicio.host + 'img/base.jpg',
       paddingTop: '7em',
       estructura: {} as Documento.Estructura[],
       plantilla: ''

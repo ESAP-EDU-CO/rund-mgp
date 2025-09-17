@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { SelectItemGroup, TreeNode } from 'primeng/api';
-import { catchError, Observable, Subscriber, tap, throwError } from 'rxjs';
+import { catchError, map, Observable, Subscriber, tap, throwError } from 'rxjs';
 import { Firma } from '@servicios/firmas';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from 'primeng/api';
 import { Rol } from '@servicios/auth';
 import { isPlatformBrowser } from '@angular/common';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { API_CONFIG, getEndpointUrl, getMigrationStats, DIRECT_URLS } from './api-config';
 
 export interface DataCategoria extends Omit<TreeNode, 'children'> {
   numDocs?: number;
@@ -177,10 +178,11 @@ export class Data {
   public loadList: string = 'loadlist.php';
   public uploadFile: string = 'postFile.php';
   */
-  public host: string = 'http://localhost:3000/';
+  public host: string = API_CONFIG.baseUrl;
   public categorias: CategoriaBase[] = [];
   public labels: { [key: string]: string } = {};
   public dataCategorias: DataCategoria[] | undefined;
+  public apiVersion: string = API_CONFIG.version;
   public chartColors: string[] = ['blue', 'yellow', 'green', 'cyan', 'pink', 'indigo', 'orange', 'teal', 'bluegray', 'purple', 'red'];
   private aNivel: Anivel[] = [{ label: 'Direcciones territoriales', superLabel: 'Distribución territorial' }];
   public documentos: Documento.Listado = {
@@ -293,26 +295,64 @@ export class Data {
       labels: {},
     };
     return new Observable<VarData>((observer: Subscriber<VarData>) => {
-      this.http.get<{ [key: string]: string }>(this.host + 'getFile?tipo=data&nombre=labels').pipe(
-        tap((labels: { [key: string]: string }) => {
+      // Usar configuración v2 para obtener labels
+      const labelsUrl = getEndpointUrl('datos', this.host) + '/labels';
+      this.http.get<{ datos: { [key: string]: string } }>(labelsUrl).pipe(
+        map((response: any) => {
+          // Extraer datos de la respuesta v2
+          return response.datos || response;
+        }),
+        tap((labels) => {
           this.labels = labels;
           data.host = this.host;
-          data.labels = labels;
-          this.http.get<CategoriaBase[]>(this.host + 'getFile?tipo=data&nombre=categorias').pipe(
-            tap((categorias: CategoriaBase[]) => {
+          data.labels = this.labels;
+
+          // Usar configuración v2 para obtener categorías
+          const categoriasUrl = getEndpointUrl('datos', this.host) + '/categorias';
+          this.http.get<{ datos: CategoriaBase[] }>(categoriasUrl).pipe(
+            map((response: any) => {
+              // Extraer datos de la respuesta v2
+              return response.datos || response;
+            }),
+            tap((categorias) => {
               this.categorias = categorias;
-              data.categorias = categorias;
+              data.categorias = this.categorias;
               observer.next(data);
               observer.complete();
             }),
             catchError((error) => {
-              observer.error(error);
+              // Fallback a v1 si v2 falla
+              console.warn('v2 categorias failed, falling back to v1');
+              this.http.get<CategoriaBase[]>(this.host + 'getFile?tipo=data&nombre=categorias').pipe(
+                tap((categorias: CategoriaBase[]) => {
+                  this.categorias = categorias;
+                  data.categorias = categorias;
+                  observer.next(data);
+                  observer.complete();
+                })
+              ).subscribe();
               return throwError(() => error);
             })
           ).subscribe();
         }),
         catchError((error) => {
-          observer.error(error);
+          // Fallback a v1 si v2 falla
+          console.warn('v2 labels failed, falling back to v1');
+          this.http.get<{ [key: string]: string }>(this.host + 'getFile?tipo=data&nombre=labels').pipe(
+            tap((labels: { [key: string]: string }) => {
+              this.labels = labels;
+              data.host = this.host;
+              data.labels = labels;
+              this.http.get<CategoriaBase[]>(this.host + 'getFile?tipo=data&nombre=categorias').pipe(
+                tap((categorias: CategoriaBase[]) => {
+                  this.categorias = categorias;
+                  data.categorias = categorias;
+                  observer.next(data);
+                  observer.complete();
+                })
+              ).subscribe();
+            })
+          ).subscribe();
           return throwError(() => error);
         })
       ).subscribe();
@@ -322,11 +362,42 @@ export class Data {
     return this.http.get<any>('/api/config');
   }
   getCategorias(): Observable<DataCategoria[]> {
-    return this.http.get<DataCategoria[]>(this.host + 'getCategorias');
+    const url = getEndpointUrl('categorias', this.host);
+    return this.http.get<{ arbol: DataCategoria[] }>(url).pipe(
+      tap(response => {
+        if (API_CONFIG.debug) {
+          console.log('getCategorias v2 response:', response);
+        }
+      }),
+      catchError(error => {
+        console.warn('getCategorias v2 failed, falling back to v1');
+        return this.http.get<DataCategoria[]>(this.host + 'getCategorias');
+      }),
+      // Transformar datos: extraer arbol de respuesta v2 o usar v1 directamente
+      map((response: any) => {
+        // Si es respuesta v2, extraer el arbol, si es v1, usar directamente
+        return response.arbol || response;
+      })
+    );
   }
   getCruce(uuids: string[]): Observable<DataTabla> {
     const [x, y] = uuids;
-    return this.http.get<DataTabla>(this.host + 'getCruce', { params: { x: x, y: y } });
+    const url = getEndpointUrl('cruce', this.host) + `/${x}/${y}`;
+    return this.http.get<{ cruce: DataTabla }>(url).pipe(
+      tap(response => {
+        if (API_CONFIG.debug) {
+          console.log('getCruce v2 response:', response);
+        }
+      }),
+      catchError(error => {
+        console.warn('getCruce v2 failed, falling back to v1');
+        return this.http.get<DataTabla>(this.host + 'getCruce', { params: { x: x, y: y } });
+      }),
+      // Transformar datos: extraer cruce de respuesta v2 o usar v1 directamente
+      map((response: any) => {
+        return response.cruce || response;
+      })
+    );
   }
   getConsultaFile(tipo: any, data: DataTabla): Observable<any> {
     const opciones: any = {
@@ -459,42 +530,56 @@ export class Data {
   }
   async getInfoProfesor(cedula: string): Promise<DatosProfesor | undefined> {
     return new Promise((resolve, reject) => {
-      this.http.get<InfoProfesor | { error: any, resultado: string }>(this.host + 'getInfoProfesor?cedula=' + cedula)
-        .subscribe((info: InfoProfesor | { error: any | null, resultado: string }) => {
-          if ('archivosProfesor' in info && 'datosDemograficos' in info) {
-            const archivosProfesor: DatoArchivo[] = info.archivosProfesor.map((archivo: { nombre: string, categorias: string[][] }) => {
-              const formato: string[] | undefined = archivo.categorias.find((cat: string[]) => cat[0] == 'FORMATO');
-              const tipo: string[] | undefined = archivo.categorias.find((cat: string[]) => cat[0] == 'TIPO');
-              const origen: string[] | undefined = archivo.categorias.find((cat: string[]) => cat[0] == 'ORIGEN');
-              return {
-                nombre: archivo.nombre,
-                formato: formato ? formato[1] : '',
-                tipo: tipo ? tipo[1] : '',
-                origen: origen ? origen[1] : '',
-              };
-            });
-            let datosDemograficos: any = {};
-            Object.entries(info.datosDemograficos.categorias).forEach(([key, value]) => {
-              const elemento: any = {};
-              const ajusteAnivel: Anivel | undefined = this.aNivel.find((nivel: Anivel) => nivel.label == key);
-              if (ajusteAnivel && typeof value === 'object' && Array.isArray(value)) {
-                const categoria: string = ajusteAnivel.superLabel;
-                const valor: any = {};
-                valor[key] = value;
-                datosDemograficos[categoria] = valor;
-              } else {
-                datosDemograficos[key] = value;
-              }
-            });
-            if (archivosProfesor && datosDemograficos) {
-              resolve({ archivosProfesor: archivosProfesor, datosDemograficos: datosDemograficos as DatoDemografico });
-            } else {
-              reject('No pude obtener la información del profesor.');
-            }
-          } else {
-            resolve(undefined);
+      const url = getEndpointUrl('infoProfesor', this.host) + '/' + cedula;
+
+      this.http.get<{ profesor: InfoProfesor }>(url).pipe(
+        tap(response => {
+          if (API_CONFIG.debug) {
+            console.log('getInfoProfesor v2 response:', response);
           }
-        });
+        }),
+        catchError(error => {
+          console.warn('getInfoProfesor v2 failed, falling back to v1');
+          return this.http.get<InfoProfesor | { error: any, resultado: string }>(this.host + 'getInfoProfesor?cedula=' + cedula);
+        })
+      ).subscribe((response: any) => {
+        // Extraer datos de respuesta v2 o usar v1 directamente
+        const info = response.profesor || response;
+
+        if ('archivosProfesor' in info && 'datosDemograficos' in info) {
+          const archivosProfesor: DatoArchivo[] = info.archivosProfesor.map((archivo: { nombre: string, categorias: string[][] }) => {
+            const formato: string[] | undefined = archivo.categorias.find((cat: string[]) => cat[0] == 'FORMATO');
+            const tipo: string[] | undefined = archivo.categorias.find((cat: string[]) => cat[0] == 'TIPO');
+            const origen: string[] | undefined = archivo.categorias.find((cat: string[]) => cat[0] == 'ORIGEN');
+            return {
+              nombre: archivo.nombre,
+              formato: formato ? formato[1] : '',
+              tipo: tipo ? tipo[1] : '',
+              origen: origen ? origen[1] : '',
+            };
+          });
+          let datosDemograficos: any = {};
+          Object.entries(info.datosDemograficos.categorias).forEach(([key, value]) => {
+            const elemento: any = {};
+            const ajusteAnivel: Anivel | undefined = this.aNivel.find((nivel: Anivel) => nivel.label == key);
+            if (ajusteAnivel && typeof value === 'object' && Array.isArray(value)) {
+              const categoria: string = ajusteAnivel.superLabel;
+              const valor: any = {};
+              valor[key] = value;
+              datosDemograficos[categoria] = valor;
+            } else {
+              datosDemograficos[key] = value;
+            }
+          });
+          if (archivosProfesor && datosDemograficos) {
+            resolve({ archivosProfesor: archivosProfesor, datosDemograficos: datosDemograficos as DatoDemografico });
+          } else {
+            reject('No pude obtener la información del profesor.');
+          }
+        } else {
+          resolve(undefined);
+        }
+      });
     });
   }
   extraeDatos(accion: string, documento: File, tipoDocumento: string, datosExtraer: string[]): Observable<any> {
@@ -517,5 +602,19 @@ export class Data {
       };
       reader.readAsDataURL(blob);
     });
+  }
+
+  /**
+   * Método de diagnóstico para verificar estado de migración
+   */
+  getMigrationStatus(): any {
+    const stats = getMigrationStats();
+    return {
+      ...stats,
+      apiVersion: this.apiVersion,
+      baseUrl: this.host,
+      debug: API_CONFIG.debug,
+      directUrls: DIRECT_URLS
+    };
   }
 }
