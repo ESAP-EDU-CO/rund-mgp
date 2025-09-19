@@ -323,7 +323,8 @@ export class Data {
             catchError((error) => {
               // Fallback a v1 si v2 falla
               console.warn('v2 categorias failed, falling back to v1');
-              this.http.get<CategoriaBase[]>(this.host + 'getFile?tipo=data&nombre=categorias').pipe(
+              this.http.get<CategoriaBase[]>(this.host + 'api/v2/archivos/datos/categorias').pipe(
+              catchError(() => this.http.get<CategoriaBase[]>(this.host + 'getFile?tipo=data&nombre=categorias')),
                 tap((categorias: CategoriaBase[]) => {
                   this.categorias = categorias;
                   data.categorias = categorias;
@@ -338,12 +339,14 @@ export class Data {
         catchError((error) => {
           // Fallback a v1 si v2 falla
           console.warn('v2 labels failed, falling back to v1');
-          this.http.get<{ [key: string]: string }>(this.host + 'getFile?tipo=data&nombre=labels').pipe(
+          this.http.get<{ [key: string]: string }>(this.host + 'api/v2/archivos/datos/labels').pipe(
+            catchError(() => this.http.get<{ [key: string]: string }>(this.host + 'getFile?tipo=data&nombre=labels')),
             tap((labels: { [key: string]: string }) => {
               this.labels = labels;
               data.host = this.host;
               data.labels = labels;
-              this.http.get<CategoriaBase[]>(this.host + 'getFile?tipo=data&nombre=categorias').pipe(
+              this.http.get<CategoriaBase[]>(this.host + 'api/v2/archivos/datos/categorias').pipe(
+              catchError(() => this.http.get<CategoriaBase[]>(this.host + 'getFile?tipo=data&nombre=categorias')),
                 tap((categorias: CategoriaBase[]) => {
                   this.categorias = categorias;
                   data.categorias = categorias;
@@ -406,20 +409,25 @@ export class Data {
     const formData: FormData = new FormData();
     formData.append('tipo', tipo);
     formData.append('data', JSON.stringify(data));
-    return this.http.post<Blob>(this.host + 'getConsultaFile', formData, opciones);
+    return this.http.post<Blob>(this.host + 'api/v2/documentos/exportar', formData, opciones)
+      .pipe(catchError(() => this.http.post<Blob>(this.host + 'getConsultaFile', formData, opciones)));
   }
   loadDocumentos(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.http.get<Documento.Listado>(this.host + 'getFile?tipo=data&nombre=documentos')
-        .subscribe((documentos: Documento.Listado) => {
-          this.documentos = documentos;
+      this.http.get<{datos: Documento.Listado}>(this.host + 'api/v2/archivos/datos/documentos')
+        .pipe(catchError(() => this.http.get<{datos: Documento.Listado}>(this.host + 'getFile?tipo=data&nombre=documentos')))
+        .subscribe((documentos: {datos: Documento.Listado}) => {
+          this.documentos = documentos.datos;
           resolve(true);
         });
     });
   }
   getCertificadoFile(tipo: string, plantilla: string, data: Documento.Estructura[], fecha: string, nombre: string, id: string | null = null): Observable<any> {
     const formData: FormData = new FormData();
-    formData.append('tipo', tipo);
+    // Esto es un poco confuso, pero para poder unificar los llamados a api/v2/documentos/generar es necesario que 'tipo' = 'certificado' | 'reporte' | 'consulta'
+    // y que 'formato' = 'pdf' | 'docx' para 'tipo' = 'certificado', y que 'formato' = 'xlsx' (por defecto 'xlsx') para los otros dos casos.
+    formData.append('formato', tipo);
+    formData.append('tipo', 'certificado');
     formData.append('plantilla', plantilla);
     formData.append('data', JSON.stringify(data));
     formData.append('fecha', fecha);
@@ -428,13 +436,16 @@ export class Data {
     const opciones: any = {
       responseType: 'blob',
     }
-    return this.http.post<Blob>(this.host + 'getCertificado', formData, opciones);
+    return this.http.post<Blob>(this.host + 'api/v2/documentos/generar', formData, opciones)
+      .pipe(catchError(() => this.http.post<Blob>(this.host + 'getCertificado', formData, opciones)));
   }
   postCargaFiles(propiedades: ListadoProps[], archivo: File): Observable<any> {
-    return this.postFile(this.host + 'postFile', propiedades, 'cargaDocumento', archivo);
+    return this.postFile(this.host + 'api/v2/archivos/subir', propiedades, 'cargaDocumento', archivo)
+      .pipe(catchError(() => this.postFile(this.host + 'postFile', propiedades, 'cargaDocumento', archivo)));
   }
   postLoadList(propiedades: ListadoProps[], archivo: File | undefined): Observable<any> {
-    return this.postFile(this.host + 'loadList', propiedades, 'cargar', archivo);
+    return this.postFile(this.host + 'api/v2/listados/cargar', propiedades, 'cargar', archivo)
+      .pipe(catchError(() => this.postFile(this.host + 'loadList', propiedades, 'cargar', archivo)));
   }
   postFile(url: string, propiedades: ListadoProps[], accion: string, archivo: File | undefined = undefined): Observable<any> {
     const formData: FormData = new FormData();
@@ -471,16 +482,20 @@ export class Data {
     return resp;
   }
   delTemp(): Observable<{ borrados: string[], aBorrar: string[] }> {
-    return this.http.get<{ borrados: string[], aBorrar: string[] }>(this.host + 'delReporte');
+    return this.http.delete<{ borrados: string[], aBorrar: string[] }>(this.host + 'api/v2/archivos/temp/limpiar')
+      .pipe(catchError(() => this.http.get<{ borrados: string[], aBorrar: string[] }>(this.host + 'delReporte')));
   }
   getLoadList(params: { [key: string]: any }): Observable<any> {
-    return this.apiGet(this.host + 'loadList', params);
+    return this.apiGet(this.host + 'api/v2/listados/datos', params)
+      .pipe(catchError(() => this.apiGet(this.host + 'loadList', params)));
   }
   getCsvData(params: any): Observable<any> {
-    return this.apiGet(this.host + 'getCsvData', params);
+    return this.apiGet(this.host + 'api/v2/listados/csv', params)
+      .pipe(catchError(() => this.apiGet(this.host + 'getCsvData', params)));
   }
   getFirmas(params: { [key: string]: any }, opciones: { [key: string]: any } | undefined = undefined): Observable<any[]> {
-    return this.apiGet(this.host + 'getFirmas', params, opciones);
+    return this.apiGet(this.host + 'api/v2/firmas/lista', params, opciones)
+      .pipe(catchError(() => this.apiGet(this.host + 'getFirmas', params, opciones)));
   }
   apiGet(endpoint: string, params: { [key: string]: any }, opciones: { [key: string]: any } | undefined = undefined): Observable<any> {
     const options: any = opciones ? { params: params, ...opciones } : { params: params };
@@ -498,15 +513,21 @@ export class Data {
         valor: datos[key as keyof Firma.FirmaMetadata]
       };
     });
-    return this.postFile(this.host + 'postFile', propiedades, 'cargaFirma', archivo);
+    return this.postFile(this.host + 'api/v2/firmas/subir', propiedades, 'cargaFirma', archivo)
+      .pipe(catchError(() => this.postFile(this.host + 'postFile', propiedades, 'cargaFirma', archivo)));
   }
   deleteFile(uuid: string): Observable<any> {
-    return this.http.delete(this.host + 'deleteFile', { params: { uuid: uuid } });
+    return this.http.delete(this.host + 'api/v2/archivos/' + uuid)
+      .pipe(catchError(() => this.http.delete(this.host + 'deleteFile', { params: { uuid: uuid } })));
+  }
+  vaciaPapelera():Observable<any> {
+    return this.http.delete(this.host + 'api/v2/archivos/papelera');
   }
   getImagen(nombre: string): Observable<string | ArrayBuffer | null> {
     if (isPlatformBrowser(this.platID)) {
       const opciones: any = { responseType: 'blob' };
-      const getFile: Observable<any> = this.http.get<any>(this.host + 'getFile?tipo=imagen&nombre=' + nombre, opciones);
+      const getFile: Observable<any> = this.http.get<any>(this.host + 'api/v2/archivos/imagenes/' + nombre, opciones)
+        .pipe(catchError(() => this.http.get<any>(this.host + 'getFile?tipo=imagen&nombre=' + nombre, opciones)));
       return new Observable((observador: Subscriber<any>) => {
         getFile.pipe(
           tap((imagen: any) => {
@@ -526,7 +547,8 @@ export class Data {
     }
   }
   getCertificadoInfo(id: string): Observable<any> {
-    return this.http.get<any>(this.host + 'getCertificadoInfo?id=' + id);
+    return this.http.get<any>(this.host + 'api/v2/certificados/' + id)
+      .pipe(catchError(() => this.http.get<any>(this.host + 'getCertificadoInfo?id=' + id)));
   }
   async getInfoProfesor(cedula: string): Promise<DatosProfesor | undefined> {
     return new Promise((resolve, reject) => {
@@ -540,7 +562,8 @@ export class Data {
         }),
         catchError(error => {
           console.warn('getInfoProfesor v2 failed, falling back to v1');
-          return this.http.get<InfoProfesor | { error: any, resultado: string }>(this.host + 'getInfoProfesor?cedula=' + cedula);
+          return this.http.get<InfoProfesor | { error: any, resultado: string }>(this.host + 'api/v2/profesores/' + cedula)
+            .pipe(catchError(() => this.http.get<InfoProfesor | { error: any, resultado: string }>(this.host + 'getInfoProfesor?cedula=' + cedula)));
         })
       ).subscribe((response: any) => {
         // Extraer datos de respuesta v2 o usar v1 directamente
@@ -588,7 +611,8 @@ export class Data {
     formData.append('documento', documento);
     formData.append('tipoDocumento', tipoDocumento);
     formData.append('datosExtraer', JSON.stringify(datosExtraer));
-    return this.http.post<any>(this.host + 'extraeDatos', formData);
+    return this.http.post<any>(this.host + 'api/v2/ai/extraer', formData)
+      .pipe(catchError(() => this.http.post<any>(this.host + 'extraeDatos', formData)));
   }
   private normalizaNombre(nombre: string): string {
     return nombre.trim().replace(/\s+/g, '_').toUpperCase();

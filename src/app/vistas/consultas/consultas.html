@@ -1,4 +1,5 @@
 <div class="consultas">
+  <h5>Realice una consulta seleccionando dos variables, las cuales se cruzarán en un gráfico de barras vertical.</h5>
   <div class="paneles">
     @for (panel of dataConsulta; let nPanel = $index; track nPanel) {
     <p-panel class="categorias"
@@ -27,8 +28,8 @@
                       [(ngModel)]="panel.seleccion[index]"
                       [group]="true"
                       (ngModelChange)="creaTabla(panel)"
-                      inputId="float-label"
-                      placeholder="Selecciona una opción">
+                      style="min-width: 20em;"
+                      inputId="float-label">
               <ng-template #group
                            let-group>
                 <span class="pi pi-list"></span>

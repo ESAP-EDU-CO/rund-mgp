@@ -74,7 +74,7 @@ export class Carga implements OnInit {
     this.dataServicio.getCsvData(parametros)
       .subscribe({
         next: (response: any) => {
-          this.arrayCSV = response.arrayCSV;
+          this.arrayCSV = response.csv.arrayCSV;
           this.labelsCSV = this.arrayCSV.shift();
           this.docentesOptions = this.arrayCSV.map((fila: string[]) => {
             return {

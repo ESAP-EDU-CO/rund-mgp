@@ -56,7 +56,7 @@ export class Listados {
     this.data.postLoadList(this.listadoProps, this.archivo)
       .subscribe((resp: any) => {
         this.loadingDialog = false;
-        if (!resp.error || resp.error == 0) this.cargaCorrecta();
+        if (!resp.listado.error || resp.listado.error == 0) this.cargaCorrecta();
         else this.errorCarga(resp);
         this.cdr.detectChanges();
       });
@@ -64,7 +64,7 @@ export class Listados {
       const { archivo, propiedades } = this.generaCSV(this.csvData);
       this.data.getLoadList({ accion: 'duplicado', propiedades: JSON.stringify(propiedades) })
         .subscribe((dupeResp: any) => {
-          const dupe: Dupe = dupeResp.duplicado;
+          const dupe: Dupe = dupeResp.datos.duplicado;
           if (Object.values(dupe).findIndex((v: string | boolean) => v != false) > -1) {
             propiedades.push({ label: 'Uuid', valor: dupe.uuid });
             propiedades.push({ label: 'Duplicado', valor: true });
@@ -104,7 +104,7 @@ export class Listados {
     this.data.getLoadList({ accion: 'duplicado', propiedades: JSON.stringify(this.listadoProps) })
       .subscribe((resp: any) => {
         this.loadingDialog = false;
-        const dupe: Dupe = resp.duplicado;
+        const dupe: Dupe = resp.datos.duplicado;
         if (Object.values(dupe).findIndex((v: string | boolean) => v != false) > -1) {
           let mensaje: string = '<p class="mensaje-confirma-reemplazo">Ya existe un documento con el mismo nombre (';
           mensaje += this.extraeProp('Nombre') + ') en el RUND';

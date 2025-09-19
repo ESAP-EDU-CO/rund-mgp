@@ -28,27 +28,34 @@ export class Dashboard implements OnInit {
   init(): void {
     if (isPlatformBrowser(this.platID)) {
       if (this.data.dataCategorias) {
-        this.categorias = this.data.dataCategorias;
+        this.categorias = this.data.dataCategorias.filter((d:DataCategoria) => d.label !== null && d.label !== 'Documentos'); // Si no tiene label, no se incluye
         this.cdr.detectChanges();
       } else {
         this.data.getCategorias().subscribe((resp: DataCategoria[]) => {
-          this.categorias = this.data.setCategorias(resp);
-          console.log(this.categorias);
+          this.categorias = this.data.setCategorias(resp).filter((d:DataCategoria) => d.label !== null && d.label !== 'Documentos'); // Si no tiene label, no se incluye
           this.cdr.detectChanges();
         });
       }
     }
   }
-  nodeData(nodo: DataCategoria): DataChart {
+  calculaTotales(numCat:number):{ label:string, cantidad:number } {
+    const cat:DataCategoria = this.categorias[numCat];
+    const label:string = cat.label as string;
+    let cantidad:number = 0;
+    if (cat.children && cat.children[0].children && cat.children[0].children[0].children)
+      cat.children[0].children[0].children.forEach((hijo:any) => cantidad += hijo.numDocs);
+    return { label:label, cantidad:cantidad };
+  }
+  nodeData(nodo: DataCategoria, labelData:string | undefined): DataChart {
     const documentStyle: CSSStyleDeclaration = getComputedStyle(document.documentElement);
     const textColor: string = documentStyle.getPropertyValue('--p-text-color');
     const nombre: string = nodo.label ?? '';
-    const data: ChartData = { labels: [], datasets: [{ label: 'Número de docentes', data: [], backgroundColor: [], hoverBackgroundColor: [] }] };
+    const data: ChartData = { labels: [], datasets: [{ label: (labelData as string), data: [], backgroundColor: [], hoverBackgroundColor: [] }] };
     const tipoChart: 'pie' | 'bar' = nodo.children && nodo.children?.length > 6 ? 'bar' : 'pie';
     this.data.chartColors = this.data.chartColors.length < 22 ? this.data.chartColors.concat(this.data.chartColors) : this.data.chartColors;
     nodo.children?.forEach((subnodo: DataCategoria, num: number) => {
       data.labels.push(subnodo.label ?? '');
-      if (subnodo.numDocs) data.datasets[0].data.push(subnodo.numDocs);
+      data.datasets[0].data.push(subnodo.numDocs ?? 0);
       data.datasets[0].backgroundColor.push(documentStyle.getPropertyValue('--p-' + this.data.chartColors[num] + '-500'));
       data.datasets[0].hoverBackgroundColor.push(documentStyle.getPropertyValue('--p-' + this.data.chartColors[num] + '-300'));
     });
@@ -78,6 +85,7 @@ export class Dashboard implements OnInit {
   suficientesNodos(nodo: DataCategoria): boolean {
     const hijos: number = nodo.children ? nodo.children.length : 0;
     const numDocs: number = this.sumaDocs(nodo);
-    return numDocs > (hijos * 5) && hijos > 1;
+    return true;
+    //return numDocs > (hijos * 5) && hijos > 1;
   }
 }

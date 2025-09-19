@@ -69,6 +69,9 @@ export class EditaFirma implements OnInit, OnChanges {
                 .subscribe((delJSON: any) => {
                   if (!delJSON.error) {
                     this.listaFirmas();
+                    this.dataServicio.vaciaPapelera().subscribe((resp:any) => {
+                      if (resp.error) console.log('Error al vaciar la papelera: ' + resp.error);
+                    });
                     //this.getFirmas();
                   } else {
                     console.log('Error al borrar el JSON');

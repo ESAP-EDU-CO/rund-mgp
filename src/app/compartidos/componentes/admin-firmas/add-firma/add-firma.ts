@@ -43,7 +43,8 @@ export class AddFirma implements OnChanges {
     this.datosFirma = firma.datos;
     this.cambiaEtapa('cargando');
     this.dataServicio.postFirma(firma.datos, firma.blob).subscribe((resp: any) => {
-      this.erroresCarga = { json: resp.cargaJSON.error, png: resp.cargaPNG.error };
+      const respuesta:any = resp.resultado;
+      this.erroresCarga = { json: respuesta.cargaJSON.error, png: respuesta.cargaPNG.error };
       this.cambiaEtapa('grabado');
     });
   }

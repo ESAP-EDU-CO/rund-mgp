@@ -10,10 +10,12 @@ import { File } from '@servicios/file';
 
 interface DataCert {
   plantilla: string;
-  data: Documento.Estructura[];
+  data: Documento.Estructura[] | string;
   fecha: string;
   nombre: string;
   id: string;
+  tipo?: 'certificado' | 'reporte' | 'consulta';
+  formato?: 'pdf' | 'docx' | 'xlsx';
 }
 
 @Component({
@@ -73,7 +75,7 @@ export class Validacion implements AfterViewInit, OnDestroy {
   descargarCertificado(tipo: string): void {
     if (this.dataCertificado) {
       const datos: DataCert = this.dataCertificado[0] as DataCert;
-      this.dataServicio.getCertificadoFile(tipo, datos.plantilla, datos.data, datos.fecha, datos.nombre, datos.id)
+      this.dataServicio.getCertificadoFile(tipo, datos.plantilla, (datos.data as Documento.Estructura[]), datos.fecha, datos.nombre, datos.id)
         .subscribe((blob: Blob) => {
           if (blob.type == 'application/json; charset=utf-8') {
             blob.text()
@@ -92,10 +94,11 @@ export class Validacion implements AfterViewInit, OnDestroy {
     if (this.certificado) {
       this.idCertificado = this.certificado;
       this.dataServicio.getCertificadoInfo(this.certificado).subscribe((data: any) => {
+        const respuesta: DataCert = data.certificado;
         if (Object.keys(data).length > 1 && !data.error) {
-          this.dataCertificado = [data];
+          this.dataCertificado = [respuesta];
           this.dataCertificado[0].id = this.certificado;
-          this.dataCertificado[0].data = JSON.parse(data.data);
+          this.dataCertificado[0].data = JSON.parse(respuesta.data as string);
         }
         this.cdr.detectChanges();
       });

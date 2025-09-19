@@ -53,25 +53,28 @@ export class Consultas implements OnInit {
   }
   creaOpciones(): void {
     this.dataConsulta = [];
-    const categorias: DataCategoria[] = this.data.dataCategorias as DataCategoria[];
+    const categorias: DataCategoria[] = (this.data.dataCategorias as DataCategoria[]);
     this.datosSuficientes = categorias ? categorias.length > 1 && this.suficientesNodos(categorias[0]) : false;
     this.data.dataCategorias?.forEach((supercat: DataCategoria) => {
-      const opciones: SelectItemGroup[] = [];
-      supercat.children?.forEach((categoria: DataCategoria) => {
-        const hijos: boolean[] | undefined = categoria.children?.map((e: DataCategoria) => e.children ? true : false);
-        const conHijos: boolean = hijos ? hijos.reduce((a: boolean, c: boolean) => a && c ? true : false) : false;
-        const solo: SelectItem = { label: categoria.label as string, value: categoria.key };
-        conHijos ?
-          opciones.push(this.tree2sel(categoria)) :
-          opciones.push({ label: categoria.label as string, items: [solo], value: categoria.key });
-      });
-      this.dataConsulta.push({
-        label: supercat.label,
-        opciones: opciones,
-        seleccion: ['', ''],
-        dataTabla: undefined,
-        dataChart: {} as DataChart,
-      });
+      if (supercat.label) {
+        const opciones: SelectItemGroup[] = [];
+        supercat.children?.forEach((categoria: DataCategoria) => {
+          const hijos: boolean[] | undefined = categoria.children?.map((e: DataCategoria) => e.children ? true : false);
+          const conHijos: boolean = hijos ? hijos.reduce((a: boolean, c: boolean) => a && c ? true : false) : false;
+          const solo: SelectItem = { label: categoria.label as string, value: categoria.key };
+          conHijos ?
+            opciones.push(this.tree2sel(categoria)) :
+            opciones.push({ label: categoria.label as string, items: [solo], value: categoria.key });
+        });
+        const panel:DataConsulta = {
+          label: supercat.label,
+          opciones: opciones,
+          seleccion: ['', ''],
+          dataTabla: undefined,
+          dataChart: {} as DataChart,
+        };
+        if (supercat.label !== 'Documentos') this.dataConsulta.push(panel); // Las categorías de los documentos se deben organizar mejor
+      }
     });
     this.cdr.detectChanges();
   }
@@ -177,6 +180,7 @@ export class Consultas implements OnInit {
   private suficientesNodos(nodo: DataCategoria): boolean {
     const hijos: number = nodo.children ? nodo.children.length : 0;
     const numDocs: number = this.sumaDocs(nodo);
+    return true;
     return numDocs > (hijos * 5) && hijos > 1;
   }
 }

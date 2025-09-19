@@ -59,7 +59,7 @@ export class Documentos implements OnInit {
       this.preview = undefined;
       if (dato.origen) this.dataServicio.getCsvData(dato.origen)
         .subscribe((resp: any) => {
-          this.columnas = resp.columnasCSV;
+          this.columnas = resp.csv.columnasCSV;
           this.filtros = origenes.map((origen: number) => {
             const filtro: Documento.Dato = this.dataServicio.documentos.datos[origen];
             if (
