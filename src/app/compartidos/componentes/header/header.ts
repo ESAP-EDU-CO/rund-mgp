@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Auth, Rol, Usuario } from '@servicios/auth';
 import { Data } from '@servicios/data';
@@ -11,13 +11,18 @@ import { Data } from '@servicios/data';
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
-export class Header {
+export class Header implements OnInit {
   usuario: Usuario | null | undefined;
   logo: string | ArrayBuffer | null = null;
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private data: Data = inject(Data);
-  constructor(private authServicio: Auth) {
-    this.authServicio.usuario.subscribe((usuario: Usuario | null | undefined) => this.usuario = usuario);
+  private authServicio: Auth = inject(Auth);
+  ngOnInit(): void {
+    this.authServicio.usuario
+      .subscribe((usuario: Usuario | null | undefined) => {
+        this.usuario = usuario;
+        this.cdr.detectChanges();
+      });
     this.data.getImagen('logoESAP.svg')
       .subscribe((logo: string | ArrayBuffer | null) => {
         if (logo) {

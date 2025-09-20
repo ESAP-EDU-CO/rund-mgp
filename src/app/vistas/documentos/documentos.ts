@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { VistaDatos } from '@componentes/documentos/vista-datos/vista-datos';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Data, Documento } from '@servicios/data';
+import { API_CONFIG } from '@servicios/api-config';
 import { File } from '@servicios/file';
 import { SelectItemGroup } from 'primeng/api';
 import { Preview } from "@componentes/documentos/preview/preview";
@@ -97,7 +98,7 @@ export class Documentos implements OnInit {
     this.preview = {
       // En background se almacena una ruta que es un request directo, sin pasar por data.ts, que usará compartidos/componentes/documentos/preview/preview.html
       // Usar alias corto v2 para mejor performance y URL más limpia
-      background: this.dataServicio.host + 'img/base.jpg',
+      background: API_CONFIG.baseUrl + 'img/base.jpg',
       paddingTop: '7em',
       estructura: {} as Documento.Estructura[],
       plantilla: ''

@@ -16,6 +16,7 @@ interface DataCert {
   id: string;
   tipo?: 'certificado' | 'reporte' | 'consulta';
   formato?: 'pdf' | 'docx' | 'xlsx';
+  error?: string;
 }
 
 @Component({
@@ -95,10 +96,12 @@ export class Validacion implements AfterViewInit, OnDestroy {
       this.idCertificado = this.certificado;
       this.dataServicio.getCertificadoInfo(this.certificado).subscribe((data: any) => {
         const respuesta: DataCert = data.certificado;
-        if (Object.keys(data).length > 1 && !data.error) {
+        if (Object.keys(data).length > 1 && !respuesta.error) {
           this.dataCertificado = [respuesta];
           this.dataCertificado[0].id = this.certificado;
           this.dataCertificado[0].data = JSON.parse(respuesta.data as string);
+        } else {
+          this.dataCertificado = null;
         }
         this.cdr.detectChanges();
       });

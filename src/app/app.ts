@@ -1,11 +1,12 @@
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
-import { afterNextRender, ChangeDetectorRef, Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { afterNextRender, ChangeDetectorRef, Component, inject, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { EventType, Router, RouterOutlet } from '@angular/router';
 import { Header } from '@componentes/header/header';
 import { Menu } from '@componentes/menu/menu';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Auth, Usuario, Rol } from '@servicios/auth';
 import { Data, MenuElemento, VarData } from '@servicios/data';
+import { tap } from 'rxjs';
 
 @Component({
   selector: 'mgp-root',
@@ -19,61 +20,42 @@ import { Data, MenuElemento, VarData } from '@servicios/data';
   styleUrl: './app.scss'
 })
 export class App implements OnInit {
+  configLoaded: boolean = false;
   dataVars: boolean = false;
   usuario: Usuario | null | undefined;
   seccionActual?: string;
   contenidos: MenuElemento[] = [];
   rolMinimo?: string;
-  constructor(
-    @Inject(PLATFORM_ID) private platID: any,
-    private data: Data,
-    private authServicio: Auth,
-    private router: Router,
-    private cdr: ChangeDetectorRef,
-  ) {
-    afterNextRender(() => {
-      if (isPlatformBrowser(this.platID)) {
-        // Si se está ejecutando en el browser
-      }
-      if (isPlatformServer(this.platID)) {
-        // Si se está ejecutando en el server
-      }
-    });
-  }
+  private platID: any = inject(PLATFORM_ID);
+  private data: Data = inject(Data);
+  private authServicio: Auth = inject(Auth);
+  private router: Router = inject(Router);
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   ngOnInit(): void {
     if (isPlatformBrowser(this.platID)) {
-      // Si se está ejecutando en el browser
-      this.data.getConfig().subscribe((config: any) => {
-        this.data.host = config.apiBaseUrl + '/';
-        this.authServicio.getAuth();
-        this.authServicio.usuario.subscribe((usuario: Usuario | null | undefined) => {
-          this.usuario = usuario;
-          this.cdr.detectChanges();
-        });
-        this.data.init().subscribe((data: VarData) => {
-          /*
-          this.data.host = data.host;
-          this.data.categorias = data.categorias;
-          this.data.labels = data.labels;
-          this.data.api = data.host + this.data.api;
-          this.data.file = data.host + this.data.file;
-          this.data.clean = data.host + this.data.clean;
-          this.data.loadList = data.host + this.data.loadList;
-          this.data.uploadFile = data.host + this.data.uploadFile;
-          //*/
-          this.contenidos = this.data.elementosMenu;
-          this.getRolMinimo();
-          this.dataVars = true;
-        });
-        this.seccionActual = this.router.url.split('?')[0];
-        this.getRolMinimo();
-        this.router.events.subscribe((ev: any) => {
-          if (ev.type == EventType.NavigationEnd) {
-            this.seccionActual = ev.url.split('?')[0];
+      this.data.getConfig()
+        .subscribe((resp: boolean) => {
+          // La configuración ya se actualiza automáticamente en API_CONFIG.baseUrl
+          this.configLoaded = resp; // Ya se puede cargar el contenido, porque se ha leído la configuración que viene desde /api/config - Node.js
+          this.authServicio.getAuth();
+          this.authServicio.usuario.subscribe((usuario: Usuario | null | undefined) => {
+            this.usuario = usuario;
+            this.cdr.detectChanges();
+          });
+          this.data.init().subscribe((data: VarData) => {
+            this.contenidos = this.data.elementosMenu;
             this.getRolMinimo();
-          }
+            this.dataVars = true;
+          });
+          this.seccionActual = this.router.url.split('?')[0];
+          this.getRolMinimo();
+          this.router.events.subscribe((ev: any) => {
+            if (ev.type == EventType.NavigationEnd) {
+              this.seccionActual = ev.url.split('?')[0];
+              this.getRolMinimo();
+            }
+          });
         });
-      });
     }
   }
   getRolMinimo(): void {

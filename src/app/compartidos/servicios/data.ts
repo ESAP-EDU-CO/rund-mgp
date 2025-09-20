@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpRequest } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { SelectItemGroup, TreeNode } from 'primeng/api';
 import { catchError, map, Observable, Subscriber, tap, throwError } from 'rxjs';
@@ -8,7 +8,7 @@ import { MenuItem } from 'primeng/api';
 import { Rol } from '@servicios/auth';
 import { isPlatformBrowser } from '@angular/common';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { API_CONFIG, getEndpointUrl, getMigrationStats, DIRECT_URLS } from './api-config';
+import { API_CONFIG, getEndpointUrl } from './api-config';
 
 export interface DataCategoria extends Omit<TreeNode, 'children'> {
   numDocs?: number;
@@ -54,7 +54,6 @@ export interface DataTabla {
   filas: FilaTabla[];
 }
 export interface VarData {
-  host: string;
   categorias: CategoriaBase[];
   labels: { [key: string]: string };
 }
@@ -171,106 +170,13 @@ export interface DatosProfesor {
   providedIn: 'root',
 })
 export class Data {
-  /*
-  public api: string = 'api.php';
-  public file: string = 'file.php';
-  public clean: string = 'clean.php';
-  public loadList: string = 'loadlist.php';
-  public uploadFile: string = 'postFile.php';
-  */
-  public host: string = API_CONFIG.baseUrl;
   public categorias: CategoriaBase[] = [];
   public labels: { [key: string]: string } = {};
   public dataCategorias: DataCategoria[] | undefined;
   public apiVersion: string = API_CONFIG.version;
   public chartColors: string[] = ['blue', 'yellow', 'green', 'cyan', 'pink', 'indigo', 'orange', 'teal', 'bluegray', 'purple', 'red'];
   private aNivel: Anivel[] = [{ label: 'Direcciones territoriales', superLabel: 'Distribución territorial' }];
-  public documentos: Documento.Listado = {
-    grupos: [
-      {
-        label: 'Certificados',
-        value: 'certificados',
-        items: [
-          { label: 'Certificación de categorización y evaluación', value: [0] },
-        ]
-      }
-    ],
-    datos: [
-      {
-        label: 'Documento de identidad',
-        value: undefined,
-        type: 'multi',
-        encabezados: ['Nombre completo', 'Documento de identidad', 'Categoría', 'Última Evaluación'],
-        plantilla: {
-          plantilla: '1050',
-          estructura: [
-            {
-              tipo: 'parrafo',
-              fontSize: 12,
-              fontWeight: 'regular',
-              value: '12_301_1300_60_1050'
-            },
-            {
-              tipo: 'parrafo',
-              fontSize: 12,
-              fontWeight: 'regular',
-              value: 'LA COORDINADORA DEL GRUPO DE GESTIÓN PROFESORAL, EN CALIDAD DE SECRETARIA TÉCNICA DEL COMITÉ DOCENTE DE LA ESAP',
-              textAlign: 'center',
-              marginTop: '6em'
-            },
-            {
-              tipo: 'parrafo',
-              fontSize: 12,
-              fontWeight: 'regular',
-              value: 'CERTIFICA',
-              textAlign: 'center',
-              marginTop: '3em'
-            },
-            {
-              tipo: 'parrafo',
-              fontSize: 12,
-              fontWeight: 'regular',
-              value: 'Que, de acuerdo con las bases de datos del Grupo de Gestión Profesoral, la Evaluación y Clasificación Docente aprobada en sesión del Comité Docente de los Profesores No vinculados a la carrera es la que se enuncia a continuación:',
-              marginTop: '3em'
-            },
-            {
-              tipo: 'tabla',
-              fontSize: 9,
-              fontWeight: 'regular',
-              value: undefined,
-              marginTop: '1em'
-            },
-            {
-              tipo: 'parrafo',
-              fontSize: 12,
-              fontWeight: 'regular',
-              value: 'La presente certificación se expide {alDia} del mes de {mes} de {año}.',
-              marginTop: '1em'
-            },
-            {
-              tipo: 'firma',
-              fontSize: 12,
-              fontWeight: 'bold',
-              value: {
-                nombre: 'ANA CATALINA BORRERO MARTINEZ',
-                cargo: 'Coordinadora Grupo de Gestión Profesoral',
-                imagen: 'firma_CatalinaBorrero.png',
-                uuid: 'bd2b50ff-0381-44c2-b046-52c135419aa1',
-              }
-            },
-          ]
-        },
-        origen: {
-          categoria: 'Listados',
-          tipo: 'Listado de docentes',
-          nombre: 'ListadoGeneralDocente',
-          formato: 'CSV',
-          extension: '.csv'
-        }
-      }
-    ]
-  };
-  // En el futuro debe obtenerse de un JSON o una fuente de datos centralizada
+  public documentos: Documento.Listado = {} as Documento.Listado;
   private faIconLibrary: FaIconLibrary = inject(FaIconLibrary);
   private faCheckDouble: IconDefinition = this.faIconLibrary.getIconDefinition('fas', 'check-double') as IconDefinition;
   private faGauge: IconDefinition = this.faIconLibrary.getIconDefinition('fas', 'gauge') as IconDefinition;
@@ -287,16 +193,15 @@ export class Data {
     { label: 'Validación', faIcon: this.faCheckDouble, route: '/validacion', rol: 'usuario' },
   ];
   private platID: any = inject(PLATFORM_ID);
-  constructor(private http: HttpClient) { }
+  private http: HttpClient = inject(HttpClient);
   init(): Observable<VarData> {
     const data: VarData = {
-      host: this.host,
       categorias: [],
       labels: {},
     };
     return new Observable<VarData>((observer: Subscriber<VarData>) => {
       // Usar configuración v2 para obtener labels
-      const labelsUrl = getEndpointUrl('datos', this.host) + '/labels';
+      const labelsUrl = getEndpointUrl('datos') + '/labels';
       this.http.get<{ datos: { [key: string]: string } }>(labelsUrl).pipe(
         map((response: any) => {
           // Extraer datos de la respuesta v2
@@ -304,11 +209,10 @@ export class Data {
         }),
         tap((labels) => {
           this.labels = labels;
-          data.host = this.host;
           data.labels = this.labels;
 
           // Usar configuración v2 para obtener categorías
-          const categoriasUrl = getEndpointUrl('datos', this.host) + '/categorias';
+          const categoriasUrl = getEndpointUrl('datos') + '/categorias';
           this.http.get<{ datos: CategoriaBase[] }>(categoriasUrl).pipe(
             map((response: any) => {
               // Extraer datos de la respuesta v2
@@ -321,51 +225,40 @@ export class Data {
               observer.complete();
             }),
             catchError((error) => {
-              // Fallback a v1 si v2 falla
-              console.warn('v2 categorias failed, falling back to v1');
-              this.http.get<CategoriaBase[]>(this.host + 'api/v2/archivos/datos/categorias').pipe(
-              catchError(() => this.http.get<CategoriaBase[]>(this.host + 'getFile?tipo=data&nombre=categorias')),
-                tap((categorias: CategoriaBase[]) => {
-                  this.categorias = categorias;
-                  data.categorias = categorias;
-                  observer.next(data);
-                  observer.complete();
-                })
-              ).subscribe();
+              console.error('Error obteniendo categorías:', error);
               return throwError(() => error);
             })
           ).subscribe();
         }),
         catchError((error) => {
-          // Fallback a v1 si v2 falla
-          console.warn('v2 labels failed, falling back to v1');
-          this.http.get<{ [key: string]: string }>(this.host + 'api/v2/archivos/datos/labels').pipe(
-            catchError(() => this.http.get<{ [key: string]: string }>(this.host + 'getFile?tipo=data&nombre=labels')),
-            tap((labels: { [key: string]: string }) => {
-              this.labels = labels;
-              data.host = this.host;
-              data.labels = labels;
-              this.http.get<CategoriaBase[]>(this.host + 'api/v2/archivos/datos/categorias').pipe(
-              catchError(() => this.http.get<CategoriaBase[]>(this.host + 'getFile?tipo=data&nombre=categorias')),
-                tap((categorias: CategoriaBase[]) => {
-                  this.categorias = categorias;
-                  data.categorias = categorias;
-                  observer.next(data);
-                  observer.complete();
-                })
-              ).subscribe();
-            })
-          ).subscribe();
+          console.error('Error obteniendo labels:', error);
           return throwError(() => error);
         })
       ).subscribe();
     });
   }
-  getConfig(): Observable<any> {
-    return this.http.get<any>('/api/config');
+  apiGet(endpoint: string, params: { [key: string]: any }, opciones: { [key: string]: any } | undefined = undefined): Observable<any> {
+    const options: any = opciones ? { params: params, ...opciones } : { params: params };
+    return this.http.get<any>(endpoint, options);
+  }
+  getConfig(): Observable<boolean> {
+    return new Observable((suscriptor: Subscriber<boolean>) => {
+      this.http.get<any>('/api/config').pipe(
+        tap((config: any) => {
+          // Actualizar configuración global de API_CONFIG con la URL del entorno actual
+          API_CONFIG.baseUrl = config.apiBaseUrl + '/';
+          if (API_CONFIG.baseUrl !== '') {
+            suscriptor.next(true);
+            suscriptor.complete();
+          } else {
+            suscriptor.error('No se pudo leer la configuración del host del servidor');
+          }
+        })
+      ).subscribe();
+    });
   }
   getCategorias(): Observable<DataCategoria[]> {
-    const url = getEndpointUrl('categorias', this.host);
+    const url = getEndpointUrl('categorias');
     return this.http.get<{ arbol: DataCategoria[] }>(url).pipe(
       tap(response => {
         if (API_CONFIG.debug) {
@@ -373,8 +266,8 @@ export class Data {
         }
       }),
       catchError(error => {
-        console.warn('getCategorias v2 failed, falling back to v1');
-        return this.http.get<DataCategoria[]>(this.host + 'getCategorias');
+        console.error('Error obteniendo categorías:', error);
+        return throwError(() => error);
       }),
       // Transformar datos: extraer arbol de respuesta v2 o usar v1 directamente
       map((response: any) => {
@@ -385,7 +278,7 @@ export class Data {
   }
   getCruce(uuids: string[]): Observable<DataTabla> {
     const [x, y] = uuids;
-    const url = getEndpointUrl('cruce', this.host) + `/${x}/${y}`;
+    const url = getEndpointUrl('cruce') + `/${x}/${y}`;
     return this.http.get<{ cruce: DataTabla }>(url).pipe(
       tap(response => {
         if (API_CONFIG.debug) {
@@ -393,8 +286,8 @@ export class Data {
         }
       }),
       catchError(error => {
-        console.warn('getCruce v2 failed, falling back to v1');
-        return this.http.get<DataTabla>(this.host + 'getCruce', { params: { x: x, y: y } });
+        console.error('Error obteniendo cruce:', error);
+        return throwError(() => error);
       }),
       // Transformar datos: extraer cruce de respuesta v2 o usar v1 directamente
       map((response: any) => {
@@ -409,14 +302,12 @@ export class Data {
     const formData: FormData = new FormData();
     formData.append('tipo', tipo);
     formData.append('data', JSON.stringify(data));
-    return this.http.post<Blob>(this.host + 'api/v2/documentos/exportar', formData, opciones)
-      .pipe(catchError(() => this.http.post<Blob>(this.host + 'getConsultaFile', formData, opciones)));
+    return this.http.post<Blob>(getEndpointUrl('consultaFile'), formData, opciones);
   }
   loadDocumentos(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.http.get<{datos: Documento.Listado}>(this.host + 'api/v2/archivos/datos/documentos')
-        .pipe(catchError(() => this.http.get<{datos: Documento.Listado}>(this.host + 'getFile?tipo=data&nombre=documentos')))
-        .subscribe((documentos: {datos: Documento.Listado}) => {
+      this.http.get<{ datos: Documento.Listado }>(getEndpointUrl('datos') + '/documentos')
+        .subscribe((documentos: { datos: Documento.Listado }) => {
           this.documentos = documentos.datos;
           resolve(true);
         });
@@ -436,16 +327,13 @@ export class Data {
     const opciones: any = {
       responseType: 'blob',
     }
-    return this.http.post<Blob>(this.host + 'api/v2/documentos/generar', formData, opciones)
-      .pipe(catchError(() => this.http.post<Blob>(this.host + 'getCertificado', formData, opciones)));
+    return this.http.post<Blob>(getEndpointUrl('documentosGenerar'), formData, opciones);
   }
   postCargaFiles(propiedades: ListadoProps[], archivo: File): Observable<any> {
-    return this.postFile(this.host + 'api/v2/archivos/subir', propiedades, 'cargaDocumento', archivo)
-      .pipe(catchError(() => this.postFile(this.host + 'postFile', propiedades, 'cargaDocumento', archivo)));
+    return this.postFile(getEndpointUrl('archivosSubir'), propiedades, 'cargaDocumento', archivo);
   }
   postLoadList(propiedades: ListadoProps[], archivo: File | undefined): Observable<any> {
-    return this.postFile(this.host + 'api/v2/listados/cargar', propiedades, 'cargar', archivo)
-      .pipe(catchError(() => this.postFile(this.host + 'loadList', propiedades, 'cargar', archivo)));
+    return this.postFile(getEndpointUrl('loadList'), propiedades, 'cargar', archivo);
   }
   postFile(url: string, propiedades: ListadoProps[], accion: string, archivo: File | undefined = undefined): Observable<any> {
     const formData: FormData = new FormData();
@@ -482,24 +370,16 @@ export class Data {
     return resp;
   }
   delTemp(): Observable<{ borrados: string[], aBorrar: string[] }> {
-    return this.http.delete<{ borrados: string[], aBorrar: string[] }>(this.host + 'api/v2/archivos/temp/limpiar')
-      .pipe(catchError(() => this.http.get<{ borrados: string[], aBorrar: string[] }>(this.host + 'delReporte')));
+    return this.http.delete<{ borrados: string[], aBorrar: string[] }>(getEndpointUrl('tempCleanup'));
   }
   getLoadList(params: { [key: string]: any }): Observable<any> {
-    return this.apiGet(this.host + 'api/v2/listados/datos', params)
-      .pipe(catchError(() => this.apiGet(this.host + 'loadList', params)));
+    return this.apiGet(getEndpointUrl('listadosDatos'), params);
   }
   getCsvData(params: any): Observable<any> {
-    return this.apiGet(this.host + 'api/v2/listados/csv', params)
-      .pipe(catchError(() => this.apiGet(this.host + 'getCsvData', params)));
+    return this.apiGet(getEndpointUrl('csvData'), params);
   }
   getFirmas(params: { [key: string]: any }, opciones: { [key: string]: any } | undefined = undefined): Observable<any[]> {
-    return this.apiGet(this.host + 'api/v2/firmas/lista', params, opciones)
-      .pipe(catchError(() => this.apiGet(this.host + 'getFirmas', params, opciones)));
-  }
-  apiGet(endpoint: string, params: { [key: string]: any }, opciones: { [key: string]: any } | undefined = undefined): Observable<any> {
-    const options: any = opciones ? { params: params, ...opciones } : { params: params };
-    return this.http.get<any>(endpoint, options);
+    return this.apiGet(getEndpointUrl('firmas'), params, opciones);
   }
   postFirma(datos: Firma.FirmaMetadata, blob: Blob): Observable<any> {
     const nombreFirma: string =
@@ -513,21 +393,18 @@ export class Data {
         valor: datos[key as keyof Firma.FirmaMetadata]
       };
     });
-    return this.postFile(this.host + 'api/v2/firmas/subir', propiedades, 'cargaFirma', archivo)
-      .pipe(catchError(() => this.postFile(this.host + 'postFile', propiedades, 'cargaFirma', archivo)));
+    return this.postFile(getEndpointUrl('firmaSubir'), propiedades, 'cargaFirma', archivo);
   }
   deleteFile(uuid: string): Observable<any> {
-    return this.http.delete(this.host + 'api/v2/archivos/' + uuid)
-      .pipe(catchError(() => this.http.delete(this.host + 'deleteFile', { params: { uuid: uuid } })));
+    return this.http.delete(getEndpointUrl('deleteFile') + '/' + uuid);
   }
-  vaciaPapelera():Observable<any> {
-    return this.http.delete(this.host + 'api/v2/archivos/papelera');
+  vaciaPapelera(): Observable<any> {
+    return this.http.delete(getEndpointUrl('papelera'));
   }
   getImagen(nombre: string): Observable<string | ArrayBuffer | null> {
     if (isPlatformBrowser(this.platID)) {
       const opciones: any = { responseType: 'blob' };
-      const getFile: Observable<any> = this.http.get<any>(this.host + 'api/v2/archivos/imagenes/' + nombre, opciones)
-        .pipe(catchError(() => this.http.get<any>(this.host + 'getFile?tipo=imagen&nombre=' + nombre, opciones)));
+      const getFile: Observable<any> = this.http.get<any>(getEndpointUrl('imagen') + '/' + nombre, opciones);
       return new Observable((observador: Subscriber<any>) => {
         getFile.pipe(
           tap((imagen: any) => {
@@ -547,12 +424,11 @@ export class Data {
     }
   }
   getCertificadoInfo(id: string): Observable<any> {
-    return this.http.get<any>(this.host + 'api/v2/certificados/' + id)
-      .pipe(catchError(() => this.http.get<any>(this.host + 'getCertificadoInfo?id=' + id)));
+    return this.http.get<any>(getEndpointUrl('certificadoInfo') + '/' + id);
   }
   async getInfoProfesor(cedula: string): Promise<DatosProfesor | undefined> {
     return new Promise((resolve, reject) => {
-      const url = getEndpointUrl('infoProfesor', this.host) + '/' + cedula;
+      const url = getEndpointUrl('infoProfesor') + '/' + cedula;
 
       this.http.get<{ profesor: InfoProfesor }>(url).pipe(
         tap(response => {
@@ -561,9 +437,8 @@ export class Data {
           }
         }),
         catchError(error => {
-          console.warn('getInfoProfesor v2 failed, falling back to v1');
-          return this.http.get<InfoProfesor | { error: any, resultado: string }>(this.host + 'api/v2/profesores/' + cedula)
-            .pipe(catchError(() => this.http.get<InfoProfesor | { error: any, resultado: string }>(this.host + 'getInfoProfesor?cedula=' + cedula)));
+          console.error('Error obteniendo información del profesor:', error);
+          return throwError(() => error);
         })
       ).subscribe((response: any) => {
         // Extraer datos de respuesta v2 o usar v1 directamente
@@ -611,8 +486,7 @@ export class Data {
     formData.append('documento', documento);
     formData.append('tipoDocumento', tipoDocumento);
     formData.append('datosExtraer', JSON.stringify(datosExtraer));
-    return this.http.post<any>(this.host + 'api/v2/ai/extraer', formData)
-      .pipe(catchError(() => this.http.post<any>(this.host + 'extraeDatos', formData)));
+    return this.http.post<any>(getEndpointUrl('extraeDatos'), formData);
   }
   private normalizaNombre(nombre: string): string {
     return nombre.trim().replace(/\s+/g, '_').toUpperCase();
@@ -626,19 +500,5 @@ export class Data {
       };
       reader.readAsDataURL(blob);
     });
-  }
-
-  /**
-   * Método de diagnóstico para verificar estado de migración
-   */
-  getMigrationStatus(): any {
-    const stats = getMigrationStats();
-    return {
-      ...stats,
-      apiVersion: this.apiVersion,
-      baseUrl: this.host,
-      debug: API_CONFIG.debug,
-      directUrls: DIRECT_URLS
-    };
   }
 }
