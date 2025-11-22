@@ -1,7 +1,7 @@
 import { NgStyle } from '@angular/common';
 import { AfterViewInit, Component, Input } from '@angular/core';
 import { FirmaCertificado } from '@componentes/firma-certificado/firma-certificado';
-import { Prevista } from '@vistas/documentos/documentos';
+import { Prevista } from '@vistas/certificados/certificados';
 
 @Component({
   selector: 'mgp-preview',

@@ -115,6 +115,10 @@ export const API_ENDPOINTS: ApiEndpoints = {
     endpoint: 'api/v2/listados/cargar',
     status: 'active'
   },
+  indice: {
+    endpoint: 'api/v2/listados/indice',
+    status: 'active'
+  },
 
   // Archivos y subida
   postFile: {

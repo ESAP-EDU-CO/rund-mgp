@@ -1,12 +1,11 @@
-import { isPlatformBrowser, isPlatformServer } from '@angular/common';
-import { afterNextRender, ChangeDetectorRef, Component, inject, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { EventType, Router, RouterOutlet } from '@angular/router';
 import { Header } from '@componentes/header/header';
 import { Menu } from '@componentes/menu/menu';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Auth, Usuario, Rol } from '@servicios/auth';
 import { Data, MenuElemento, VarData } from '@servicios/data';
-import { tap } from 'rxjs';
 
 @Component({
   selector: 'mgp-root',
@@ -46,6 +45,7 @@ export class App implements OnInit {
             this.contenidos = this.data.elementosMenu;
             this.getRolMinimo();
             this.dataVars = true;
+            this.cdr.detectChanges();
           });
           this.seccionActual = this.router.url.split('?')[0];
           this.getRolMinimo();

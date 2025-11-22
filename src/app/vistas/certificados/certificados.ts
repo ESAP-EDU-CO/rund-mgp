@@ -18,7 +18,7 @@ export interface Prevista {
 }
 
 @Component({
-  selector: 'mgp-documentos',
+  selector: 'mgp-certificados',
   imports: [
     PrimengModule,
     FormsModule,
@@ -26,10 +26,10 @@ export interface Prevista {
     Preview,
     PipesModule,
   ],
-  templateUrl: './documentos.html',
-  styleUrl: './documentos.scss'
+  templateUrl: './certificados.html',
+  styleUrl: './certificados.scss'
 })
-export class Documentos implements OnInit {
+export class Certificados implements OnInit {
   listaCertificados: SelectItemGroup[] = [];
   certificadoSeleccionado: number[] = [];
   filtros: Documento.Dato[] | undefined;

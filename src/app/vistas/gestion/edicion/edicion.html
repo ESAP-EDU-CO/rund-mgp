@@ -1,0 +1,100 @@
+<p-card header="Edición de documentación profesoral">
+  <div class="edicion">
+    <div class="header">
+      <div class="selector">
+        <h4>Seleccione el profesor/a por nombre o cédula</h4>
+        <p-autocomplete [(ngModel)]="profesor"
+                        [dropdown]="true"
+                        [suggestions]="profesoresFiltrados"
+                        optionLabel="nombre"
+                        placeholder="Buscar por nombre o cédula"
+                        [minLength]="1"
+                        (completeMethod)="filtrarProfesores($event)"
+                        (onSelect)="seleccionaProfesor($event)" />
+      </div>
+    </div>
+    @if (profeSeleccionado) {
+    <div class="cuerpo">
+      <div class="ficha-profesor">
+        @for (dato of claves(profeSeleccionado); track dato) {
+        <div class="dato">
+          <div class="clave">{{labels[dato]}}</div>
+          <div class="valor">{{profeSeleccionado[dato]}}</div>
+        </div>
+        }
+      </div>
+      <p-table class="tabla-archivos"
+               [value]="archivos"
+               [(selection)]="archivosSeleccionados"
+               dataKey="nombre"
+               sortField="tipo"
+               sortMode="single"
+               rowGroupMode="subheader"
+               groupRowsBy="tipo">
+        <ng-template #header>
+          <tr>
+            <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
+            <th>DOCUMENTOS</th>
+            <th>
+              <div class="acciones-masivas">
+                <p-button icon="pi pi-plus"
+                          (onClick)="accionesArchivos([], 'add')" />
+                <p-button icon="pi pi-download"
+                          severity="info"
+                          [disabled]="archivosSeleccionados.length === 0"
+                          (onClick)="accionesArchivos(archivosSeleccionados, 'download')" />
+                <p-button icon="pi pi-replay"
+                          severity="warn"
+                          [disabled]="archivosSeleccionados.length === 0"
+                          (onClick)="accionesArchivos(archivosSeleccionados, 'change')" />
+                <p-button icon="pi pi-trash"
+                          severity="danger"
+                          [disabled]="archivosSeleccionados.length === 0"
+                          (onClick)="accionesArchivos(archivosSeleccionados, 'delete')" />
+              </div>
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template #groupheader
+                     let-archivo>
+          <tr>
+            <td class="grupo"
+                colspan="4">
+              <span>{{labels[archivo.tipo]}}</span>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template #body
+                     let-archivo>
+          <tr class="item-archivo">
+            <td>
+              <p-tableCheckbox [value]="archivo" />
+            </td>
+            <td>
+              <div class="nombre-archivo">
+                <span class="icono">
+                  <i [class]="'pi ' + (iconoFormato[archivo.formato] || 'pi-file')"></i>
+                </span>
+                <span class="nombre">{{archivo.nombre}}</span>
+              </div>
+            </td>
+            <td>
+              <div class="acciones">
+                <p-button icon="pi pi-download"
+                          severity="info"
+                          (onClick)="accionesArchivos([archivo], 'download')" />
+                <p-button icon="pi pi-replay"
+                          severity="warn"
+                          (onClick)="accionesArchivos([archivo], 'change')" />
+                <p-button icon="pi pi-trash"
+                          severity="danger"
+                          (onClick)="accionesArchivos([archivo], 'delete')" />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+    }
+  </div>
+</p-card>

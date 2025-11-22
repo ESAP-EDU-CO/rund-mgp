@@ -1,4 +1,4 @@
-import { HttpClient, HttpRequest } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { SelectItemGroup, TreeNode } from 'primeng/api';
 import { catchError, map, Observable, Subscriber, tap, throwError } from 'rxjs';
@@ -184,13 +184,13 @@ export class Data {
   private faFileArrowUp: IconDefinition = this.faIconLibrary.getIconDefinition('fas', 'file-arrow-up') as IconDefinition;
   private faFileAlt: IconDefinition = this.faIconLibrary.getIconDefinition('fas', 'file-alt') as IconDefinition;
   public elementosMenu: MenuElemento[] = [
-    { label: 'Panel de control', faIcon: this.faGauge, route: '/dashboard', rol: 'consulta' },
-    { label: 'Consultas', faIcon: this.faMagnifyingGlassChart, route: '/consultas', rol: 'consulta' },
+    /*{ label: 'Panel de control', faIcon: this.faGauge, route: '/dashboard', rol: 'consulta' },
+    { label: 'Consultas', faIcon: this.faMagnifyingGlassChart, route: '/consultas', rol: 'consulta' },*/
     { label: 'Listados', tipo: 'PrimeNG', icon: 'pi pi-list-check', route: '/listados', rol: 'servicio' },
-    { label: 'Carga', faIcon: this.faFileArrowUp, route: '/carga', rol: 'servicio' },
-    { label: 'Documentos', faIcon: this.faFileAlt, route: '/documentos', rol: 'servicio' },
-    { label: 'Herramientas', tipo: 'PrimeNG', icon: 'pi pi-wrench', route: '/herramientas', rol: 'servicio' },
+    { label: 'Gestión', faIcon: this.faFileArrowUp, route: '/gestion', rol: 'servicio' },
+    { label: 'Certificados', faIcon: this.faFileAlt, route: '/certificados', rol: 'servicio' },
     { label: 'Validación', faIcon: this.faCheckDouble, route: '/validacion', rol: 'usuario' },
+    { label: 'Herramientas', tipo: 'PrimeNG', icon: 'pi pi-wrench', route: '/herramientas', rol: 'servicio' },
   ];
   private platID: any = inject(PLATFORM_ID);
   private http: HttpClient = inject(HttpClient);
@@ -479,6 +479,9 @@ export class Data {
         }
       });
     });
+  }
+  getIndiceDocente(): Observable<any> {
+    return this.http.get<any>(getEndpointUrl('indice'));
   }
   extraeDatos(accion: string, documento: File, tipoDocumento: string, datosExtraer: string[]): Observable<any> {
     const formData: FormData = new FormData();
