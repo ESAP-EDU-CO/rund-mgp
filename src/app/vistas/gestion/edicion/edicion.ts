@@ -4,7 +4,7 @@ import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Data, DatoArchivo, DatosProfesor } from '@servicios/data';
 import { TreeNode } from 'primeng/api';
-import { DocPreview } from './doc-preview/doc-preview';
+import { DownloadPreview } from './download-preview/download-preview';
 
 type Profesor = { nombre: string, documentoIdentidad: string };
 
@@ -14,7 +14,7 @@ type Profesor = { nombre: string, documentoIdentidad: string };
     PipesModule,
     PrimengModule,
     FormsModule,
-    DocPreview,
+    DownloadPreview,
   ],
   templateUrl: './edicion.html',
   styleUrl: './edicion.scss'

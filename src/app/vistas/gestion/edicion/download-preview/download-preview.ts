@@ -17,12 +17,12 @@ interface ListaDescarga {
 }
 
 @Component({
-  selector: 'mgp-doc-preview',
+  selector: 'mgp-download-preview',
   imports: [],
-  templateUrl: './doc-preview.html',
-  styleUrl: './doc-preview.scss'
+  templateUrl: './download-preview.html',
+  styleUrl: './download-preview.scss'
 })
-export class DocPreview implements OnDestroy {
+export class DownloadPreview implements OnDestroy {
   profesor: InputSignal<any> = input<any>();
   archivos: InputSignal<DatoArchivo[]> = input<DatoArchivo[]>([]);
   modo: InputSignal<Modo> = input<Modo>('watch');
@@ -123,15 +123,25 @@ export class DocPreview implements OnDestroy {
                 this.textoError = error as string;
               }
             });
-            setTimeout(() => {
-              if (this.archivosDescarga.length === 1 && this.archivosDescarga[0]?.blob) {
-                this.fileServicio.descarga(this.archivosDescarga[0].blob, this.archivosDescarga[0].nombre);
-                this.archivosDescarga[0].descargado = true;
-                this.textoError = '';
+            await this.pausa();
+            if (this.archivosDescarga.length === 1 && this.archivosDescarga[0]?.blob) {
+              this.fileServicio.descarga(this.archivosDescarga[0].blob, this.archivosDescarga[0].nombre);
+              this.archivosDescarga[0].descargado = true;
+            }
+            if (this.archivosDescarga.length > 1) {
+              this.archivosDescarga.forEach(async (a: ListaDescarga, i: number) => {
+                this.archivosDescarga[i].descargado = true;
                 this.cdr.detectChanges();
-                this.cerrar.emit();
-              }
-            }, 500);
+                await this.pausa();
+              });
+              const zip: Blob = await this.fileServicio.creaZipDesdeBlobs(this.archivosDescarga);
+              console.log(zip);
+              const fecha: string = new Date().toLocaleDateString().replace(/\//g, '');
+              this.fileServicio.descarga(zip, cedula + '-documentacion-' + fecha + '.zip');
+            }
+            this.textoError = '';
+            this.cdr.detectChanges();
+            this.cerrar.emit();
             break;
         }
       }
@@ -147,6 +157,9 @@ export class DocPreview implements OnDestroy {
     if (consulta.type != 'application/json') return { blob: consulta, blobUrl: undefined, pdfUrl: undefined, error: undefined };
     console.error('ERROR: ', consulta);
     return { blob: consulta, blobUrl: undefined, pdfUrl: undefined, error: consulta };
+  }
+  private async pausa(ms: number = 500): Promise<boolean> {
+    return new Promise<boolean>((resolve) => setTimeout(() => resolve(true), ms));
   }
   ngOnDestroy(): void {
     if (this.blobUrl) {

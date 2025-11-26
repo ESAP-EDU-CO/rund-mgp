@@ -89,10 +89,10 @@
           [closable]="dialogoCerrable"
           modal="true">
   @if(tipoDialogo === 'watch' || tipoDialogo === 'download') {
-  <mgp-doc-preview [modo]="modoDocumento"
-                   [profesor]="profeSeleccionado"
-                   [archivos]="archivos"
-                   (cerrar)="cerrarDialogo()" />
+  <mgp-download-preview [modo]="modoDocumento"
+                        [profesor]="profeSeleccionado"
+                        [archivos]="archivos"
+                        (cerrar)="cerrarDialogo()" />
   }
   @else {
   ¡¡No hay accion!!

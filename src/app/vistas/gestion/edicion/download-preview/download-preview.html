@@ -36,11 +36,11 @@
            style="color: red; font-size: 1.5rem">
         </i>
         }
-        @if (archivo.descargado) {
+        @if (archivo.blob && archivo.descargado) {
         <i class="pi pi-check"
            style="color: green; font-size: 1.5rem">
         </i>
-        } @else {
+        } @else if (archivo.blob) {
         <i class="pi pi-spin pi-spinner"
            style="font-size: 1.5rem">
         </i>
