@@ -10,14 +10,30 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
-import { definePreset, palette } from '@primeng/themes';
+import { definePreset, palette, $dt } from '@primeng/themes';
 import Aura from '@primeng/themes/aura';
 
 const estilo: any = definePreset(
   Aura, {
   semantic: {
     primary: palette('{blue}')
-  }
+  },
+  components: {
+    tree: {
+      css: ({ dt }: any) => `
+        .p-tree-node-selectable {
+          line-break: anywhere;
+        }
+      `,
+    },
+    dialog: {
+      css: ({ dt }: any) => `
+        .p-dialog-content {
+          overflow-y: hidden;
+        }
+      `,
+    },
+  },
 }
 );
 

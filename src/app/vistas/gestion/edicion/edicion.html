@@ -3,6 +3,7 @@
     <div class="header">
       <div class="selector">
         <h4>Seleccione el profesor/a por nombre o cédula</h4>
+        @if (cargandoProfesores == 100) {
         <p-autocomplete [(ngModel)]="profesor"
                         [dropdown]="true"
                         [suggestions]="profesoresFiltrados"
@@ -11,90 +12,99 @@
                         [minLength]="1"
                         (completeMethod)="filtrarProfesores($event)"
                         (onSelect)="seleccionaProfesor($event)" />
+        } @else {
+        <p-progressbar [value]="cargandoProfesores"
+                       style="width: 16em" />
+        }
       </div>
     </div>
     @if (profeSeleccionado) {
     <div class="cuerpo">
-      <div class="ficha-profesor">
-        @for (dato of claves(profeSeleccionado); track dato) {
-        <div class="dato">
-          <div class="clave">{{labels[dato]}}</div>
-          <div class="valor">{{profeSeleccionado[dato]}}</div>
+      <p-panel header="Ficha profesoral"
+               class="ficha-profesor">
+        <p-table [value]="claves(profeSeleccionado)"
+                 showGridlines
+                 size="small">
+          <ng-template #header>
+            <tr>
+              <th>Información</th>
+              <th>Contenido</th>
+            </tr>
+          </ng-template>
+          <ng-template #body
+                       let-dato>
+            <tr>
+              <td class="dato">{{labels[dato]}}</td>
+              <td>{{profeSeleccionado[dato]}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-panel>
+      <p-panel header="Documentación"
+               class="archivos">
+        <div class="acciones">
+          <p-tag severity="info"
+                 [value]="'Seleccionados: ' + numSel()" />
+          <div class="botones">
+            <p-button pTooltip="Agregar un documento a la hoja de vida"
+                      tooltipPosition="top"
+                      severity="success"
+                      (onClick)="accionesArchivos('add')"
+                      icon="pi pi-plus" />
+            <p-button [pTooltip]="'Descargar ' + plural('el') + ' documento' + plural() + ' seleccionado' + plural()"
+                      tooltipPosition="top"
+                      [disabled]="numSel() < 1"
+                      (onClick)="accionesArchivos('download')"
+                      icon="pi pi-download" />
+            <p-button pTooltip="Ver información del documento seleccionado"
+                      tooltipPosition="top"
+                      [disabled]="numSel() != 1"
+                      severity="info"
+                      (onClick)="accionesArchivos('watch')"
+                      icon="pi pi-eye" />
+            <p-button pTooltip="Reemplazar el documento seleccionado por otro documento"
+                      tooltipPosition="top"
+                      [disabled]="numSel() != 1"
+                      severity="warn"
+                      (onClick)="accionesArchivos('change')"
+                      icon="pi pi-refresh" />
+            <p-button [pTooltip]="'Eliminar ' + plural('el') + ' documento' + plural() + ' seleccionado' + plural()"
+                      tooltipPosition="top"
+                      [disabled]="numSel() < 1"
+                      severity="danger"
+                      (onClick)="accionesArchivos('delete')"
+                      icon="pi pi-trash" />
+          </div>
         </div>
-        }
-      </div>
-      <p-table class="tabla-archivos"
-               [value]="archivos"
-               [(selection)]="archivosSeleccionados"
-               dataKey="nombre"
-               sortField="tipo"
-               sortMode="single"
-               rowGroupMode="subheader"
-               groupRowsBy="tipo">
-        <ng-template #header>
-          <tr>
-            <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
-            <th>DOCUMENTOS</th>
-            <th>
-              <div class="acciones-masivas">
-                <p-button icon="pi pi-plus"
-                          (onClick)="accionesArchivos([], 'add')" />
-                <p-button icon="pi pi-download"
-                          severity="info"
-                          [disabled]="archivosSeleccionados.length === 0"
-                          (onClick)="accionesArchivos(archivosSeleccionados, 'download')" />
-                <p-button icon="pi pi-replay"
-                          severity="warn"
-                          [disabled]="archivosSeleccionados.length === 0"
-                          (onClick)="accionesArchivos(archivosSeleccionados, 'change')" />
-                <p-button icon="pi pi-trash"
-                          severity="danger"
-                          [disabled]="archivosSeleccionados.length === 0"
-                          (onClick)="accionesArchivos(archivosSeleccionados, 'delete')" />
-              </div>
-            </th>
-          </tr>
-        </ng-template>
-        <ng-template #groupheader
-                     let-archivo>
-          <tr>
-            <td class="grupo"
-                colspan="4">
-              <span>{{labels[archivo.tipo]}}</span>
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template #body
-                     let-archivo>
-          <tr class="item-archivo">
-            <td>
-              <p-tableCheckbox [value]="archivo" />
-            </td>
-            <td>
-              <div class="nombre-archivo">
-                <span class="icono">
-                  <i [class]="'pi ' + (iconoFormato[archivo.formato] || 'pi-file')"></i>
-                </span>
-                <span class="nombre">{{archivo.nombre}}</span>
-              </div>
-            </td>
-            <td>
-              <div class="acciones">
-                <p-button icon="pi pi-download"
-                          severity="info"
-                          (onClick)="accionesArchivos([archivo], 'download')" />
-                <p-button icon="pi pi-replay"
-                          severity="warn"
-                          (onClick)="accionesArchivos([archivo], 'change')" />
-                <p-button icon="pi pi-trash"
-                          severity="danger"
-                          (onClick)="accionesArchivos([archivo], 'delete')" />
-              </div>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
+        <p-tree [value]="arbolArchivos"
+                selectionMode="checkbox"
+                [(selection)]="archivosSeleccionados" />
+      </p-panel>
     </div>
     }
   </div>
 </p-card>
+<p-dialog [header]="tituloDialogo"
+          [(visible)]="dialogoVisible"
+          [closable]="dialogoCerrable"
+          modal="true">
+  @if(tipoDialogo === 'watch' || tipoDialogo === 'download') {
+  <mgp-doc-preview [modo]="modoDocumento"
+                   [profesor]="profeSeleccionado"
+                   [archivos]="archivos"
+                   (cerrar)="cerrarDialogo()" />
+  }
+  @else {
+  ¡¡No hay accion!!
+  }
+  @if (dialogoCerrable) {
+  <ng-template #footer>
+    <div class="footer">
+      <p-button severity="warn"
+                label="Cerrar"
+                (onClick)="dialogoVisible = false"
+                icon="pi pi-times" />
+    </div>
+  </ng-template>
+  }
+</p-dialog>

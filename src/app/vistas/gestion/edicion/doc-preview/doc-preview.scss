@@ -1,0 +1,33 @@
+.prevista {
+  min-width: 80vw;
+  display: flex;
+  gap: 1rem;
+  .contenido {
+    width: calc(50% - 0.5rem);
+    height: 80vh;
+  }
+  .propiedades {
+    .propiedad {
+      display: flex;
+      gap: 1em;
+      align-items: baseline;
+      & > * {
+        margin-top: 0;
+        margin-bottom: 0.5em;
+      }
+      h4 {
+        width: 13em;
+      }
+    }
+  }
+}
+.descarga {
+  .descargando {
+    .archivo {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.5em 2em 0.5em 0.5em;
+    }
+  }
+}

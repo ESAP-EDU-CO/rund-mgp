@@ -73,6 +73,10 @@ export const API_ENDPOINTS: ApiEndpoints = {
     endpoint: 'api/v2/archivos',
     status: 'active'
   },
+  getFile: {
+    endpoint: 'api/v2/archivos',
+    status: 'active'
+  },
   tempCleanup: {
     endpoint: 'api/v2/archivos/temp/limpiar',
     status: 'active'

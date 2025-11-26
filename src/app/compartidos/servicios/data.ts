@@ -426,6 +426,31 @@ export class Data {
   getCertificadoInfo(id: string): Observable<any> {
     return this.http.get<any>(getEndpointUrl('certificadoInfo') + '/' + id);
   }
+  async getArchivo(uuid: string): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      const opciones: any = { responseType: 'blob' };
+      const url = getEndpointUrl('getFile') + '/' + uuid;
+      this.http.get(url, { responseType: 'blob' }).pipe(
+        catchError(error => {
+          console.error('Error obteniendo archivo:', error);
+          reject(error);
+          return throwError(() => error);
+        })
+      ).subscribe((response: any) => resolve(response));
+    });
+  }
+  async getArchivoProfesorUuid(cedula: string, nombre: string): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      const url = getEndpointUrl('infoProfesor') + '/' + cedula + '/' + nombre;
+      this.http.get<any>(url).pipe(
+        catchError(error => {
+          console.error('Error obteniendo UUID del archivo:', error);
+          reject(error);
+          return throwError(() => error);
+        })
+      ).subscribe((response: any) => resolve(response));
+    });
+  }
   async getInfoProfesor(cedula: string): Promise<DatosProfesor | undefined> {
     return new Promise((resolve, reject) => {
       const url = getEndpointUrl('infoProfesor') + '/' + cedula;

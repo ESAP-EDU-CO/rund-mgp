@@ -24,55 +24,27 @@
     }
   }
   .cuerpo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    & > * {
+      width: calc(50% - 0.5rem);
+      min-width: 30em;
+    }
     .ficha-profesor {
-      display: flex;
-      flex-wrap: wrap;
       .dato {
-        display: flex;
-        align-items: center;
-        border: 1px solid;
-        .clave {
-          font-weight: bold;
-          width: 16em;
-        }
-        .valor {
-          width: 20em;
-        }
+        font-weight: bold;
       }
     }
-    .tabla-archivos {
-      .acciones-masivas {
+    .archivos {
+      .acciones {
         display: flex;
-        gap: 1rem;
-      }
-      .grupo {
-        span {
-          margin-left: 1em;
-          font-weight: 800;
-        }
-      }
-      .item-archivo {
-        .nombre-archivo {
+        gap: 1em;
+        .botones {
           display: flex;
-          align-items: center;
-          gap: 1em;
-          .icono {
-            font-size: 1.5rem;
-            .pi {
-              font-size: 1em;
-            }
-          }
-        }
-        .acciones {
-          opacity: 0;
-          display: flex;
-          gap: 1rem;
-        }
-        &:hover {
-          background-color: var(--p-navigation-item-focus-background);
-          .acciones {
-            opacity: 1;
-          }
+          flex: 1 1 auto;
+          justify-content: flex-end;
+          gap: 0.5em;
         }
       }
     }
