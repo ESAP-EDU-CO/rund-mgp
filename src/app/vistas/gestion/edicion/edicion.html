@@ -93,6 +93,10 @@
                         [profesor]="profeSeleccionado"
                         [archivos]="archivos"
                         (cerrar)="cerrarDialogo()" />
+  } @else if (tipoDialogo === 'delete') {
+  <mgp-borra-documentos [profesor]="profeSeleccionado"
+                        [archivos]="archivos"
+                        (finEliminar)="obtieneArchivos()" />
   }
   @else {
   ¡¡No hay accion!!

@@ -5,6 +5,7 @@ import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Data, DatoArchivo, DatosProfesor } from '@servicios/data';
 import { TreeNode } from 'primeng/api';
 import { DownloadPreview } from './download-preview/download-preview';
+import { BorraDocumentos } from "./borra-documentos/borra-documentos";
 
 type Profesor = { nombre: string, documentoIdentidad: string };
 
@@ -15,6 +16,7 @@ type Profesor = { nombre: string, documentoIdentidad: string };
     PrimengModule,
     FormsModule,
     DownloadPreview,
+    BorraDocumentos
   ],
   templateUrl: './edicion.html',
   styleUrl: './edicion.scss'
@@ -67,13 +69,18 @@ export class Edicion implements OnInit {
       profesor.documentoIdentidad.toLowerCase().includes(valorFiltro)
     );
   }
-  async seleccionaProfesor(ev: any): Promise<void> {
+  seleccionaProfesor(ev: any): void {
     this.profesor = ev.value as Profesor;
-    const cedula: string = this.profesor.documentoIdentidad;
-    const archivos: DatoArchivo[] = await this.getArchivosProfe(cedula) as DatoArchivo[];
-    this.arbolArchivos = this.generaArbolArchivos(archivos);
-    this.profeSeleccionado = this.profesores[cedula];
-    this.cdr.detectChanges();
+    this.obtieneArchivos();
+  }
+  async obtieneArchivos(): Promise<void> {
+    if (this.profesor) {
+      const cedula: string = this.profesor.documentoIdentidad;
+      const archivos: DatoArchivo[] = await this.getArchivosProfe(cedula) as DatoArchivo[];
+      this.arbolArchivos = this.generaArbolArchivos(archivos);
+      this.profeSeleccionado = this.profesores[cedula];
+      this.cdr.detectChanges();
+    }
   }
   accionesArchivos(accion: 'download' | 'delete' | 'change' | 'add' | 'watch'): void {
     this.archivos = this.archivosSeleccionados
@@ -92,6 +99,11 @@ export class Edicion implements OnInit {
         this.tituloDialogo = 'Descargando ' + this.archivos.length + ' documento' + (this.archivos.length > 1 ? 's' : '');
         this.modoDocumento = accion;
         this.dialogoCerrable = false;
+        this.dialogoVisible = true;
+        break;
+      case 'delete':
+        this.tituloDialogo = 'Eliminando documento' + (this.archivos.length > 1 ? 's' : '');
+        this.dialogoCerrable = true;
         this.dialogoVisible = true;
         break;
       default:

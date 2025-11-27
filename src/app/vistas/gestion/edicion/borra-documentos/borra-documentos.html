@@ -1,0 +1,58 @@
+<div class="borra-documentos">
+  @if (dataVisible) {
+  @if (listaArchivos.length > 0) {
+  <p-table class="lista-documentos"
+           [scrollable]="true"
+           scrollHeight="50vh"
+           [value]="listaArchivos"
+           [(selection)]="archivosBorrar"
+           size="small"
+           dataKey="nombre">
+    <ng-template #header>
+      <tr>
+        <th><p-tableHeaderCheckbox /></th>
+        <th>Nombre del archivo</th>
+        <th>Categoría</th>
+        <th>Fecha de creación</th>
+        <th>Última modificación</th>
+      </tr>
+    </ng-template>
+    <ng-template #body
+                 let-archivo>
+      <tr>
+        <td>
+          <p-tableCheckbox [value]="archivo" />
+        </td>
+        <td>{{archivo.nombre}}</td>
+        <td>{{archivo.tipo}}</td>
+        <td>{{archivo.fechaCreacion}}</td>
+        <td>{{archivo.fechaModificacion}}</td>
+      </tr>
+    </ng-template>
+    @if (archivosBorrar.length > 0) {
+    <ng-template #footer>
+      <tr>
+        <td colspan="2"
+            style="text-align: right">
+          <h4>Documento{{archivosBorrar.length > 1 ? 's' : ''}} a eliminar: {{archivosBorrar.length}}</h4>
+        </td>
+        <td colspan="3">
+          <p-button [icon]=" 'pi pi-' + (eliminando ? 'spin pi-spinner' : 'trash')"
+                    pTooltip="Esta acción es irreversible"
+                    tooltipPosition="top"
+                    [label]="textoBotonEliminar"
+                    (onClick)="eliminaDocumentos()"
+                    [disabled]="eliminando"
+                    severity="danger" />
+        </td>
+      </tr>
+    </ng-template>
+    }
+  </p-table>
+  } @else {
+  <div class="vacio">
+    <h3>No hay documentos pendientes de eliminar</h3>
+  </div>
+  }
+  }
+</div>
