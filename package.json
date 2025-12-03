@@ -33,6 +33,7 @@
     "file-saver": "^2.0.5",
     "image-js": "^0.37.0",
     "jszip": "^3.10.1",
+    "pdfjs-dist": "^5.4.449",
     "primeicons": "^7.0.0",
     "primeng": "^20.0.0",
     "quill": "^2.0.3",

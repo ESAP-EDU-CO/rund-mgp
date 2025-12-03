@@ -1,10 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Chart } from '@componentes/chart/chart';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { ChartData, ChartDataset, ChartOptions, DataCategoria, DataChart, Data, DataTabla, FilaTabla } from '@servicios/data';
-import { File } from '@servicios/file';
+import { FileServicio } from '@servicios/file';
 import { MenuItem, SelectItem, SelectItemGroup } from 'primeng/api';
 
 interface DataConsulta {
@@ -27,6 +27,9 @@ interface DataConsulta {
   styleUrl: './consultas.scss'
 })
 export class Consultas implements OnInit {
+  private data: Data = inject(Data);
+  private fileServicio: FileServicio = inject(FileServicio);
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   dataConsulta: DataConsulta[] = [];
   placeholders: string[] = ['Variables eje X', 'Variables eje Y'];
   numPanel: number = -1;
@@ -37,11 +40,6 @@ export class Consultas implements OnInit {
   esperando: boolean = false;
   mensajeEspera: string = '';
   datosSuficientes: boolean = false;
-  constructor(
-    private data: Data,
-    private file: File,
-    private cdr: ChangeDetectorRef,
-  ) { }
   ngOnInit(): void {
     this.data.dataCategorias ?
       this.creaOpciones() :
@@ -66,7 +64,7 @@ export class Consultas implements OnInit {
             opciones.push(this.tree2sel(categoria)) :
             opciones.push({ label: categoria.label as string, items: [solo], value: categoria.key });
         });
-        const panel:DataConsulta = {
+        const panel: DataConsulta = {
           label: supercat.label,
           opciones: opciones,
           seleccion: ['', ''],
@@ -157,7 +155,7 @@ export class Consultas implements OnInit {
           .catch((e: any) => console.log(e));
         return;
       }
-      this.file.descarga(blob, nombre);
+      this.fileServicio.descarga(blob, nombre);
       this.esperando = false;
       this.cdr.detectChanges();
       if (tipo == 'pdf') {

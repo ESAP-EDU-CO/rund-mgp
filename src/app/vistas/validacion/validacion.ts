@@ -6,7 +6,7 @@ import { tap } from 'rxjs';
 import { AutofillEvent, AutofillMonitor } from '@angular/cdk/text-field';
 import { Data, Documento } from '@servicios/data';
 import { PipesModule } from '@modulos/pipes/pipes-module';
-import { File } from '@servicios/file';
+import { FileServicio } from '@servicios/file';
 
 interface DataCert {
   plantilla: string;
@@ -36,7 +36,7 @@ export class Validacion implements AfterViewInit, OnDestroy {
   private autoFillMonitor: AutofillMonitor = inject(AutofillMonitor);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private dataServicio: Data = inject(Data);
-  private fileServicio: File = inject(File);
+  private fileServicio: FileServicio = inject(FileServicio);
   idLen: number = 16;
   certificado: string | null = null;
   idCertificado: string = '';

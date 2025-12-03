@@ -1,0 +1,99 @@
+<div class="reemplazo">
+  @if (salida) {
+  <div class="salida">
+    <div class="icono">
+      @if (salida.error) {
+      <i class="pi pi-exclamation-triangle"
+         style="color: var(--p-tag-danger-color)">
+      </i>
+      } @else {
+      <i class="pi pi-check-circle"
+         style="color: var(--p-tag-success-color)">
+      </i>
+      }
+    </div>
+    <div class="mensaje">
+      <h3>{{salida.mensaje}}</h3>
+    </div>
+  </div>
+  } @else {
+  <p-fileupload class="change-file"
+                name="reemplaza"
+                (onSelect)="selecciona($event)"
+                (onClear)="elimina($event)"
+                (onRemove)="elimina($event)"
+                (uploadHandler)="reemplaza()"
+                customUpload="true"
+                multiple="false"
+                maxFileSize="5000000"
+                chooseLabel="Examinar"
+                uploadLabel="Reemplazar"
+                cancelLabel="Cancelar"
+                chooseIcon="pi pi-search"
+                uploadIcon="pi pi-refresh"
+                [mode]="'advanced'"
+                fileLimit="1"
+                cancelStyleClass="p-button-danger"
+                uploadStyleClass="p-button-warn"
+                accept=".jpg, .png, .pdf, .jpeg, .xlsx, .xls, .doc, .docx, .ppt, .pptx">
+    <ng-template #content>
+      @if (archivo && docOriginal()) {
+      @if (prevista) {
+      <div class="prevista">
+        <div class="miniatura">
+          <img [src]="prevista.miniaturaURL" />
+        </div>
+        <div class="datos">
+          <div class="dato nombre">
+            <h5>Nombre:</h5>
+            <p>{{prevista.nombre}}</p>
+          </div>
+          <div class="dato peso">
+            <h5>Tamaño:</h5>
+            <p>{{prevista.peso}}</p>
+          </div>
+          <div class="dato categoria">
+            <h5>Categoría:</h5>
+            <p>{{dato('tipo')}}</p>
+          </div>
+          <div class="dato formato">
+            <h5>Formato:</h5>
+            <p>{{dato('formato')}}</p>
+          </div>
+          <div class="dato comentario">
+            <h5>Comentario:</h5>
+            <textarea type="text"
+                      pTextarea
+                      placeholder="Justifique el reemplazo"
+                      rows="4"
+                      fluid="true"
+                      [(ngModel)]="prevista.comentario">
+            </textarea>
+          </div>
+        </div>
+      </div>
+      } @else {
+      <div class="cargando">
+        <p-progress-spinner strokeWidth="8"
+                            fill="transparent"
+                            animationDuration="1s"
+                            class="spinner" />
+        <span>Cargando miniatura...</span>
+      </div>
+      }
+      }
+    </ng-template>
+    <ng-template #file></ng-template>
+    <ng-template #empty>
+      <div class="drag-drop">
+        <div class="icono">
+          <i class="pi pi-cloud-upload"></i>
+        </div>
+        <div class="texto">
+          Arrastre y suelte un documento para reemplazar el seleccionado.
+        </div>
+      </div>
+    </ng-template>
+  </p-fileupload>
+  }
+</div>

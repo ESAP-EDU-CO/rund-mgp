@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { SelectItemGroup, TreeNode } from 'primeng/api';
-import { catchError, map, Observable, Subscriber, tap, throwError } from 'rxjs';
+import { catchError, firstValueFrom, map, Observable, Subscriber, tap, throwError } from 'rxjs';
 import { Firma } from '@servicios/firmas';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from 'primeng/api';
@@ -452,9 +452,8 @@ export class Data {
     });
   }
   async getInfoProfesor(cedula: string): Promise<DatosProfesor | undefined> {
+    const url: string = getEndpointUrl('infoProfesor') + '/' + cedula;
     return new Promise((resolve, reject) => {
-      const url = getEndpointUrl('infoProfesor') + '/' + cedula;
-
       this.http.get<{ profesor: InfoProfesor }>(url).pipe(
         tap(response => {
           if (API_CONFIG.debug) {
@@ -468,7 +467,6 @@ export class Data {
       ).subscribe((response: any) => {
         // Extraer datos de respuesta v2 o usar v1 directamente
         const info = response.profesor || response;
-
         if ('archivosProfesor' in info && 'datosDemograficos' in info) {
           const archivosProfesor: DatoArchivo[] = info.archivosProfesor.map((archivo: { nombre: string, categorias: string[][] }) => {
             const formato: string[] | undefined = archivo.categorias.find((cat: string[]) => cat[0] == 'FORMATO');
@@ -504,6 +502,14 @@ export class Data {
         }
       });
     });
+  }
+  async reemplazaArchivo(uuid: string, nombre: string, archivo: File, comentario: string): Promise<any> {
+    const formData: FormData = new FormData();
+    formData.append('file', archivo);
+    formData.append('nombre_archivo', nombre);
+    formData.append('comment', comentario);
+    const url: string = getEndpointUrl('actualizaArchivo') + '/' + uuid + '/actualizar';
+    return firstValueFrom(this.http.post<any>(url, formData));
   }
   getIndiceDocente(): Observable<any> {
     return this.http.get<any>(getEndpointUrl('indice'));

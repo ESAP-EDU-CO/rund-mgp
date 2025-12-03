@@ -4,7 +4,7 @@ import { VistaDatos } from '@componentes/documentos/vista-datos/vista-datos';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Data, Documento } from '@servicios/data';
 import { API_CONFIG } from '@servicios/api-config';
-import { File } from '@servicios/file';
+import { FileServicio } from '@servicios/file';
 import { SelectItemGroup } from 'primeng/api';
 import { Preview } from "@componentes/documentos/preview/preview";
 import { PipesModule } from '@modulos/pipes/pipes-module';
@@ -38,7 +38,7 @@ export class Certificados implements OnInit {
   listaFirmas: Firma.Firma[] = [];
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private dataServicio: Data = inject(Data);
-  private fileServicio: File = inject(File);
+  private fileServicio: FileServicio = inject(FileServicio);
   private firmasServicio: Firmas = inject(Firmas);
   ngOnInit(): void {
     this.dataServicio.loadDocumentos().then((resp: boolean) => {

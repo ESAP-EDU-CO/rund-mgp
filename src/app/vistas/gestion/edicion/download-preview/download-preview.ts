@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, effect, inject, input, InputSignal, OnDestroy, output, OutputEmitterRef } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Data, DatoArchivo } from '@servicios/data';
-import { File } from '@servicios/file';
+import { FileServicio } from '@servicios/file';
 
 type Modo = 'watch' | 'download';
 interface DescargaResponse {
@@ -28,7 +28,7 @@ export class DownloadPreview implements OnDestroy {
   modo: InputSignal<Modo> = input<Modo>('watch');
   cerrar: OutputEmitterRef<void> = output();
   private dataServicio: Data = inject(Data);
-  private fileServicio: File = inject(File);
+  private fileServicio: FileServicio = inject(FileServicio);
   private sanitizer: DomSanitizer = inject(DomSanitizer);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private blobUrl: string | undefined;

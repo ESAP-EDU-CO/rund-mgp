@@ -6,8 +6,16 @@ import { Data, DatoArchivo, DatosProfesor } from '@servicios/data';
 import { TreeNode } from 'primeng/api';
 import { DownloadPreview } from './download-preview/download-preview';
 import { BorraDocumentos } from "./borra-documentos/borra-documentos";
+import { Reemplazo } from "../reemplazo/reemplazo";
 
-type Profesor = { nombre: string, documentoIdentidad: string };
+export type Profesor = { nombre: string, documentoIdentidad: string };
+export const iconoFormato: any = {
+  PDF: 'pi-file-pdf',
+  XLSX: 'pi-file-excel',
+  DOCX: 'pi-file-word',
+  JPG: 'pi-image',
+  PNG: 'pi-image',
+};
 
 @Component({
   selector: 'mgp-edicion',
@@ -16,7 +24,8 @@ type Profesor = { nombre: string, documentoIdentidad: string };
     PrimengModule,
     FormsModule,
     DownloadPreview,
-    BorraDocumentos
+    BorraDocumentos,
+    Reemplazo
   ],
   templateUrl: './edicion.html',
   styleUrl: './edicion.scss'
@@ -32,19 +41,12 @@ export class Edicion implements OnInit {
   arbolArchivos: TreeNode[] = [];
   archivosSeleccionados: TreeNode[] = [];
   dialogoVisible: boolean = false;
-  tipoDialogo: 'download' | 'delete' | 'change' | 'add' | 'watch' = 'download';
+  tipoDialogo: 'download' | 'delete' | 'change' | 'add' | 'watch' | undefined;
   archivos: DatoArchivo[] = [];
   cargandoProfesores: number = 0;
   tituloDialogo: string = '';
   dialogoCerrable: boolean = true;
   modoDocumento: 'watch' | 'download' = 'watch';
-  iconoFormato: any = {
-    PDF: 'pi-file-pdf',
-    XLSX: 'pi-file-excel',
-    DOCX: 'pi-file-word',
-    JPG: 'pi-image',
-    PNG: 'pi-image',
-  };
   async ngOnInit(): Promise<void> {
     this.labels['DOCUMENTO_DE_IDENTIDAD'] = 'Documento de identidad';
     this.labels['CEDULA'] = 'Documento de identidad';
@@ -106,12 +108,19 @@ export class Edicion implements OnInit {
         this.dialogoCerrable = true;
         this.dialogoVisible = true;
         break;
+      case 'change':
+        this.tituloDialogo = 'Reemplazando ' + this.archivos[0].nombre;
+        this.dialogoCerrable = true;
+        this.dialogoVisible = true;
+        break;
       default:
     }
   }
   cerrarDialogo(): void {
     this.dialogoVisible = false;
+    this.tipoDialogo = undefined;
   }
+  reemplazoCerrado(): void { }
   numSel(): number {
     return this.archivosSeleccionados.filter((nodo: TreeNode) => !nodo.children).length;
   }
@@ -137,24 +146,26 @@ export class Edicion implements OnInit {
     const raiz: TreeNode[] = [];
     const tiposArchivos: { [key: string]: TreeNode } = {};
     archivos.forEach((archivo: DatoArchivo) => {
-      const key: string = '' + Object.keys(tiposArchivos).length;
-      if (!tiposArchivos[archivo.tipo]) {
-        tiposArchivos[archivo.tipo] = {
-          key: key,
-          icon: 'pi pi-fw pi-folder',
-          label: this.labels[archivo.tipo],
-          data: archivo.tipo,
-          children: []
-        };
-        raiz.push(tiposArchivos[archivo.tipo]);
+      if (archivo && archivo.formato !== 'JSON' && archivo.formato !== '') {
+        const key: string = '' + Object.keys(tiposArchivos).length;
+        if (!tiposArchivos[archivo.tipo]) {
+          tiposArchivos[archivo.tipo] = {
+            key: key,
+            icon: 'pi pi-fw pi-folder',
+            label: this.labels[archivo.tipo],
+            data: archivo.tipo,
+            children: []
+          };
+          raiz.push(tiposArchivos[archivo.tipo]);
+        }
+        const subkey: string = tiposArchivos[archivo.tipo].key + '-' + (tiposArchivos[archivo.tipo].children!.length);
+        tiposArchivos[archivo.tipo].children!.push({
+          key: subkey,
+          label: archivo.nombre,
+          data: archivo,
+          icon: 'pi pi-fw ' + (iconoFormato[archivo.formato] || 'pi.file')
+        });
       }
-      const subkey: string = tiposArchivos[archivo.tipo].key + '-' + (tiposArchivos[archivo.tipo].children!.length);
-      tiposArchivos[archivo.tipo].children!.push({
-        key: subkey,
-        label: archivo.nombre,
-        data: archivo,
-        icon: 'pi pi-fw ' + (this.iconoFormato[archivo.formato] || 'pi.file')
-      });
     });
     return raiz;
   }

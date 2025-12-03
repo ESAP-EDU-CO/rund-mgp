@@ -87,6 +87,7 @@
 <p-dialog [header]="tituloDialogo"
           [(visible)]="dialogoVisible"
           [closable]="dialogoCerrable"
+          (onHide)="cerrarDialogo()"
           modal="true">
   @if(tipoDialogo === 'watch' || tipoDialogo === 'download') {
   <mgp-download-preview [modo]="modoDocumento"
@@ -97,6 +98,10 @@
   <mgp-borra-documentos [profesor]="profeSeleccionado"
                         [archivos]="archivos"
                         (finEliminar)="obtieneArchivos()" />
+  } @else if (tipoDialogo === 'change') {
+  <mgp-reemplazo [profesor]="profeSeleccionado"
+                 [docOriginal]="archivos[0]"
+                 (finReemplazo)="obtieneArchivos()" />
   }
   @else {
   ¡¡No hay accion!!
@@ -106,7 +111,7 @@
     <div class="footer">
       <p-button severity="warn"
                 label="Cerrar"
-                (onClick)="dialogoVisible = false"
+                (onClick)="cerrarDialogo()"
                 icon="pi pi-times" />
     </div>
   </ng-template>
