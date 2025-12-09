@@ -7,6 +7,7 @@ import { TreeNode } from 'primeng/api';
 import { DownloadPreview } from './download-preview/download-preview';
 import { BorraDocumentos } from "./borra-documentos/borra-documentos";
 import { Reemplazo } from "../reemplazo/reemplazo";
+import { Adicion } from './adicion/adicion';
 
 export type Profesor = { nombre: string, documentoIdentidad: string };
 export const iconoFormato: any = {
@@ -25,7 +26,8 @@ export const iconoFormato: any = {
     FormsModule,
     DownloadPreview,
     BorraDocumentos,
-    Reemplazo
+    Reemplazo,
+    Adicion,
   ],
   templateUrl: './edicion.html',
   styleUrl: './edicion.scss'
@@ -43,6 +45,7 @@ export class Edicion implements OnInit {
   dialogoVisible: boolean = false;
   tipoDialogo: 'download' | 'delete' | 'change' | 'add' | 'watch' | undefined;
   archivos: DatoArchivo[] = [];
+  archivosProfe: DatoArchivo[] = [];
   cargandoProfesores: number = 0;
   tituloDialogo: string = '';
   dialogoCerrable: boolean = true;
@@ -78,8 +81,8 @@ export class Edicion implements OnInit {
   async obtieneArchivos(): Promise<void> {
     if (this.profesor) {
       const cedula: string = this.profesor.documentoIdentidad;
-      const archivos: DatoArchivo[] = await this.getArchivosProfe(cedula) as DatoArchivo[];
-      this.arbolArchivos = this.generaArbolArchivos(archivos);
+      this.archivosProfe = await this.getArchivosProfe(cedula) as DatoArchivo[];
+      this.arbolArchivos = this.generaArbolArchivos(this.archivosProfe);
       this.profeSeleccionado = this.profesores[cedula];
       this.cdr.detectChanges();
     }
@@ -113,6 +116,11 @@ export class Edicion implements OnInit {
         this.dialogoCerrable = true;
         this.dialogoVisible = true;
         break;
+      case 'add':
+        this.tituloDialogo = 'Añadiendo documento a la hoja de vida';
+        this.dialogoCerrable = true;
+        this.dialogoVisible = true;
+        break;
       default:
     }
   }
@@ -120,7 +128,6 @@ export class Edicion implements OnInit {
     this.dialogoVisible = false;
     this.tipoDialogo = undefined;
   }
-  reemplazoCerrado(): void { }
   numSel(): number {
     return this.archivosSeleccionados.filter((nodo: TreeNode) => !nodo.children).length;
   }

@@ -46,7 +46,6 @@ export class Reemplazo implements OnDestroy {
   }
   async reemplaza(): Promise<void> {
     const resp: any = await this.data.getArchivoProfesorUuid(this.profesor()['DOCUMENTO_DE_IDENTIDAD'] as string, this.docOriginal()?.nombre as string);
-    const uuid: string | undefined = resp.success ? resp.uuid : undefined;
     if (!resp.success) {
       this.salida = { error: true, mensaje: 'El documento original no se encontró en el repositorio' };
       this.cdr.detectChanges();

@@ -102,6 +102,10 @@
   <mgp-reemplazo [profesor]="profeSeleccionado"
                  [docOriginal]="archivos[0]"
                  (finReemplazo)="obtieneArchivos()" />
+  } @else if (tipoDialogo === 'add') {
+  <mgp-adicion [profesor]="profeSeleccionado"
+               [documentos]="archivosProfe"
+               (finAdicion)="obtieneArchivos()" />
   }
   @else {
   ¡¡No hay accion!!

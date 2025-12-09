@@ -1,0 +1,93 @@
+.adicion {
+  .salida {
+    display: flex;
+    align-items: center;
+    gap: 2em;
+    justify-content: center;
+    .icono {
+      i {
+        font-size: 4em;
+      }
+    }
+    .mensaje {
+      max-width: 32em;
+      line-break: anywhere;
+    }
+  }
+  .add-file {
+    display: block;
+    .acciones {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 1em;
+    }
+    .drag-drop {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2em;
+      gap: 2em;
+      .icono {
+        font-size: 2em;
+        padding: 1em;
+        border-radius: 50%;
+        border: 1px solid var(--p-dialog-border-color);
+        background-color: var(--p-highlight-background);
+        color: var(--p-primary-400);
+        i {
+          font-size: 3em;
+        }
+      }
+    }
+    .prevista {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-evenly;
+      gap: 1em;
+      .miniatura {
+        max-width: 240px;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+      }
+      .datos {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 1em;
+        .categoria {
+          .selecciona-categoria {
+            min-width: 20em;
+          }
+        }
+        .dato {
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: flex-start;
+          width: 100%;
+          & > *:not(textarea) {
+            margin: 0;
+            padding: 0;
+          }
+        }
+      }
+    }
+    .cargando {
+      display: flex;
+      align-items: center;
+      gap: 1em;
+      justify-content: center;
+      .spinner {
+        width: 2em;
+        height: 2em;
+        margin: 0;
+      }
+    }
+  }
+}
