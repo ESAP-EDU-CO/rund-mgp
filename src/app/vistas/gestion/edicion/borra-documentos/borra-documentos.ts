@@ -24,6 +24,7 @@ interface ListaArchivos {
 export class BorraDocumentos implements OnDestroy {
   profesor: InputSignal<any> = input<any>();
   archivos: InputSignal<DatoArchivo[]> = input<DatoArchivo[]>([]);
+  headless: InputSignal<boolean> = input<boolean>(false);
   finEliminar: OutputEmitterRef<void> = output();
   private dataServicio: Data = inject(Data);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);

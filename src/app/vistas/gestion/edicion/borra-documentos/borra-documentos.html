@@ -1,6 +1,7 @@
 <div class="borra-documentos">
   @if (dataVisible) {
   @if (listaArchivos.length > 0) {
+  @if (!headless()) {
   <p-table class="lista-documentos"
            [scrollable]="true"
            scrollHeight="50vh"
@@ -49,6 +50,18 @@
     </ng-template>
     }
   </p-table>
+  } @else {
+  <!-- headless() = Solo confirmar borrado -->
+  <div class="confirmar">
+    <p-button [icon]=" 'pi pi-' + (eliminando ? 'spin pi-spinner' : 'trash')"
+              pTooltip="Esta acción es irreversible"
+              tooltipPosition="top"
+              label="Eliminar"
+              (onClick)="eliminaDocumentos()"
+              [disabled]="eliminando"
+              severity="danger" />
+  </div>
+  }
   } @else {
   <div class="vacio">
     <h3>No hay documentos pendientes de eliminar</h3>

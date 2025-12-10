@@ -2,6 +2,9 @@ import { ChangeDetectorRef, Component, effect, inject, input, InputSignal, OnDes
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Data, DatoArchivo } from '@servicios/data';
 import { FileServicio } from '@servicios/file';
+import { PrimengModule } from "@modulos/primeng/primeng-module";
+import { BorraDocumentos } from '../borra-documentos/borra-documentos';
+import { Reemplazo } from '@vistas/gestion/reemplazo/reemplazo';
 
 type Modo = 'watch' | 'download';
 interface DescargaResponse {
@@ -18,7 +21,11 @@ interface ListaDescarga {
 
 @Component({
   selector: 'mgp-download-preview',
-  imports: [],
+  imports: [
+    PrimengModule,
+    BorraDocumentos,
+    Reemplazo,
+  ],
   templateUrl: './download-preview.html',
   styleUrl: './download-preview.scss'
 })
@@ -40,6 +47,7 @@ export class DownloadPreview implements OnDestroy {
     'image/png': 'PNG',
   }
   private labels: { [key: string]: string } = this.dataServicio.labels;
+  uuid?: string;
   propiedades: { clave: string, valor: string }[] = [];
   pdfUrl: SafeResourceUrl | undefined;
   textoError: string = '';
@@ -63,6 +71,7 @@ export class DownloadPreview implements OnDestroy {
             try {
               const consulta: any = await this.dataServicio.getArchivoProfesorUuid(cedula, nombre);
               if (consulta.uuid && !consulta.error) {
+                this.uuid = consulta.uuid;
                 let tipo: string = consulta.propiedades.path.replace('/okm:root/RUND/DOCENTES/HOJAS_DE_VIDA/' + cedula + '/', '').replace('/' + nombre, '');
                 if (tipo == nombre) tipo = 'CEDULA';
                 this.labels['CEDULA'] = 'Documento de identidad';
@@ -146,6 +155,10 @@ export class DownloadPreview implements OnDestroy {
         }
       }
     });
+  }
+  async descargaPreview(): Promise<void> {
+    const descarga: DescargaResponse = await this.descargaArchivo(this.uuid as string);
+    this.fileServicio.descarga(descarga.blob, this.archivos()[0].nombre);
   }
   async descargaArchivo(uuid: string): Promise<DescargaResponse> {
     const consulta: Blob = await this.dataServicio.getArchivo(uuid);

@@ -12,13 +12,26 @@
     }
   </div>
   <div class="propiedades">
-    @if (propiedades && propiedades.length > 0){
+    @if (propiedades && propiedades.length > 0) {
+    <div class="acciones">
+      <p-button (onClick)="descargaPreview()"
+                label="Descargar"
+                icon="pi pi-download" />
+      <mgp-borra-documentos [headless]="true"
+                            [profesor]="profesor()"
+                            [archivos]="archivos()" />
+    </div>
     @for (propiedad of propiedades; track propiedad) {
     <div class="propiedad">
       <h4>{{propiedad.clave}}</h4>
       <p>{{propiedad.valor}}</p>
     </div>
     }
+    <p-card header="Reemplazar documento"
+            class="reemplazar">
+      <mgp-reemplazo [profesor]="profesor()"
+                     [docOriginal]="archivos()[0]" />
+    </p-card>
     } @else {
     <h2>{{textoError}}</h2>
     }

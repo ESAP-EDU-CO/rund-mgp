@@ -7,6 +7,12 @@
     height: 80vh;
   }
   .propiedades {
+    .acciones {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5em;
+      margin-bottom: 1em;
+    }
     .propiedad {
       display: flex;
       gap: 1em;
