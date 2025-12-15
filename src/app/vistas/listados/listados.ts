@@ -4,7 +4,8 @@ import { VistaExcel } from '@componentes/vista-excel/vista-excel';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { ListadoProps, TipoListado, Data } from '@servicios/data';
-import { API_CONFIG, DIRECT_URLS } from '@servicios/api-config';
+import { DIRECT_URLS } from '@servicios/api-config';
+import { ConfigService } from '@servicios/config.service';
 import { ConfirmationService } from 'primeng/api';
 
 type Dupe = {
@@ -39,10 +40,11 @@ export class Listados {
   private data: Data = inject(Data);
   private confirmationService: ConfirmationService = inject(ConfirmationService);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private configService = inject(ConfigService);
   constructor() {
     // Se usa para generar una ruta directa, para el componente <p-fileUpload>, sin que pase por data.ts
-    // Usar API_CONFIG.baseUrl que se configura dinámicamente desde /api/config
-    this.loadList = API_CONFIG.baseUrl + DIRECT_URLS.uploadListados;
+    // Usar ConfigService.getApiBaseUrl() que se configura dinámicamente desde /api/config
+    this.loadList = this.configService.getApiBaseUrl() + '/' + DIRECT_URLS.uploadListados;
   }
   acciones(ev: any, funcion: Function): void {
     if (funcion.name != 'bound upload') {

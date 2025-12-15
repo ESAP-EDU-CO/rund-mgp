@@ -11,19 +11,19 @@
       </div>
     </ng-template>
     <ng-template #end>
-      @if (usuario) {
+      @if (usuario()) {
       <div class="nombre">
-        <span [innerHTML]="usuario.nombre"></span>
+        <span [innerHTML]="usuario()?.name || usuario()?.email"></span>
       </div>
       <p-button severity="secondary"
                 (onClick)="logout()"
-                icon="pi pi-sign-out" />
-      } @else {
-      @for (tipo of ['admin', 'servicio', 'consulta', 'usuario']; track tipo){
-      <p-button (onClick)="login(tipo)"
-                [label]="tipo"
-                [style]="{'margin-left': '1em', 'text-transform': 'uppercase'}" />
-      }
+                icon="pi pi-sign-out"
+                label="Cerrar sesión" />
+      } @else if(!enLogin) {
+      <p-button (onClick)="irALogin()"
+                label="Iniciar sesión"
+                icon="pi pi-sign-in"
+                severity="primary" />
       }
     </ng-template>
   </p-toolbar>

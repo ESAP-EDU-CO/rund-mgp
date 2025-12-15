@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { VistaDatos } from '@componentes/documentos/vista-datos/vista-datos';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Data, Documento } from '@servicios/data';
-import { API_CONFIG } from '@servicios/api-config';
+import { ConfigService } from '@servicios/config.service';
 import { FileServicio } from '@servicios/file';
 import { SelectItemGroup } from 'primeng/api';
 import { Preview } from "@componentes/documentos/preview/preview";
@@ -40,6 +40,7 @@ export class Certificados implements OnInit {
   private dataServicio: Data = inject(Data);
   private fileServicio: FileServicio = inject(FileServicio);
   private firmasServicio: Firmas = inject(Firmas);
+  private configService = inject(ConfigService);
   ngOnInit(): void {
     this.dataServicio.loadDocumentos().then((resp: boolean) => {
       if (resp) {
@@ -98,7 +99,7 @@ export class Certificados implements OnInit {
     this.preview = {
       // En background se almacena una ruta que es un request directo, sin pasar por data.ts, que usará compartidos/componentes/documentos/preview/preview.html
       // Usar alias corto v2 para mejor performance y URL más limpia
-      background: API_CONFIG.baseUrl + 'img/base.jpg',
+      background: this.configService.getApiBaseUrl() + '/img/base.jpg',
       paddingTop: '7em',
       estructura: {} as Documento.Estructura[],
       plantilla: ''

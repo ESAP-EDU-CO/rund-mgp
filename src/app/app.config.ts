@@ -1,4 +1,5 @@
 import {
+  APP_INITIALIZER,
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection
@@ -7,11 +8,13 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { authInterceptor } from './compartidos/interceptores/auth-interceptor';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import { definePreset, palette, $dt } from '@primeng/themes';
 import Aura from '@primeng/themes/aura';
+import { ConfigService } from './compartidos/servicios/config.service';
 
 const estilo: any = definePreset(
   Aura, {
@@ -37,18 +40,36 @@ const estilo: any = definePreset(
 }
 );
 
+/**
+ * Factory function para inicializar ConfigService
+ * Se ejecuta ANTES de que la aplicación arranque
+ */
+function initializeApp(configService: ConfigService) {
+  return () => configService.loadConfig();
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withFetch()),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([authInterceptor])
+    ),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
         preset: estilo
       }
     }),
+    // APP_INITIALIZER: Cargar configuración antes de iniciar la app
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeApp,
+      deps: [ConfigService],
+      multi: true
+    }
   ]
 };

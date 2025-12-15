@@ -8,7 +8,8 @@ import { MenuItem } from 'primeng/api';
 import { Rol } from '@servicios/auth';
 import { isPlatformBrowser } from '@angular/common';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { API_CONFIG, getEndpointUrl } from './api-config';
+import { getEndpointUrl } from './api-config';
+import { ConfigService } from './config.service';
 
 export interface DataCategoria extends Omit<TreeNode, 'children'> {
   numDocs?: number;
@@ -173,7 +174,7 @@ export class Data {
   public categorias: CategoriaBase[] = [];
   public labels: { [key: string]: string } = {};
   public dataCategorias: DataCategoria[] | undefined;
-  public apiVersion: string = API_CONFIG.version;
+  public apiVersion: string = '2.0';
   public chartColors: string[] = ['blue', 'yellow', 'green', 'cyan', 'pink', 'indigo', 'orange', 'teal', 'bluegray', 'purple', 'red'];
   private aNivel: Anivel[] = [{ label: 'Direcciones territoriales', superLabel: 'Distribución territorial' }];
   public documentos: Documento.Listado = {} as Documento.Listado;
@@ -184,16 +185,26 @@ export class Data {
   private faFileArrowUp: IconDefinition = this.faIconLibrary.getIconDefinition('fas', 'file-arrow-up') as IconDefinition;
   private faFileAlt: IconDefinition = this.faIconLibrary.getIconDefinition('fas', 'file-alt') as IconDefinition;
   public elementosMenu: MenuElemento[] = [
-    /*{ label: 'Panel de control', faIcon: this.faGauge, route: '/dashboard', rol: 'consulta' },
-    { label: 'Consultas', faIcon: this.faMagnifyingGlassChart, route: '/consultas', rol: 'consulta' },*/
-    { label: 'Listados', tipo: 'PrimeNG', icon: 'pi pi-list-check', route: '/listados', rol: 'servicio' },
-    { label: 'Gestión', faIcon: this.faFileArrowUp, route: '/gestion', rol: 'servicio' },
-    { label: 'Certificados', faIcon: this.faFileAlt, route: '/certificados', rol: 'servicio' },
+    /*{ label: 'Panel de control', faIcon: this.faGauge, route: '/dashboard', rol: 'directivo' },
+    { label: 'Consultas', faIcon: this.faMagnifyingGlassChart, route: '/consultas', rol: 'directivo' },*/
+    { label: 'Listados', tipo: 'PrimeNG', icon: 'pi pi-list-check', route: '/listados', rol: 'gestor' },
+    { label: 'Gestión', faIcon: this.faFileArrowUp, route: '/gestion', rol: 'gestor' },
+    { label: 'Certificados', faIcon: this.faFileAlt, route: '/certificados', rol: 'gestor' },
+    { label: 'Herramientas', tipo: 'PrimeNG', icon: 'pi pi-wrench', route: '/herramientas', rol: 'gestor' },
     { label: 'Validación', faIcon: this.faCheckDouble, route: '/validacion', rol: 'usuario' },
-    { label: 'Herramientas', tipo: 'PrimeNG', icon: 'pi pi-wrench', route: '/herramientas', rol: 'servicio' },
   ];
   private platID: any = inject(PLATFORM_ID);
   private http: HttpClient = inject(HttpClient);
+  private configService = inject(ConfigService);
+
+  /**
+   * Método auxiliar para obtener URL de endpoint con baseUrl
+   */
+  private getUrl(endpointKey: string): string {
+    const baseUrl = this.configService.getApiBaseUrl();
+    return getEndpointUrl(endpointKey, baseUrl);
+  }
+
   init(): Observable<VarData> {
     const data: VarData = {
       categorias: [],
@@ -201,7 +212,7 @@ export class Data {
     };
     return new Observable<VarData>((observer: Subscriber<VarData>) => {
       // Usar configuración v2 para obtener labels
-      const labelsUrl = getEndpointUrl('datos') + '/labels';
+      const labelsUrl = this.getUrl('datos') + '/labels';
       this.http.get<{ datos: { [key: string]: string } }>(labelsUrl).pipe(
         map((response: any) => {
           // Extraer datos de la respuesta v2
@@ -212,7 +223,7 @@ export class Data {
           data.labels = this.labels;
 
           // Usar configuración v2 para obtener categorías
-          const categoriasUrl = getEndpointUrl('datos') + '/categorias';
+          const categoriasUrl = this.getUrl('datos') + '/categorias';
           this.http.get<{ datos: CategoriaBase[] }>(categoriasUrl).pipe(
             map((response: any) => {
               // Extraer datos de la respuesta v2
@@ -241,30 +252,9 @@ export class Data {
     const options: any = opciones ? { params: params, ...opciones } : { params: params };
     return this.http.get<any>(endpoint, options);
   }
-  getConfig(): Observable<boolean> {
-    return new Observable((suscriptor: Subscriber<boolean>) => {
-      this.http.get<any>('/api/config').pipe(
-        tap((config: any) => {
-          // Actualizar configuración global de API_CONFIG con la URL del entorno actual
-          API_CONFIG.baseUrl = config.apiBaseUrl + '/';
-          if (API_CONFIG.baseUrl !== '') {
-            suscriptor.next(true);
-            suscriptor.complete();
-          } else {
-            suscriptor.error('No se pudo leer la configuración del host del servidor');
-          }
-        })
-      ).subscribe();
-    });
-  }
   getCategorias(): Observable<DataCategoria[]> {
-    const url = getEndpointUrl('categorias');
+    const url = this.getUrl('categorias');
     return this.http.get<{ arbol: DataCategoria[] }>(url).pipe(
-      tap(response => {
-        if (API_CONFIG.debug) {
-          console.log('getCategorias v2 response:', response);
-        }
-      }),
       catchError(error => {
         console.error('Error obteniendo categorías:', error);
         return throwError(() => error);
@@ -278,13 +268,8 @@ export class Data {
   }
   getCruce(uuids: string[]): Observable<DataTabla> {
     const [x, y] = uuids;
-    const url = getEndpointUrl('cruce') + `/${x}/${y}`;
+    const url = this.getUrl('cruce') + `/${x}/${y}`;
     return this.http.get<{ cruce: DataTabla }>(url).pipe(
-      tap(response => {
-        if (API_CONFIG.debug) {
-          console.log('getCruce v2 response:', response);
-        }
-      }),
       catchError(error => {
         console.error('Error obteniendo cruce:', error);
         return throwError(() => error);
@@ -302,11 +287,11 @@ export class Data {
     const formData: FormData = new FormData();
     formData.append('tipo', tipo);
     formData.append('data', JSON.stringify(data));
-    return this.http.post<Blob>(getEndpointUrl('consultaFile'), formData, opciones);
+    return this.http.post<Blob>(this.getUrl('consultaFile'), formData, opciones);
   }
   loadDocumentos(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.http.get<{ datos: Documento.Listado }>(getEndpointUrl('datos') + '/documentos')
+      this.http.get<{ datos: Documento.Listado }>(this.getUrl('datos') + '/documentos')
         .subscribe((documentos: { datos: Documento.Listado }) => {
           this.documentos = documentos.datos;
           resolve(true);
@@ -327,13 +312,13 @@ export class Data {
     const opciones: any = {
       responseType: 'blob',
     }
-    return this.http.post<Blob>(getEndpointUrl('documentosGenerar'), formData, opciones);
+    return this.http.post<Blob>(this.getUrl('documentosGenerar'), formData, opciones);
   }
   postCargaFiles(propiedades: ListadoProps[], archivo: File): Observable<any> {
-    return this.postFile(getEndpointUrl('archivosSubir'), propiedades, 'cargaDocumento', archivo);
+    return this.postFile(this.getUrl('archivosSubir'), propiedades, 'cargaDocumento', archivo);
   }
   postLoadList(propiedades: ListadoProps[], archivo: File | undefined): Observable<any> {
-    return this.postFile(getEndpointUrl('loadList'), propiedades, 'cargar', archivo);
+    return this.postFile(this.getUrl('loadList'), propiedades, 'cargar', archivo);
   }
   postFile(url: string, propiedades: ListadoProps[], accion: string, archivo: File | undefined = undefined): Observable<any> {
     const formData: FormData = new FormData();
@@ -370,16 +355,16 @@ export class Data {
     return resp;
   }
   delTemp(): Observable<{ borrados: string[], aBorrar: string[] }> {
-    return this.http.delete<{ borrados: string[], aBorrar: string[] }>(getEndpointUrl('tempCleanup'));
+    return this.http.delete<{ borrados: string[], aBorrar: string[] }>(this.getUrl('tempCleanup'));
   }
   getLoadList(params: { [key: string]: any }): Observable<any> {
-    return this.apiGet(getEndpointUrl('listadosDatos'), params);
+    return this.apiGet(this.getUrl('listadosDatos'), params);
   }
   getCsvData(params: any): Observable<any> {
-    return this.apiGet(getEndpointUrl('csvData'), params);
+    return this.apiGet(this.getUrl('csvData'), params);
   }
   getFirmas(params: { [key: string]: any }, opciones: { [key: string]: any } | undefined = undefined): Observable<any[]> {
-    return this.apiGet(getEndpointUrl('firmas'), params, opciones);
+    return this.apiGet(this.getUrl('firmas'), params, opciones);
   }
   postFirma(datos: Firma.FirmaMetadata, blob: Blob): Observable<any> {
     const nombreFirma: string =
@@ -393,18 +378,18 @@ export class Data {
         valor: datos[key as keyof Firma.FirmaMetadata]
       };
     });
-    return this.postFile(getEndpointUrl('firmaSubir'), propiedades, 'cargaFirma', archivo);
+    return this.postFile(this.getUrl('firmaSubir'), propiedades, 'cargaFirma', archivo);
   }
   deleteFile(uuid: string): Observable<any> {
-    return this.http.delete(getEndpointUrl('deleteFile') + '/' + uuid);
+    return this.http.delete(this.getUrl('deleteFile') + '/' + uuid);
   }
   vaciaPapelera(): Observable<any> {
-    return this.http.delete(getEndpointUrl('papelera'));
+    return this.http.delete(this.getUrl('papelera'));
   }
   getImagen(nombre: string): Observable<string | ArrayBuffer | null> {
     if (isPlatformBrowser(this.platID)) {
       const opciones: any = { responseType: 'blob' };
-      const getFile: Observable<any> = this.http.get<any>(getEndpointUrl('imagen') + '/' + nombre, opciones);
+      const getFile: Observable<any> = this.http.get<any>(this.getUrl('imagen') + '/' + nombre, opciones);
       return new Observable((observador: Subscriber<any>) => {
         getFile.pipe(
           tap((imagen: any) => {
@@ -424,12 +409,12 @@ export class Data {
     }
   }
   getCertificadoInfo(id: string): Observable<any> {
-    return this.http.get<any>(getEndpointUrl('certificadoInfo') + '/' + id);
+    return this.http.get<any>(this.getUrl('certificadoInfo') + '/' + id);
   }
   async getArchivo(uuid: string): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       const opciones: any = { responseType: 'blob' };
-      const url = getEndpointUrl('getFile') + '/' + uuid;
+      const url = this.getUrl('getFile') + '/' + uuid;
       this.http.get(url, { responseType: 'blob' }).pipe(
         catchError(error => {
           console.error('Error obteniendo archivo:', error);
@@ -441,7 +426,7 @@ export class Data {
   }
   async getArchivoProfesorUuid(cedula: string, nombre: string): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      const url = getEndpointUrl('infoProfesor') + '/' + cedula + '/' + nombre;
+      const url = this.getUrl('infoProfesor') + '/' + cedula + '/' + nombre;
       this.http.get<any>(url).pipe(
         catchError(error => {
           console.error('Error obteniendo UUID del archivo:', error);
@@ -452,14 +437,9 @@ export class Data {
     });
   }
   async getInfoProfesor(cedula: string): Promise<DatosProfesor | undefined> {
-    const url: string = getEndpointUrl('infoProfesor') + '/' + cedula;
+    const url: string = this.getUrl('infoProfesor') + '/' + cedula;
     return new Promise((resolve, reject) => {
       this.http.get<{ profesor: InfoProfesor }>(url).pipe(
-        tap(response => {
-          if (API_CONFIG.debug) {
-            console.log('getInfoProfesor v2 response:', response);
-          }
-        }),
         catchError(error => {
           console.error('Error obteniendo información del profesor:', error);
           return throwError(() => error);
@@ -508,11 +488,11 @@ export class Data {
     formData.append('file', archivo);
     formData.append('nombre_archivo', nombre);
     formData.append('comment', comentario);
-    const url: string = getEndpointUrl('actualizaArchivo') + '/' + uuid + '/actualizar';
+    const url: string = this.getUrl('actualizaArchivo') + '/' + uuid + '/actualizar';
     return firstValueFrom(this.http.post<any>(url, formData));
   }
   getIndiceDocente(): Observable<any> {
-    return this.http.get<any>(getEndpointUrl('indice'));
+    return this.http.get<any>(this.getUrl('indice'));
   }
   extraeDatos(accion: string, documento: File, tipoDocumento: string, datosExtraer: string[]): Observable<any> {
     const formData: FormData = new FormData();
@@ -520,7 +500,7 @@ export class Data {
     formData.append('documento', documento);
     formData.append('tipoDocumento', tipoDocumento);
     formData.append('datosExtraer', JSON.stringify(datosExtraer));
-    return this.http.post<any>(getEndpointUrl('extraeDatos'), formData);
+    return this.http.post<any>(this.getUrl('extraeDatos'), formData);
   }
   private normalizaNombre(nombre: string): string {
     return nombre.trim().replace(/\s+/g, '_').toUpperCase();

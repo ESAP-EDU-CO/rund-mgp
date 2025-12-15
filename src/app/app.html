@@ -1,11 +1,11 @@
-@if (configLoaded){
+@if (configLoaded) {
 <mgp-header />
-@if (usuario){
+@if (usuario()){
 <div class="contenido">
   <div class="menu-lateral">
     <mgp-menu />
   </div>
-  @if (tienePermiso()) {
+  @if (tienePermiso) {
   <div class="content"
        [class.vacio]="!dataVars">
     @if (dataVars){
@@ -24,16 +24,14 @@
   }
 </div>
 } @else {
-@if (usuario === undefined) {
+@if (usuario() === undefined) {
 <div class="autenticandose">
   <h1>Autenticándose con su usuario de ESAP</h1>
   <p-progressSpinner ariaLabel="Cargando credenciales" />
 </div>
 }
-@if (usuario === null) {
-<div class="no-autenticado">
-  <h1>No se ha autenticado, no hay usuario</h1>
-</div>
+@if (usuario() === null) {
+<mgp-login />
 }
 }
 }

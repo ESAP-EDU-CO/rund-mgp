@@ -33,6 +33,8 @@ import { DataViewModule } from 'primeng/dataview';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TooltipModule } from 'primeng/tooltip';
 import { TagModule } from 'primeng/tag';
+import { PasswordModule } from 'primeng/password';
+import { MessageModule } from 'primeng/message';
 
 @NgModule({
   declarations: [],
@@ -71,6 +73,8 @@ import { TagModule } from 'primeng/tag';
     ToggleSwitchModule,
     TooltipModule,
     TagModule,
+    PasswordModule,
+    MessageModule,
   ],
   exports: [
     ButtonModule,
@@ -106,6 +110,8 @@ import { TagModule } from 'primeng/tag';
     ToggleSwitchModule,
     TooltipModule,
     TagModule,
+    PasswordModule,
+    MessageModule,
   ],
 })
 export class PrimengModule { }

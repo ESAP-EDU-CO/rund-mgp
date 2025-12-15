@@ -8,7 +8,6 @@
  * @version 2.0
  * @since Angular 18
  */
-
 export interface EndpointConfig {
   endpoint: string;
   status: 'active';
@@ -148,21 +147,33 @@ export const API_ENDPOINTS: ApiEndpoints = {
     status: 'active'
   },
 
+  // Autenticación
+  login: {
+    endpoint: 'api/v2/auth/login',
+    status: 'active',
+  },
+  logout: {
+    endpoint: 'api/v2/auth/logout',
+    status: 'active',
+  },
+  session: {
+    endpoint: 'api/v2/auth/session',
+    status: 'active',
+  },
+  refresh: {
+    endpoint: 'api/v2/auth/refresh',
+    status: 'active',
+  },
+  devLogin: {
+    endpoint: 'api/v2/auth/dev/login',
+    status: 'active',
+  },
+
   // IA
   extraeDatos: {
     endpoint: 'api/v2/ai/extraer',
     status: 'active'
   }
-};
-
-/**
- * Configuración global de la API
- */
-export const API_CONFIG = {
-  version: '2.0',
-  baseUrl: '', // Se configura dinámicamente desde /api/config
-  onlyV2: true,
-  debug: false
 };
 
 /**
@@ -179,19 +190,24 @@ export const DIRECT_URLS = {
 
 /**
  * Utilidad para obtener la URL v2 correcta
+ *
+ * IMPORTANTE: Esta función depende de ConfigService para obtener la baseUrl.
+ * ConfigService debe estar inicializado antes de usar esta función.
+ *
+ * @param endpointKey - La clave del endpoint en API_ENDPOINTS
+ * @param configService - Instancia de ConfigService (debe ser inyectada)
+ * @returns URL completa del endpoint
  */
-export function getEndpointUrl(endpointKey: string): string {
+export function getEndpointUrl(endpointKey: string, baseUrl: string): string {
   const config = API_ENDPOINTS[endpointKey];
 
   if (!config) {
     console.warn(`Endpoint '${endpointKey}' no encontrado en configuración`);
-    return API_CONFIG.baseUrl + endpointKey; // Fallback al key original
+    return baseUrl + endpointKey; // Fallback al key original
   }
 
-  if (API_CONFIG.baseUrl == '') {
-    console.log('La baseUrl está vacía');
-    //API_CONFIG.baseUrl = 'http://localhost:3000/';
-  }
+  // Asegurar que baseUrl termine con /
+  const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
 
-  return API_CONFIG.baseUrl + config.endpoint;
+  return normalizedBaseUrl + config.endpoint;
 }

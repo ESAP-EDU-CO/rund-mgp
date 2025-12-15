@@ -1,9 +1,9 @@
 import { isPlatformBrowser, NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectorRef, Component, effect, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { EventType, Router, RouterLink } from '@angular/router';
 import { IconsModule } from '@modulos/icons/icons-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
-import { Auth, Rol, Usuario } from '@servicios/auth';
+import { Auth, Rol } from '@servicios/auth';
 import { Data, MenuElemento } from '@servicios/data';
 
 @Component({
@@ -22,16 +22,26 @@ export class Menu implements OnInit {
   conteo: number = 0;
   itemsUsados: string[] = [];
   seccionActual: string = '';
-  usuario?: Usuario;
-  constructor(
-    private router: Router,
-    private authServicio: Auth,
-    private dataServicio: Data,
-    @Inject(PLATFORM_ID) private platID: any,
-    private cdr: ChangeDetectorRef,
-  ) {
-    this.authServicio.usuario.subscribe((usuario: Usuario | null | undefined) => this.usuario = usuario as Usuario);
+
+  private router = inject(Router);
+  private authServicio = inject(Auth);
+  private dataServicio = inject(Data);
+  private platID = inject(PLATFORM_ID);
+  private cdr = inject(ChangeDetectorRef);
+
+  // Usar el signal directamente del servicio
+  protected usuario = this.authServicio.usuario;
+
+  constructor() {
+    // Effect para detectar cambios en el usuario y forzar detección de cambios
+    effect(() => {
+      const user = this.usuario();
+      if (user !== undefined) {
+        this.cdr.detectChanges();
+      }
+    });
   }
+
   ngOnInit(): void {
     if (isPlatformBrowser(this.platID)) {
       this.seccionActual = this.router.url.split('?')[0];

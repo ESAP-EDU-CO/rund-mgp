@@ -2,7 +2,7 @@
   <p-menu [model]="elementosMenu">
     <ng-template #item
                  let-item>
-      @if (permiso(item, usuario?.rol)){
+      @if (permiso(item, usuario()?.rol)){
       <a class="item p-menu-item-link"
          [class.surface-200]="seccionActual == item.route"
          [routerLink]="item.route"

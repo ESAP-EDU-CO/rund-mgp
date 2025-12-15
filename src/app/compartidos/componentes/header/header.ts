@@ -1,6 +1,7 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, effect, inject, OnInit } from '@angular/core';
+import { EventType, Router } from '@angular/router';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
-import { Auth, Rol, Usuario } from '@servicios/auth';
+import { Auth } from '@servicios/auth';
 import { Data } from '@servicios/data';
 
 @Component({
@@ -12,17 +13,29 @@ import { Data } from '@servicios/data';
   styleUrl: './header.scss'
 })
 export class Header implements OnInit {
-  usuario: Usuario | null | undefined;
-  logo: string | ArrayBuffer | null = null;
+  protected logo: string | ArrayBuffer | null = null;
+
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private data: Data = inject(Data);
   private authServicio: Auth = inject(Auth);
-  ngOnInit(): void {
-    this.authServicio.usuario
-      .subscribe((usuario: Usuario | null | undefined) => {
-        this.usuario = usuario;
+  private router: Router = inject(Router);
+
+  // Usar el signal directamente del servicio
+  protected usuario = this.authServicio.usuario;
+
+  enLogin: boolean = false;
+
+  constructor() {
+    // Effect para detectar cambios en el usuario
+    effect(() => {
+      const user = this.usuario();
+      if (user !== undefined) {
         this.cdr.detectChanges();
-      });
+      }
+    });
+  }
+
+  ngOnInit(): void {
     this.data.getImagen('logoESAP.svg')
       .subscribe((logo: string | ArrayBuffer | null) => {
         if (logo) {
@@ -30,13 +43,23 @@ export class Header implements OnInit {
           this.cdr.detectChanges();
         }
       });
+    this.router.events.subscribe((ev: any) => {
+      if (ev.type == EventType.NavigationEnd) this.enLogin = ev.url.split('?')[0] === '/login';
+      this.cdr.detectChanges();
+    });
   }
-  login(tipo: string): void {
-    this.authServicio.getAuth(tipo as Rol);
-    this.cdr.detectChanges();
+
+  /**
+   * Redirige a la página de login
+   */
+  irALogin(): void {
+    this.router.navigate(['/login']);
   }
+
+  /**
+   * Cierra la sesión del usuario
+   */
   logout(): void {
-    this.authServicio.logout();
-    this.cdr.detectChanges();
+    this.authServicio.logout().subscribe();
   }
 }
