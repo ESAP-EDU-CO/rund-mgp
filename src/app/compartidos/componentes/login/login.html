@@ -2,13 +2,18 @@
   <div class="login-card">
     <!-- Logo y título -->
     <div class="login-header">
-      @if (logo) {
-      <img [src]="logo"
-           alt="ESAP"
-           class="logo" />
-      }
-      <h1>RUND - Registro Único Nacional Docente</h1>
-      <p class="subtitle">Sistema de Gestión de Hojas de Vida</p>
+      <div class="logo-titulo">
+        <div class="logo">
+          @if (logo) {
+          <img [src]="logo"
+               animate.enter="entra-animacion"
+               alt="ESAP"
+               class="imagen-logo" />
+          }
+        </div>
+        <h1>RUND</h1>
+      </div>
+      <p class="subtitle">Módulo de Gestión Profesoral</p>
     </div>
 
     <!-- Formulario de login -->

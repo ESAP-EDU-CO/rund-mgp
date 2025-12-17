@@ -268,10 +268,20 @@ export class Auth {
    * Se determina el rol del usuario basado en los datos de rund-auth
    */
   private determinarRol(user: Usuario): Rol {
-    // SOLO PARA DESARROLLO
+    //* SOLO PARA DESARROLLO
     if ((!this.usuarioSignal() && user.email.includes('usuario.administrador')) || this.esAdmin()) {
       return 'admin';
     }
+    if ((!this.usuarioSignal() && user.email.includes('usuario.gestor'))) {
+      return 'gestor';
+    }
+    if ((!this.usuarioSignal() && user.email.includes('usuario.directivo'))) {
+      return 'directivo';
+    }
+    if ((!this.usuarioSignal() && user.email.includes('usuario.usuario'))) {
+      return 'usuario';
+    }
+    //*/
 
     // Si ya tiene rol definido, usarlo
     if (user.rol) {

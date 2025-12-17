@@ -1,5 +1,6 @@
 <div class="herramientas">
   @for (herramienta of herramientas; track herramienta.vinculo) {
+  @if (tienePermisos(herramienta.rolMinimo)) {
   <p-card class="herramienta">
     <ng-template #title>
       {{herramienta.titulo}}
@@ -16,6 +17,7 @@
       </div>
     </ng-template>
   </p-card>
+  }
   }
   <p-dialog [style]="{width: '70vw'}"
             [visible]="modalVisible"
