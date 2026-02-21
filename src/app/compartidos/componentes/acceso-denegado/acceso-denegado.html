@@ -1,0 +1,31 @@
+<div class="acceso-denegado-container">
+  <div class="acceso-denegado-card">
+    <div class="icono-container">
+      <i class="pi pi-lock" style="font-size: 4rem; color: var(--red-500);"></i>
+    </div>
+    <h1 class="titulo">Acceso Denegado</h1>
+    <p class="descripcion">
+      No tienes permisos para acceder a esta sección.
+      @if (nombreUsuario()?.name) {
+        Estás conectado como <strong>{{ nombreUsuario()?.name }}</strong>
+      }
+      @if (rolUsuario()?.rol) {
+        con rol <strong>{{ rolUsuario()?.rol }}</strong>.
+      }
+    </p>
+    <div class="acciones">
+      <p-button
+        label="Ir al inicio"
+        icon="pi pi-home"
+        (onClick)="irInicio()"
+        styleClass="p-button-outlined mr-2">
+      </p-button>
+      <p-button
+        label="Cerrar sesión"
+        icon="pi pi-sign-out"
+        severity="danger"
+        (onClick)="cerrarSesion()">
+      </p-button>
+    </div>
+  </div>
+</div>

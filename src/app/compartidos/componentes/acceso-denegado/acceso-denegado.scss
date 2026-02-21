@@ -1,0 +1,40 @@
+.acceso-denegado-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 80px);
+  padding: 2rem;
+
+  .acceso-denegado-card {
+    text-align: center;
+    max-width: 480px;
+    padding: 3rem 2rem;
+    background: var(--surface-card);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow, 0 2px 12px rgba(0,0,0,0.1));
+
+    .icono-container {
+      margin-bottom: 1.5rem;
+    }
+
+    .titulo {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-color);
+      margin-bottom: 1rem;
+    }
+
+    .descripcion {
+      color: var(--text-color-secondary);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .acciones {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+  }
+}
