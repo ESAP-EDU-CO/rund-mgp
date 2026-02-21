@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Auth } from '../../servicios/auth';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
@@ -16,7 +16,7 @@ export class AccesoDenegado {
   private authService = inject(Auth);
 
   protected nombreUsuario = this.authService.usuario;
-  protected rolUsuario = this.authService.usuario;
+  protected readonly rolUsuario = computed(() => this.authService.usuario()?.rol);
 
   protected irInicio(): void {
     this.router.navigate(['/listados']);

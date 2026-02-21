@@ -9,8 +9,8 @@
       @if (nombreUsuario()?.name) {
         Estás conectado como <strong>{{ nombreUsuario()?.name }}</strong>
       }
-      @if (rolUsuario()?.rol) {
-        con rol <strong>{{ rolUsuario()?.rol }}</strong>.
+      @if (rolUsuario()) {
+        con rol <strong>{{ rolUsuario() }}</strong>.
       }
     </p>
     <div class="acciones">
