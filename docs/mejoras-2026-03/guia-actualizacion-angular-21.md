@@ -7,8 +7,12 @@
 
 > Fuentes oficiales consultadas:
 > - [Angular Update Guide (20→21, Advanced)](https://angular.dev/update-guide?v=20.0-21.0&l=3)
+> - [Angular Zoneless Guide](https://angular.dev/guide/zoneless)
+> - [Angular 21 – What's New? – Ninja Squad](https://blog.ninja-squad.com/2025/11/20/what-is-new-angular-21.0)
 > - [Angular 21 – What's New? – Angular.love](https://angular.love/angular-21-whats-new/)
-> - [The Ultimate Guide to Migrating from Angular 20 to 21](https://noumansehgal.com/blog/migrate-angular-v20-to-v21-guide)
+> - [PrimeNG v21 Migration Guide](https://primeng.org/migration/v21)
+> - [PrimeNG v21 Release Notes (llms)](https://primeng.org/llms/pages/v21.md)
+> - [PrimeNG + Zoneless Discussion](https://github.com/orgs/primefaces/discussions/2310)
 > - [Angular 20+ to 21+ Transition Guide (Medium)](https://medium.com/@flaviusson/angular-20-to-21-transition-guide-breaking-changes-best-practices-and-migration-paths-2026-9a66338ac33e)
 
 ---
@@ -73,9 +77,169 @@ Angular 21 requiere TypeScript ≥ 5.6. El proyecto usa `~5.8.2`.
 
 ---
 
-## 3. Nuevas características en Angular 21
+## 3. Breaking changes en PrimeNG v21
 
-### 3.1 Signal Forms (Experimental)
+### 3.1 Animaciones CSS nativas — eliminación de Angular Animations
+
+PrimeNG v21 migra a animaciones basadas en CSS nativo, abandonando `@angular/animations`. Las propiedades de transición **ya no tienen efecto** aunque no producen error en tiempo de compilación.
+
+| Propiedad deprecada | Estado en v21 | Eliminación | Acción requerida |
+|---|---|---|---|
+| `showTransitionOptions` | Deprecada, ignorada | v22 | Eliminar de las plantillas |
+| `hideTransitionOptions` | Deprecada, ignorada | v22 | Eliminar de las plantillas |
+
+**Búsqueda en rund-mgp:**
+```bash
+grep -r "showTransitionOptions\|hideTransitionOptions" src/ --include="*.html" --include="*.ts"
+```
+
+Si hay resultados, eliminar esas propiedades. Las animaciones ahora son controladas por CSS custom properties del tema Aura.
+
+### 3.2 Renombrado de atributos PT (PassThrough)
+
+Los atributos directivos de PassThrough cambian de notación prefijo a sufijo:
+
+| Antes (v20) | Después (v21) |
+|---|---|
+| `ptInputText` | `pInputTextPT` |
+| `ptButton` | `pButtonPT` |
+| `ptTable` | `pTablePT` |
+
+**Búsqueda en rund-mgp:**
+```bash
+grep -r "\bpt[A-Z]" src/ --include="*.html"
+```
+
+**Eliminación prevista:** v22. No es urgente pero sí recomendable migrar en esta actualización.
+
+### 3.3 contextMenuSelectionMode "joint" eliminado
+
+En `p-tree`, `p-treetable` y `p-table`, el modo `contextMenuSelectionMode="joint"` es eliminado. Usar `"separate"` en su lugar.
+
+**Impacto en rund-mgp:** Bajo (verificar si hay p-table con contextMenu en listados/gestion).
+
+### 3.4 Versiones mínimas de paquetes internos
+
+```bash
+# Estos paquetes deben ser ≥ 2.0.2 o se producen errores visuales silenciosos
+npm install @primeuix/styles@^2.0.2 @primeuix/themes@^2.0.2
+```
+
+**Verificar después de la actualización:**
+```bash
+npm list @primeuix/styles @primeuix/themes
+```
+
+---
+
+## 4. ⚠️ Problema crítico: PrimeNG + Zoneless + OnPush
+
+> **Este es el riesgo más alto de la migración.** El usuario ya ha experimentado este problema en proyectos anteriores.
+
+### 4.1 Descripción del problema
+
+PrimeNG fue diseñado asumiendo que **Zone.js** dispara la detección de cambios automáticamente. Cuando se usa `ChangeDetectionStrategy.OnPush` con zoneless, muchos componentes de PrimeNG no actualizan su vista porque:
+
+1. Zone.js no intercepta los eventos internos de PrimeNG
+2. Sin Zone.js, Angular solo re-renderiza cuando recibe una notificación explícita
+3. PrimeNG no emite esas notificaciones internamente de forma consistente
+
+**Estado oficial:** El mantenedor principal de PrimeNG (cagataycivici) confirmó en abril 2025:
+> *"Zoneless es una característica experimental; trabajaremos en ello cuando esté listo para producción."*
+
+PrimeNG v21 incluye "Initial Zoneless Support" pero **no es soporte completo**.
+
+### 4.2 Síntomas conocidos
+
+| Síntoma | Componente | Causa |
+|---|---|---|
+| Labels no se desplazan al cargar datos | `p-floatlabel`, `p-inputtext` | No se notifica el cambio de valor |
+| Dropdown no muestra el valor seleccionado | `p-select`, `p-dropdown` | Estado interno no sincronizado |
+| Tabla no refleja cambios de datos | `p-table` | Rows no se re-renderizan |
+| Diálogo no se cierra visualmente | `p-dialog` | Animación CSS no dispara detección |
+| Botón muestra estado incorrecto | `p-button` (loading) | Signal de loading no propagada |
+
+### 4.3 Estrategia recomendada para rund-mgp
+
+**Opción A — Conservadora (recomendada para esta migración):**
+Volver a Zone.js durante la migración a Angular 21, hasta que PrimeNG tenga soporte completo.
+
+```typescript
+// src/app/app.config.ts
+import { provideZoneChangeDetection } from '@angular/core';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }), // ← añadir
+    // Eliminar o comentar: provideExperimentalZonelessChangeDetection()
+    // ...resto de providers
+  ]
+};
+```
+
+**Ventaja:** Cero riesgo de regresión visual con PrimeNG. Permite completar el Sprint 2 y Sprint 3 sin sorpresas.
+
+**Opción B — Zoneless con workarounds (avanzada):**
+Mantener zoneless e inyectar `ChangeDetectorRef` en cada componente que use PrimeNG interactivo.
+
+```typescript
+// Patrón para componentes con PrimeNG en modo zoneless
+@Component({ changeDetection: ChangeDetectionStrategy.OnPush, ... })
+export class ListadosComponent {
+  private cdr = inject(ChangeDetectorRef);
+
+  cargarDatos(): void {
+    this.servicio.getDatos().subscribe(datos => {
+      this.datos = datos;
+      this.cdr.markForCheck(); // ← obligatorio con PrimeNG + zoneless
+    });
+  }
+
+  // En operaciones síncronas que afectan PrimeNG:
+  onSeleccion(item: any): void {
+    this.seleccionado = item;
+    this.cdr.detectChanges(); // ← fuerza render inmediato
+  }
+}
+```
+
+### 4.4 Cuándo usar markForCheck() vs detectChanges()
+
+| Método | Cuándo usarlo | Efecto |
+|---|---|---|
+| `markForCheck()` | Después de cambios asíncronos (HTTP, timers) | Marca el componente y sus padres para la próxima ronda de CD |
+| `detectChanges()` | Cuando el cambio debe verse inmediatamente (ej: abrir un dialog) | Ejecuta CD sincrónico en el árbol del componente |
+| `Signals` | Estado reactivo nuevo | Se propagan automáticamente, sin necesidad de CD manual |
+
+**Regla práctica en rund-mgp:**
+- Respuestas HTTP → `markForCheck()`
+- Interacciones directas con PrimeNG (open/close dialog, selección, filtros) → `detectChanges()`
+- Estado nuevo que se puede modelar como signal → usar `signal()` directamente
+
+### 4.5 Decisión para esta migración
+
+```
+¿Está rund-mgp listo para zoneless completo con PrimeNG v21?
+                         │
+             ┌───────────┴───────────┐
+             │                       │
+    PrimeNG v21 tiene         PrimeNG v21 tiene
+    soporte zoneless           soporte parcial
+    completo                   (situación actual)
+             │                       │
+             ▼                       ▼
+    Mantener zoneless        ⚠️ Usar Opción A:
+    + migrar signals          provideZoneChangeDetection()
+                              hasta PrimeNG v22
+```
+
+**Recomendación:** Aplicar **Opción A** en esta migración. Revisar el estado de zoneless en PrimeNG antes de Sprint 3 y decidir si retomar.
+
+---
+
+## 5. Nuevas características en Angular 21
+
+### 5.1 Signal Forms (Experimental)
 
 Nueva API de formularios basada en signals que simplifica la gestión de formularios reactivos:
 
@@ -88,7 +252,7 @@ const username = loginForm.value.username; // signal automática
 
 **Para rund-mgp:** Aplicable al `login.ts` en Sprint 3+. Por ahora se mantiene ReactiveFormsModule.
 
-### 3.2 Angular Aria (Developer Preview)
+### 5.2 Angular Aria (Developer Preview)
 
 Nueva librería de componentes accesibles:
 
@@ -98,7 +262,7 @@ npm install @angular/aria
 
 **Para rund-mgp:** Evaluar en Sprint 3 para mejorar accesibilidad del formulario de login y tablas de listados.
 
-### 3.3 SimpleChanges Genérico
+### 5.3 SimpleChanges Genérico
 
 `SimpleChanges` ahora soporta genéricos para mayor seguridad de tipos:
 
@@ -106,13 +270,13 @@ npm install @angular/aria
 ngOnChanges(changes: SimpleChanges<MyComponent>): void { ... }
 ```
 
-### 3.4 HttpResponse mejorado
+### 5.4 HttpResponse mejorado
 
 Nueva propiedad `responseType` en `HttpResponse` y `HttpErrorResponse` para diagnóstico de problemas CORS.
 
 ---
 
-## 4. Pasos de actualización
+## 6. Pasos de actualización
 
 ### FASE 0: Pre-actualización (obligatorio)
 
@@ -153,16 +317,24 @@ npx @angular/cli@21 update @angular/core@21 @angular/cli@21 --force
 ### FASE 2: Actualizar dependencias relacionadas
 
 ```bash
-# Angular CDK (si se usa Angular Material)
+# Angular CDK
 npx @angular/cli@21 update @angular/cdk@21
 
-# PrimeNG — esperar versión compatible con Angular 21
-npm install primeng@21
+# PrimeNG v21 + paquetes internos requeridos (≥ 2.0.2 obligatorio)
+npm install primeng@21 @primeng/themes@latest
+npm install @primeuix/styles@^2.0.2 @primeuix/themes@^2.0.2
 
-# Si primeng@21 no está disponible aún, usar la versión más reciente compatible:
-npm install primeng@latest
-npm install @primeng/themes@latest
+# Verificar versiones instaladas:
+npm list primeng @primeuix/styles @primeuix/themes
+
+# Si primeng@21 no está disponible aún:
+npm install primeng@latest @primeng/themes@latest
+npm install @primeuix/styles@latest @primeuix/themes@latest
 ```
+
+> ⚠️ Si `@primeuix/styles` o `@primeuix/themes` quedan en versión < 2.0.2,
+> los componentes de PrimeNG pueden tener errores visuales silenciosos
+> (colores incorrectos, bordes que desaparecen, temas que no aplican).
 
 ### FASE 3: Schematics de migración automática
 
@@ -170,6 +342,7 @@ Ejecutar en orden después de `ng update`:
 
 ```bash
 # 3.1 Migrar zoneless de experimental a estable (si no se aplicó automáticamente)
+# ⚠️ PRECAUCIÓN: ver sección 4 sobre PrimeNG + zoneless antes de ejecutar
 ng generate @angular/core:zoneless
 
 # 3.2 Migrar ngClass a class bindings
@@ -184,7 +357,41 @@ ng generate @schematics/angular:refactor-jasmine-vitest
 ng generate @angular/core:karma-to-vitest
 ```
 
+> **Sobre el schematic 3.1 (zoneless):** `ng update` puede aplicarlo automáticamente,
+> convirtiendo `provideExperimentalZonelessChangeDetection()` en `provideZonelessChangeDetection()`.
+> Después de aplicarlo, **revisar FASE 4.5** para decidir si mantener zoneless o
+> revertir a `provideZoneChangeDetection()` por compatibilidad con PrimeNG.
+
 ### FASE 4: Ajustes manuales específicos de rund-mgp
+
+#### 4.0 Decisión zoneless vs Zone.js (PRIORITARIO — leer antes de continuar)
+
+Basado en la experiencia previa con PrimeNG y los problemas reportados (sección 4):
+
+```typescript
+// src/app/app.config.ts — OPCIÓN A (recomendada)
+import { provideZoneChangeDetection } from '@angular/core';
+// Eliminar: import { provideZonelessChangeDetection } from '@angular/core';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }), // ← compatibilidad PrimeNG
+    // NO usar: provideZonelessChangeDetection()
+    provideRouter(routes),
+    provideClientHydration(),
+    provideHttpClient(withInterceptors([authInterceptor])),
+    // ...
+  ]
+};
+```
+
+Con esta configuración, eliminar también `zone.js` de los imports explícitos si se hubiera removido:
+```bash
+# Verificar que zone.js sigue en package.json
+cat package.json | grep zone
+# Si no está, reinstalar:
+npm install zone.js
+```
 
 #### 4.1 Revisar provideHttpClient() en app.config.ts
 
@@ -233,6 +440,39 @@ Después de actualizar PrimeNG a v21, verificar visualmente:
 ```bash
 # Angular 21 puede requerir @types/node más reciente
 npm install --save-dev @types/node@latest
+```
+
+#### 4.5 Eliminar showTransitionOptions/hideTransitionOptions de PrimeNG
+
+Buscar y eliminar estas propiedades deprecadas en todas las plantillas:
+
+```bash
+# Buscar usos
+grep -r "showTransitionOptions\|hideTransitionOptions" src/ --include="*.html" -l
+```
+
+Si hay resultados, eliminar los atributos. Ejemplo:
+```html
+<!-- ANTES (v20) -->
+<p-dialog [showTransitionOptions]="'300ms ease-in'" [hideTransitionOptions]="'200ms ease-out'">
+
+<!-- DESPUÉS (v21) — las animaciones son CSS automáticas -->
+<p-dialog>
+```
+
+#### 4.6 Migrar atributos PT si se usan
+
+```bash
+# Buscar atributos PT con notación antigua (prefijo)
+grep -r "\[pt[A-Z]\|pt[A-Z][a-z]*=" src/ --include="*.html" -l
+```
+
+Renombrar de `ptComponenteName` a `pComponentNamePT`. Ejemplo:
+```html
+<!-- ANTES -->
+<p-inputtext ptInputText="...">
+<!-- DESPUÉS -->
+<p-inputtext pInputTextPT="...">
 ```
 
 ### FASE 5: Verificación post-actualización
@@ -286,19 +526,22 @@ git push origin main
 
 ---
 
-## 5. Riesgos y mitigaciones
+## 7. Riesgos y mitigaciones
 
 | Riesgo | Probabilidad | Impacto | Mitigación |
 |---|---|---|---|
-| PrimeNG v21 no disponible al momento | Media | Medio | Usar `primeng@latest` y esperar release oficial |
+| **PrimeNG + zoneless: componentes no actualizan** | **Alta** | **Alto** | **Usar Opción A: `provideZoneChangeDetection()`** |
+| PrimeNG v21 no disponible al momento | Media | Medio | Usar `primeng@latest`; verificar `@primeuix/styles ≥ 2.0.2` |
 | Cambios visuales por CSS selector parsing | Media | Medio | Pruebas visuales completas en FASE 5 |
+| showTransitionOptions ignorados silenciosamente | Alta | Bajo | Buscar y eliminar con grep antes del build |
 | Interceptores HttpClient con doble provisión | Baja | Alto | Revisar app.config.ts antes de build |
 | SSR roto por cambios en @angular/ssr | Baja | Alto | Verificar app.routes.server.ts post-update |
 | Schematics de migración con conflictos | Baja | Medio | Revisar git diff después de cada schematic |
+| zone.js eliminado por schematic automático | Media | Alto | Verificar `package.json` y `polyfills` post-update |
 
 ---
 
-## 6. Relación con el plan de mejoras existente
+## 8. Relación con el plan de mejoras existente
 
 Esta actualización es **prerequisito** para Sprint 2 y Sprint 3:
 
@@ -307,11 +550,18 @@ Esta actualización es **prerequisito** para Sprint 2 y Sprint 3:
 | Sprint 2 | T-01: Habilitar testing | Vitest (ng update instala config base) |
 | Sprint 2 | T-02 a T-06: Tests unitarios | Vitest como runner |
 | Sprint 3 | R-01: División de data.ts | Signal Forms (opcional pero recomendado) |
-| Sprint 3 | O-05: Eliminar detectChanges() | Zoneless API estable |
+| Sprint 3 | O-05: Eliminar detectChanges() | ⚠️ Solo si PrimeNG tiene soporte zoneless completo |
+
+> **Nota sobre O-05 (eliminar detectChanges()):** El plan de mejoras original incluye
+> eliminar las 20 llamadas a `detectChanges()` en el Sprint 3. Con la estrategia
+> **Opción A** (Zone.js), `detectChanges()` sigue siendo innecesario con Zone.js activo
+> y puede eliminarse igualmente. Con **Opción B** (zoneless + PrimeNG), algunas llamadas
+> a `detectChanges()` son **obligatorias** y no deben eliminarse hasta que PrimeNG
+> tenga soporte zoneless completo.
 
 ---
 
-## 7. Checklist de ejecución
+## 9. Checklist de ejecución
 
 ```
 FASE 0 — Pre-actualización
@@ -323,30 +573,40 @@ FASE 0 — Pre-actualización
 FASE 1 — Framework
   [ ] ng update @angular/core@21 @angular/cli@21 ejecutado
   [ ] Sin errores de compilación post-update
+  [ ] Revisar si schematic automático modificó app.config.ts (zoneless)
 
 FASE 2 — Dependencias
   [ ] @angular/cdk@21 actualizado
   [ ] primeng@21 (o latest) actualizado
-  [ ] @primeng/themes actualizado
+  [ ] @primeuix/styles ≥ 2.0.2 instalado
+  [ ] @primeuix/themes ≥ 2.0.2 instalado
+  [ ] npm list confirma versiones correctas
 
 FASE 3 — Schematics
-  [ ] Migración zoneless aplicada
+  [ ] Decisión zoneless vs Zone.js tomada (ver sección 4)
   [ ] Migración ngClass aplicada
   [ ] Migración ngStyle aplicada
   [ ] Vitest configurado (karma-to-vitest)
 
-FASE 4 — Ajustes manuales
+FASE 4 — Ajustes manuales PrimeNG + Angular
+  [ ] app.config.ts: provideZoneChangeDetection() o provideZonelessChangeDetection()
+  [ ] zone.js presente en package.json (si Opción A)
+  [ ] showTransitionOptions/hideTransitionOptions eliminados de plantillas
+  [ ] Atributos PT migrados (ptX → pXPT) si aplica
   [ ] app.config.ts verificado (provideHttpClient + interceptores)
   [ ] app.routes.server.ts verificado
-  [ ] Estilos PrimeNG verificados visualmente
 
 FASE 5 — Verificación
   [ ] tsc --noEmit: 0 errores
   [ ] npm run build: exitoso
-  [ ] Login funcional
+  [ ] Login funcional (formulario, error messages)
   [ ] Rutas con guards funcionales
   [ ] /acceso-denegado funcional
-  [ ] PrimeNG visualmente correcto
+  [ ] Tablas (p-table) en listados muestran datos correctamente
+  [ ] Dialogs (p-dialog) abren y cierran correctamente
+  [ ] Dropdowns (p-select) muestran selección correcta
+  [ ] FloatLabels se desplazan al escribir
+  [ ] Tema Aura visualmente correcto
 
 FASE 6 — Merge
   [ ] Commit descriptivo
@@ -355,5 +615,5 @@ FASE 6 — Merge
 
 ---
 
-**Tiempo estimado de ejecución:** 2–4 horas (según disponibilidad de PrimeNG v21)
+**Tiempo estimado de ejecución:** 3–5 horas (según disponibilidad de PrimeNG v21 y pruebas visuales)
 **Responsable sugerido:** Desarrollador con conocimiento de Angular y acceso al entorno de desarrollo
