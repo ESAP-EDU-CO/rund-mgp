@@ -23,7 +23,7 @@
                 [outlined]="true" />
     </div>
     <div class="zona-drop"
-         [ngClass]="{'dragging':dragging}"
+         [class.dragging]="dragging"
          (drop)="onDrop($event)"
          (dragover)="dragIn($event)"
          (dragenter)="dragIn($event)"
@@ -38,7 +38,7 @@
             <div class="archivos">
               @for (item of items;let numArchivo = $index; track item) {
               <div class="archivo"
-                   [ngClass]="{'es-cedula': item.esCedula, 'ya-cargado': archivosCargados.includes(numArchivo)}">
+                   [class]="{'es-cedula': item.esCedula, 'ya-cargado': archivosCargados.includes(numArchivo)}">
                 <div class="cedula"
                      tooltipPosition="top"
                      pTooltip="¿Este documento es la cédula del profesor?">

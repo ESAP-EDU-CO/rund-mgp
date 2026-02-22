@@ -2,11 +2,11 @@
 <div class="preview">
   <!-- preview.background hace un request directo, sin pasar por data.ts -->
   <div class="vista"
-       [ngStyle]="{'background-image': 'url('+preview.background+')', 'font-size': fontSize, 'padding-top': preview.paddingTop}">
+       [style]="{'background-image': 'url('+preview.background+')', 'font-size': fontSize, 'padding-top': preview.paddingTop}">
     <div class="contenido">
       @for (elemento of preview.estructura; track elemento.value) {
       @if (elemento.tipo == 'parrafo') {
-      <p [ngStyle]="{
+      <p [style]="{
           'font-size': (elemento.fontSize / 10) + 'em',
           'font-weight': elemento.fontWeight == 'bold' ? '800' : 400,
           'margin-top': elemento.marginTop ?? '0',
@@ -17,7 +17,7 @@
       }
       @if (elemento.tipo == 'tabla') {
       <table class="tabla"
-             [ngStyle]="{
+             [style]="{
                 'font-size': (elemento.fontSize / 10) + 'em',
                 'font-weight': elemento.fontWeight == 'bold' ? '800' : 400,
                 'margin-top': elemento.marginTop ?? '0',
@@ -53,7 +53,7 @@
       </table>
       }
       @if (elemento.tipo == 'firma') {
-      <mgp-firma-certificado [ngStyle]="{'font-size': (elemento.fontSize / 10) + 'em', 'font-weight': elemento.fontWeight == 'bold' ? '800' : 400}"
+      <mgp-firma-certificado [style]="{'font-size': (elemento.fontSize / 10) + 'em', 'font-weight': elemento.fontWeight == 'bold' ? '800' : 400}"
                              [firma]="elemento.value" />
       }
       }
