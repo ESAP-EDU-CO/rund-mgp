@@ -2,12 +2,12 @@ import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Auth } from '../../servicios/auth';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'mgp-acceso-denegado',
   standalone: true,
-  imports: [CommonModule, PrimengModule],
+  imports: [PrimengModule],
   templateUrl: './acceso-denegado.html',
   styleUrl: './acceso-denegado.scss',
 })

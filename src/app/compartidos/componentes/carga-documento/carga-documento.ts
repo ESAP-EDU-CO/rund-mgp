@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common';
+
 import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { simp, compara } from '@librerias/textos';
@@ -11,11 +11,10 @@ import { PipesModule } from '@modulos/pipes/pipes-module';
   selector: 'mgp-carga-documento',
   imports: [
     PrimengModule,
-    NgClass,
     IconsModule,
     FormsModule,
-    PipesModule,
-  ],
+    PipesModule
+],
   templateUrl: './carga-documento.html',
   styleUrl: './carga-documento.scss'
 })

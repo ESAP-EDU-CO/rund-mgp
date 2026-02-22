@@ -3,17 +3,16 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Auth } from '../../servicios/auth';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
-import { CommonModule } from '@angular/common';
+
 import { Data } from '@servicios/data';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'mgp-login',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     PrimengModule
-  ],
+],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })

@@ -2,7 +2,7 @@ import {
   APP_INITIALIZER,
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
-  provideZonelessChangeDetection
+  provideZoneChangeDetection
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
@@ -12,15 +12,13 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { authInterceptor } from './compartidos/interceptores/auth-interceptor';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
-import { definePreset, palette, $dt } from '@primeng/themes';
+import { definePreset } from '@primeng/themes';
 import Aura from '@primeng/themes/aura';
 import { ConfigService } from './compartidos/servicios/config.service';
 
 const estilo: any = definePreset(
   Aura, {
-  semantic: {
-    primary: palette('{blue}')
-  },
+  // Aura v21 ya usa azul como color primario por defecto
   components: {
     tree: {
       css: ({ dt }: any) => `
@@ -51,7 +49,7 @@ function initializeApp(configService: ConfigService) {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideZonelessChangeDetection(),
+    provideZoneChangeDetection({ eventCoalescing: true }), // Opción A: Zone.js para compatibilidad con PrimeNG
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideHttpClient(
