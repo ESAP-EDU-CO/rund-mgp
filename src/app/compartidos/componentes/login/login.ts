@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, isDevMode, OnInit, signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Auth } from '../../servicios/auth';
@@ -23,6 +23,9 @@ export class Login implements OnInit {
   private fb = inject(FormBuilder);
   private dataServicio: Data = inject(Data);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+
+  // Solo mostrar controles de desarrollo en entorno no-producción
+  protected readonly isDev = isDevMode();
 
   // Signals para el estado del componente
   protected cargando = this.authService.cargando;

@@ -8,28 +8,28 @@
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss",
-          "skipTests": true
+          "skipTests": false
         },
         "@schematics/angular:class": {
-          "skipTests": true
+          "skipTests": false
         },
         "@schematics/angular:directive": {
-          "skipTests": true
+          "skipTests": false
         },
         "@schematics/angular:guard": {
-          "skipTests": true
+          "skipTests": false
         },
         "@schematics/angular:interceptor": {
-          "skipTests": true
+          "skipTests": false
         },
         "@schematics/angular:pipe": {
-          "skipTests": true
+          "skipTests": false
         },
         "@schematics/angular:resolver": {
-          "skipTests": true
+          "skipTests": false
         },
         "@schematics/angular:service": {
-          "skipTests": true
+          "skipTests": false
         }
       },
       "root": "",
@@ -68,8 +68,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2MB",
-                  "maximumError": "5MB"
+                  "maximumWarning": "1.5MB",
+                  "maximumError": "2.5MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -107,6 +107,7 @@
           "options": {
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
+            "codeCoverage": true,
             "assets": [
               {
                 "glob": "**/*",
@@ -122,6 +123,6 @@
     }
   },
   "cli": {
-    "analytics": "d6259a39-3767-43be-9013-372f9e5ac5aa"
+    "analytics": false
   }
 }

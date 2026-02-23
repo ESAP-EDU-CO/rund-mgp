@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { SelectItemGroup, TreeNode } from 'primeng/api';
-import { catchError, firstValueFrom, map, Observable, Subscriber, tap, throwError } from 'rxjs';
+import { catchError, firstValueFrom, forkJoin, map, Observable, Subscriber, tap, throwError } from 'rxjs';
 import { Firma } from '@servicios/firmas';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from 'primeng/api';
@@ -185,8 +185,8 @@ export class Data {
   private faFileArrowUp: IconDefinition = this.faIconLibrary.getIconDefinition('fas', 'file-arrow-up') as IconDefinition;
   private faFileAlt: IconDefinition = this.faIconLibrary.getIconDefinition('fas', 'file-alt') as IconDefinition;
   public elementosMenu: MenuElemento[] = [
-    /*{ label: 'Panel de control', faIcon: this.faGauge, route: '/dashboard', rol: 'directivo' },
-    { label: 'Consultas', faIcon: this.faMagnifyingGlassChart, route: '/consultas', rol: 'directivo' },*/
+    { label: 'Panel de control', faIcon: this.faGauge, route: '/dashboard', rol: 'directivo' },
+    { label: 'Consultas', faIcon: this.faMagnifyingGlassChart, route: '/consultas', rol: 'directivo' },
     { label: 'Listados', tipo: 'PrimeNG', icon: 'pi pi-list-check', route: '/listados', rol: 'gestor' },
     { label: 'Gestión', faIcon: this.faFileArrowUp, route: '/gestion', rol: 'gestor' },
     { label: 'Certificados', faIcon: this.faFileAlt, route: '/certificados', rol: 'gestor' },
@@ -206,47 +206,26 @@ export class Data {
   }
 
   init(): Observable<VarData> {
-    const data: VarData = {
-      categorias: [],
-      labels: {},
-    };
-    return new Observable<VarData>((observer: Subscriber<VarData>) => {
-      // Usar configuración v2 para obtener labels
-      const labelsUrl = this.getUrl('datos') + '/labels';
-      this.http.get<{ datos: { [key: string]: string } }>(labelsUrl).pipe(
-        map((response: any) => {
-          // Extraer datos de la respuesta v2
-          return response.datos || response;
-        }),
-        tap((labels) => {
-          this.labels = labels;
-          data.labels = this.labels;
-
-          // Usar configuración v2 para obtener categorías
-          const categoriasUrl = this.getUrl('datos') + '/categorias';
-          this.http.get<{ datos: CategoriaBase[] }>(categoriasUrl).pipe(
-            map((response: any) => {
-              // Extraer datos de la respuesta v2
-              return response.datos || response;
-            }),
-            tap((categorias) => {
-              this.categorias = categorias;
-              data.categorias = this.categorias;
-              observer.next(data);
-              observer.complete();
-            }),
-            catchError((error) => {
-              console.error('Error obteniendo categorías:', error);
-              return throwError(() => error);
-            })
-          ).subscribe();
-        }),
-        catchError((error) => {
-          console.error('Error obteniendo labels:', error);
-          return throwError(() => error);
-        })
-      ).subscribe();
-    });
+    const labelsUrl = this.getUrl('datos') + '/labels';
+    const categoriasUrl = this.getUrl('datos') + '/categorias';
+    return forkJoin({
+      labels: this.http.get<{ datos: { [key: string]: string } }>(labelsUrl).pipe(
+        map((response: any) => response.datos || response)
+      ),
+      categorias: this.http.get<{ datos: CategoriaBase[] }>(categoriasUrl).pipe(
+        map((response: any) => response.datos || response)
+      ),
+    }).pipe(
+      map(({ labels, categorias }) => {
+        this.labels = labels;
+        this.categorias = categorias;
+        return { categorias: this.categorias, labels: this.labels };
+      }),
+      catchError((error) => {
+        console.error('Error inicializando datos:', error);
+        return throwError(() => error);
+      })
+    );
   }
   apiGet(endpoint: string, params: { [key: string]: any }, opciones: { [key: string]: any } | undefined = undefined): Observable<any> {
     const options: any = opciones ? { params: params, ...opciones } : { params: params };
@@ -292,9 +271,15 @@ export class Data {
   loadDocumentos(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.http.get<{ datos: Documento.Listado }>(this.getUrl('datos') + '/documentos')
-        .subscribe((documentos: { datos: Documento.Listado }) => {
-          this.documentos = documentos.datos;
-          resolve(true);
+        .subscribe({
+          next: (documentos: { datos: Documento.Listado }) => {
+            this.documentos = documentos.datos;
+            resolve(true);
+          },
+          error: (error) => {
+            console.error('Error cargando documentos:', error);
+            reject(error);
+          }
         });
     });
   }
@@ -328,6 +313,7 @@ export class Data {
     return this.http.post<any>(url, formData);
   }
   getChartBackgroundColors(num: number, hover: boolean = false): string {
+    if (!isPlatformBrowser(this.platID)) return '';
     const documentStyle: CSSStyleDeclaration = getComputedStyle(document.documentElement);
     this.chartColors = this.chartColors.length < 22 ? this.chartColors.concat(this.chartColors) : this.chartColors;
     return documentStyle.getPropertyValue('--p-' + this.chartColors[num] + '-' + (hover ? '3' : '5') + '00');

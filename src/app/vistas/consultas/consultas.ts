@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Chart } from '@componentes/chart/chart';
 import { PipesModule } from '@modulos/pipes/pipes-module';
@@ -30,6 +31,7 @@ export class Consultas implements OnInit {
   private data: Data = inject(Data);
   private fileServicio: FileServicio = inject(FileServicio);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private platID = inject(PLATFORM_ID);
   dataConsulta: DataConsulta[] = [];
   placeholders: string[] = ['Variables eje X', 'Variables eje Y'];
   numPanel: number = -1;
@@ -87,6 +89,7 @@ export class Consultas implements OnInit {
     }
   }
   creaChart(panel: DataConsulta): void {
+    if (!isPlatformBrowser(this.platID)) return;
     const documentStyle: CSSStyleDeclaration = getComputedStyle(document.documentElement);
     const textColor: string = documentStyle.getPropertyValue('--p-text-color');
     const datasets: ChartDataset[] = [];
@@ -178,7 +181,6 @@ export class Consultas implements OnInit {
   private suficientesNodos(nodo: DataCategoria): boolean {
     const hijos: number = nodo.children ? nodo.children.length : 0;
     const numDocs: number = this.sumaDocs(nodo);
-    return true;
     return numDocs > (hijos * 5) && hijos > 1;
   }
 }

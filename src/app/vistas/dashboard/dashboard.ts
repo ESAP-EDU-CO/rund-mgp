@@ -47,7 +47,9 @@ export class Dashboard implements OnInit {
     return { label:label, cantidad:cantidad };
   }
   nodeData(nodo: DataCategoria, labelData:string | undefined): DataChart {
-    const documentStyle: CSSStyleDeclaration = getComputedStyle(document.documentElement);
+    const documentStyle: CSSStyleDeclaration = isPlatformBrowser(this.platID)
+      ? getComputedStyle(document.documentElement)
+      : ({ getPropertyValue: () => '' } as any);
     const textColor: string = documentStyle.getPropertyValue('--p-text-color');
     const nombre: string = nodo.label ?? '';
     const data: ChartData = { labels: [], datasets: [{ label: (labelData as string), data: [], backgroundColor: [], hoverBackgroundColor: [] }] };

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, effect, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { EventType, Router } from '@angular/router';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Auth } from '@servicios/auth';
@@ -24,16 +24,6 @@ export class Header implements OnInit {
   protected usuario = this.authServicio.usuario;
 
   enLogin: boolean = false;
-
-  constructor() {
-    // Effect para detectar cambios en el usuario
-    effect(() => {
-      const user = this.usuario();
-      if (user !== undefined) {
-        this.cdr.detectChanges();
-      }
-    });
-  }
 
   ngOnInit(): void {
     this.data.getImagen('logoESAP.svg')

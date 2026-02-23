@@ -71,17 +71,18 @@
                 styleClass="w-full"
                 severity="primary" />
 
-      <!-- Botón de desarrollo (solo en DEV) -->
-      <!-- IMPORTANTE: Comentar o eliminar en producción -->
-      <p-button type="button"
-                label="Login de Desarrollo"
-                icon="pi pi-cog"
-                (onClick)="loginDev()"
-                [loading]="cargando()"
-                [disabled]="cargando()"
-                styleClass="w-full mt-2"
-                severity="secondary"
-                [outlined]="true" />
+      <!-- Botón de desarrollo (solo en entorno no-producción) -->
+      @if (isDev) {
+        <p-button type="button"
+                  label="Login de Desarrollo"
+                  icon="pi pi-cog"
+                  (onClick)="loginDev()"
+                  [loading]="cargando()"
+                  [disabled]="cargando()"
+                  styleClass="w-full mt-2"
+                  severity="secondary"
+                  [outlined]="true" />
+      }
 
     </form>
 

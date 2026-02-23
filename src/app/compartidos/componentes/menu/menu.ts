@@ -1,5 +1,5 @@
 import { isPlatformBrowser, NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, effect, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { EventType, Router, RouterLink } from '@angular/router';
 import { IconsModule } from '@modulos/icons/icons-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
@@ -31,16 +31,6 @@ export class Menu implements OnInit {
 
   // Usar el signal directamente del servicio
   protected usuario = this.authServicio.usuario;
-
-  constructor() {
-    // Effect para detectar cambios en el usuario y forzar detección de cambios
-    effect(() => {
-      const user = this.usuario();
-      if (user !== undefined) {
-        this.cdr.detectChanges();
-      }
-    });
-  }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platID)) {

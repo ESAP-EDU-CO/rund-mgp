@@ -12,6 +12,23 @@ const browserDistFolder = join(import.meta.dirname, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
+// Cabeceras de seguridad — mitigación CSP para Quill XSS (GHSA-v3m3-f69x-jf25)
+app.use((_req, res, next) => {
+  res.setHeader('Content-Security-Policy',
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' blob:; " +
+    "style-src 'self' 'unsafe-inline'; " +
+    "img-src 'self' data: blob:; " +
+    "font-src 'self' data:; " +
+    "connect-src 'self'; " +
+    "worker-src blob:;"
+  );
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
 const apiBaseUrl = process.env['API_BASE_URL'] || 'http://localhost:3000';
 app.get('/api/config', (req, res) => {
   res.json({ apiBaseUrl: apiBaseUrl });

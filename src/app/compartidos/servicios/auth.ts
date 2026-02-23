@@ -305,13 +305,4 @@ export class Auth {
     this.errorSignal.set(null);
   }
 
-  /**
-   * Método legacy para compatibilidad con código existente
-   * @deprecated Usar login() en su lugar
-   */
-  getAuth(): void {
-    console.warn('getAuth() está deprecado. Usar login() en su lugar.');
-    // Intentar verificar sesión
-    this.verificarSesion().subscribe();
-  }
 }
