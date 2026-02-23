@@ -12,15 +12,17 @@ const browserDistFolder = join(import.meta.dirname, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
+const apiBaseUrl = process.env['API_BASE_URL'] || 'http://localhost:3000';
+
 // Cabeceras de seguridad — mitigación CSP para Quill XSS (GHSA-v3m3-f69x-jf25)
 app.use((_req, res, next) => {
   res.setHeader('Content-Security-Policy',
     "default-src 'self'; " +
     "script-src 'self' 'unsafe-inline' blob:; " +
-    "style-src 'self' 'unsafe-inline'; " +
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
     "img-src 'self' data: blob:; " +
-    "font-src 'self' data:; " +
-    "connect-src 'self'; " +
+    "font-src 'self' data: https://fonts.gstatic.com; " +
+    `connect-src 'self' ${apiBaseUrl}; ` +
     "worker-src blob:;"
   );
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -29,8 +31,7 @@ app.use((_req, res, next) => {
   next();
 });
 
-const apiBaseUrl = process.env['API_BASE_URL'] || 'http://localhost:3000';
-app.get('/api/config', (req, res) => {
+app.get('/api/config', (_req, res) => {
   res.json({ apiBaseUrl: apiBaseUrl });
 });
 /**
