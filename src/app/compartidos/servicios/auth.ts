@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, inject, Signal, WritableSignal } from '@angular/core';
+import { Injectable, isDevMode, signal, computed, inject, Signal, WritableSignal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, catchError, of, tap } from 'rxjs';
@@ -63,7 +63,7 @@ export class Auth {
   public readonly estaAutenticado: Signal<boolean> = computed(() => this.usuarioSignal() !== null && this.usuarioSignal() !== undefined);
   public readonly esAdmin: Signal<boolean> = computed(() => {
     const usuario = this.usuarioSignal();
-    return usuario?.rol === 'admin' || usuario?.roles?.includes('admin') || usuario?.email.includes('usuario.administrador') || false;
+    return usuario?.rol === 'admin' || usuario?.roles?.includes('admin') || false;
   });
 
   constructor() {
@@ -268,20 +268,21 @@ export class Auth {
    * Se determina el rol del usuario basado en los datos de rund-auth
    */
   private determinarRol(user: Usuario): Rol {
-    //* SOLO PARA DESARROLLO
-    if ((!this.usuarioSignal() && user.email.includes('usuario.administrador')) || this.esAdmin()) {
-      return 'admin';
+    // Inferencia de rol por email solo en modo desarrollo (tree-shaken en producción)
+    if (isDevMode()) {
+      if (!this.usuarioSignal() && user.email.includes('usuario.administrador')) {
+        return 'admin';
+      }
+      if (!this.usuarioSignal() && user.email.includes('usuario.gestor')) {
+        return 'gestor';
+      }
+      if (!this.usuarioSignal() && user.email.includes('usuario.directivo')) {
+        return 'directivo';
+      }
+      if (!this.usuarioSignal() && user.email.includes('usuario.usuario')) {
+        return 'usuario';
+      }
     }
-    if ((!this.usuarioSignal() && user.email.includes('usuario.gestor'))) {
-      return 'gestor';
-    }
-    if ((!this.usuarioSignal() && user.email.includes('usuario.directivo'))) {
-      return 'directivo';
-    }
-    if ((!this.usuarioSignal() && user.email.includes('usuario.usuario'))) {
-      return 'usuario';
-    }
-    //*/
 
     // Si ya tiene rol definido, usarlo
     if (user.rol) {
