@@ -6,6 +6,7 @@ import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { ChartData, ChartDataset, ChartOptions, DataCategoria, DataChart, Data, DataTabla, FilaTabla } from '@servicios/data';
 import { FileServicio } from '@servicios/file';
+import { LoggerService } from '@servicios/logger.service';
 import { MenuItem, SelectItem, SelectItemGroup } from 'primeng/api';
 
 interface DataConsulta {
@@ -32,24 +33,27 @@ export class Consultas implements OnInit {
   private fileServicio: FileServicio = inject(FileServicio);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private platID = inject(PLATFORM_ID);
+  private logger: LoggerService = inject(LoggerService);
   dataConsulta: DataConsulta[] = [];
   placeholders: string[] = ['Variables eje X', 'Variables eje Y'];
-  numPanel: number = -1;
+  numPanel = -1;
   menuDescarga: MenuItem[] = [
     { label: 'PDF', icon: 'pi pi-file-pdf', command: () => this.getConsultaFile('pdf') },
     { label: 'Excel', icon: 'pi pi-file-excel', command: () => this.getConsultaFile('xlsx') },
   ];
-  esperando: boolean = false;
-  mensajeEspera: string = '';
-  datosSuficientes: boolean = false;
+  esperando = false;
+  mensajeEspera = '';
+  datosSuficientes = false;
   ngOnInit(): void {
-    this.data.dataCategorias ?
-      this.creaOpciones() :
+    if (this.data.dataCategorias) {
+      this.creaOpciones();
+    } else {
       this.data.getCategorias().subscribe((resp: DataCategoria[]) => {
         const categorias: DataCategoria[] = this.data.setCategorias(resp);
         this.datosSuficientes = categorias ? categorias.length > 1 && this.suficientesNodos(categorias[0]) : false;
         this.creaOpciones();
       });
+    }
   }
   creaOpciones(): void {
     this.dataConsulta = [];
@@ -62,9 +66,11 @@ export class Consultas implements OnInit {
           const hijos: boolean[] | undefined = categoria.children?.map((e: DataCategoria) => e.children ? true : false);
           const conHijos: boolean = hijos ? hijos.reduce((a: boolean, c: boolean) => a && c ? true : false) : false;
           const solo: SelectItem = { label: categoria.label as string, value: categoria.key };
-          conHijos ?
-            opciones.push(this.tree2sel(categoria)) :
+          if (conHijos) {
+            opciones.push(this.tree2sel(categoria));
+          } else {
             opciones.push({ label: categoria.label as string, items: [solo], value: categoria.key });
+          }
         });
         const panel: DataConsulta = {
           label: supercat.label,
@@ -140,11 +146,11 @@ export class Consultas implements OnInit {
   }
   getConsultaFile(tipo: string): void {
     if (this.numPanel < 0) {
-      console.log('NO SE HA DEFINIDO EL PANEL ACTUAL');
+      this.logger.warn('NO SE HA DEFINIDO EL PANEL ACTUAL');
       return;
     }
     const panel: DataConsulta = this.dataConsulta[this.numPanel];
-    let tipoArchivo: string = 'archivo';
+    let tipoArchivo = 'archivo';
     if (tipo === 'pdf') tipoArchivo = 'PDF';
     if (tipo === 'xlsx') tipoArchivo = 'Excel';
     this.esperando = true;
@@ -154,8 +160,8 @@ export class Consultas implements OnInit {
     this.data.getConsultaFile(tipo, panel.dataTabla as DataTabla).subscribe((blob: Blob) => {
       if (blob.type == 'text/html; charset=utf-8') {
         blob.text()
-          .then((v: string) => console.log(v))
-          .catch((e: any) => console.log(e));
+          .then((v: string) => this.logger.error('Respuesta inesperada HTML:', v))
+          .catch((e: any) => this.logger.error('Error al leer blob:', e));
         return;
       }
       this.fileServicio.descarga(blob, nombre);
@@ -164,12 +170,12 @@ export class Consultas implements OnInit {
       if (tipo == 'pdf') {
         this.data.delTemp().subscribe((resp: { borrados: string[], aBorrar: string[] }) => {
           if (!resp || resp.borrados.length != resp.aBorrar.length)
-            console.log("Error: no se limpiaron todos los archivos temporales, solo ", resp.borrados.join(', '));
+            this.logger.warn('No se limpiaron todos los archivos temporales:', resp.borrados.join(', '));
         });
       }
     });
   }
-  private sumaDocs(nodo: DataCategoria, numDocs: number = 0): number {
+  private sumaDocs(nodo: DataCategoria, numDocs = 0): number {
     if (nodo.numDocs) numDocs += nodo.numDocs;
     if (nodo.children) {
       nodo.children.forEach((subnodo: DataCategoria) => {

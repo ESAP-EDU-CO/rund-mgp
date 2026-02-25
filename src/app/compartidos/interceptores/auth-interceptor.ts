@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { Auth } from '../servicios/auth';
+import { LoggerService } from '../servicios/logger.service';
 
 /**
  * Interceptor de autenticación
@@ -18,6 +19,7 @@ import { Auth } from '../servicios/auth';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const authService = inject(Auth);
+  const logger = inject(LoggerService);
 
   // Clonar la petición y añadir withCredentials para enviar cookies
   // (solo para peticiones a la API de rund-api)
@@ -30,7 +32,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
         // Error 401: No autenticado o sesión expirada
-        console.warn('Sesión expirada o no autenticada. Redirigiendo a login...');
+        logger.warn('Sesión expirada o no autenticada. Redirigiendo a login...');
 
         // Limpiar estado de autenticación
         authService.logout().subscribe();
@@ -42,11 +44,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         });
       } else if (error.status === 403) {
         // Error 403: Acceso denegado (falta de permisos)
-        console.warn('Acceso denegado. El usuario no tiene permisos suficientes.');
+        logger.warn('Acceso denegado. El usuario no tiene permisos suficientes.');
         router.navigate(['/acceso-denegado']);
       } else if (error.status === 0) {
         // Error de red o CORS
-        console.error('Error de conexión con el servidor:', error);
+        logger.error('Error de conexión con el servidor:', error);
       }
 
       // Re-lanzar el error para que los componentes puedan manejarlo también

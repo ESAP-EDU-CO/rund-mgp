@@ -7,7 +7,11 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:rund-mgp": "node dist/rund-mgp/server/server.mjs"
+    "test:ci": "ng test --watch=false --browsers=ChromeHeadless --code-coverage",
+    "test:coverage": "ng test --watch=false --code-coverage",
+    "serve:ssr:rund-mgp": "node dist/rund-mgp/server/server.mjs",
+    "lint": "ng lint",
+    "lint:fix": "ng lint --fix"
   },
   "private": true,
   "dependencies": {
@@ -47,17 +51,21 @@
     "@angular/build": "^21.1.4",
     "@angular/cli": "^21.1.4",
     "@angular/compiler-cli": "^21.1.5",
+    "@eslint/js": "^10.0.1",
     "@types/express": "^5.0.1",
     "@types/file-saver": "^2.0.7",
     "@types/jasmine": "~5.1.0",
     "@types/jszip": "^3.4.0",
     "@types/node": "^20.17.19",
+    "angular-eslint": "21.2.0",
+    "eslint": "^9.39.2",
     "jasmine-core": "~5.7.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "typescript-eslint": "8.50.1"
   }
 }
