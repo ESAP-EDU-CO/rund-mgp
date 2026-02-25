@@ -5,8 +5,8 @@ import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Data } from '@servicios/data';
 
 
-type Info = { label: string, value: string };
-type Payload = { tipoDocumento: string, datosExtraer: string[] };
+interface Info { label: string, value: string }
+interface Payload { tipoDocumento: string, datosExtraer: string[] }
 
 interface Documento {
   label: string;
@@ -115,7 +115,7 @@ export class ExtraeDatos {
   seleccionaDocumento(ev: any): void {
     this.documento = ev.currentFiles[0] as File;
   }
-  enviaDocumento(ev: any): void {
+  enviaDocumento(_ev: any): void {
     if (this.datos && this.documento) {
       const salida: Payload = this.transforma();
       this.dataServicio

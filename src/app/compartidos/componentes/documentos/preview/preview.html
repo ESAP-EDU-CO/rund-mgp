@@ -5,21 +5,21 @@
        [style]="{'background-image': 'url('+preview.background+')', 'font-size': fontSize, 'padding-top': preview.paddingTop}">
     <div class="contenido">
       @for (elemento of preview.estructura; track elemento.value) {
-      @if (elemento.tipo == 'parrafo') {
+      @if (elemento.tipo === 'parrafo') {
       <p [style]="{
           'font-size': (elemento.fontSize / 10) + 'em',
-          'font-weight': elemento.fontWeight == 'bold' ? '800' : 400,
+          'font-weight': elemento.fontWeight === 'bold' ? '800' : 400,
           'margin-top': elemento.marginTop ?? '0',
           'text-align': elemento.textAlign ?? 'left'
           }"
          [innerHTML]="elemento.value">
       </p>
       }
-      @if (elemento.tipo == 'tabla') {
+      @if (elemento.tipo === 'tabla') {
       <table class="tabla"
              [style]="{
                 'font-size': (elemento.fontSize / 10) + 'em',
-                'font-weight': elemento.fontWeight == 'bold' ? '800' : 400,
+                'font-weight': elemento.fontWeight === 'bold' ? '800' : 400,
                 'margin-top': elemento.marginTop ?? '0',
                 }">
         <thead>
@@ -52,8 +52,8 @@
         }
       </table>
       }
-      @if (elemento.tipo == 'firma') {
-      <mgp-firma-certificado [style]="{'font-size': (elemento.fontSize / 10) + 'em', 'font-weight': elemento.fontWeight == 'bold' ? '800' : 400}"
+      @if (elemento.tipo === 'firma') {
+      <mgp-firma-certificado [style]="{'font-size': (elemento.fontSize / 10) + 'em', 'font-weight': elemento.fontWeight === 'bold' ? '800' : 400}"
                              [firma]="elemento.value" />
       }
       }

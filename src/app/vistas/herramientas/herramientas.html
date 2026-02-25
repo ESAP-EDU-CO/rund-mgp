@@ -26,7 +26,10 @@
             [dismissableMask]="true">
     <ng-template #closeicon>
       <i class="pi pi-times"
-         (click)="cierraModal()">
+         tabindex="0"
+         (click)="cierraModal()"
+         (keydown.enter)="cierraModal()"
+         (keydown.space)="cierraModal()">
       </i>
     </ng-template>
     <ng-template #header>

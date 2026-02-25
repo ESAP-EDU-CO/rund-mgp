@@ -4,14 +4,14 @@
                  let-item>
       @if (permiso(item, usuario()?.rol)){
       <a class="item p-menu-item-link"
-         [class.surface-200]="seccionActual == item.route"
+         [class.surface-200]="seccionActual === item.route"
          [routerLink]="item.route"
          pRipple>
         <div class="icono">
-          @if (item.tipo == 'PrimeNG') {
+          @if (item.tipo === 'PrimeNG') {
           <span [class]="item.icon"></span>
           }
-          @if (item.tipo == 'MaterialDesign') {
+          @if (item.tipo === 'MaterialDesign') {
           <span [ngClass]="item.estilo">
             {{ item.icon }}
           </span>

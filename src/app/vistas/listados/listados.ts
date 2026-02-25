@@ -8,13 +8,13 @@ import { DIRECT_URLS } from '@servicios/api-config';
 import { ConfigService } from '@servicios/config.service';
 import { ConfirmationService } from 'primeng/api';
 
-type Dupe = {
+interface Dupe {
   nombre: boolean,
   ruta: boolean,
   size: boolean,
   creado: boolean | string,
   uuid: string
-};
+}
 
 @Component({
   selector: 'mgp-listados',
@@ -31,12 +31,12 @@ type Dupe = {
   styleUrl: './listados.scss'
 })
 export class Listados {
-  loadList: string = '';
+  loadList = '';
   archivo: File | undefined;
   listadoProps: ListadoProps[] = [];
   propsNoVisibles: string[] = ['Size', 'Uuid', 'Duplicado'];
-  csvData: Array<string | number>[] = [];
-  loadingDialog: boolean = false;
+  csvData: (string | number)[][] = [];
+  loadingDialog = false;
   private data: Data = inject(Data);
   private confirmationService: ConfirmationService = inject(ConfirmationService);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
@@ -46,14 +46,14 @@ export class Listados {
     // Usar ConfigService.getApiBaseUrl() que se configura dinámicamente desde /api/config
     this.loadList = this.configService.getApiBaseUrl() + '/' + DIRECT_URLS.uploadListados;
   }
-  acciones(ev: any, funcion: Function): void {
+  acciones(ev: any, funcion: (...args: unknown[]) => unknown): void {
     if (funcion.name != 'bound upload') {
       funcion();
     } else {
       this.cargaFile(ev);
     }
   }
-  cargaFile(ev: any): void {
+  cargaFile(_ev: any): void {
     this.loadingDialog = true;
     this.data.postLoadList(this.listadoProps, this.archivo)
       .subscribe((resp: any) => {
@@ -73,7 +73,7 @@ export class Listados {
             propiedades.push({ label: 'Comentario', valor: this.extraeProp('Comentario') });
           }
           this.data.postLoadList(propiedades, archivo)
-            .subscribe((resp: any) => {
+            .subscribe((_resp: any) => {
               // Se carga el CSV side-car con control de versiones
             });
         });
@@ -82,13 +82,13 @@ export class Listados {
   varComentario(): ListadoProps {
     return this.listadoProps.find((v: ListadoProps) => v.label == 'Comentario') as ListadoProps;
   }
-  cargaHandler(ev: any): void { }
+  cargaHandler(_ev: any): void { /* noop */ }
   seleccionaFile(ev: any): void {
     this.loadingDialog = true;
     this.archivo = ev.files[0];
     this.cdr.detectChanges();
   }
-  borraFile(ev: any): void {
+  borraFile(_ev: any): void {
     this.archivo = undefined;
     this.listadoProps = [];
     this.csvData = [];
@@ -108,7 +108,7 @@ export class Listados {
         this.loadingDialog = false;
         const dupe: Dupe = resp.datos.duplicado;
         if (Object.values(dupe).findIndex((v: string | boolean) => v != false) > -1) {
-          let mensaje: string = '<p class="mensaje-confirma-reemplazo">Ya existe un documento con el mismo nombre (';
+          let mensaje = '<p class="mensaje-confirma-reemplazo">Ya existe un documento con el mismo nombre (';
           mensaje += this.extraeProp('Nombre') + ') en el RUND';
           if (dupe.ruta) mensaje += ', del mismo tipo (' + this.extraeProp('Tipo') + ')';
           if (dupe.size) mensaje += ', con el mismo contenido';
@@ -120,13 +120,13 @@ export class Listados {
         this.cdr.detectChanges();
       });
   }
-  recibeCSV(csv: Array<string | number>[]): void {
+  recibeCSV(csv: (string | number)[][]): void {
     this.csvData = csv;
   }
-  generaCSV(csv: Array<string | number>[]): { archivo: File, propiedades: ListadoProps[] } {
+  generaCSV(csv: (string | number)[][]): { archivo: File, propiedades: ListadoProps[] } {
     const dataArray: string[] = [];
     csv.forEach((fila: any[]) => {
-      const filas: Array<string | number> = [];
+      const filas: (string | number)[] = [];
       fila.forEach((celda: string | number) => filas.push('"' + celda.toString().replace(/"/g, '""') + '"'));
       dataArray.push(filas.join(','));
     });
@@ -185,8 +185,8 @@ export class Listados {
     this.cdr.detectChanges();
   }
   formatSize(bytes: number): string {
-    const k: number = 1024;
-    const dm: number = 3;
+    const k = 1024;
+    const dm = 3;
     if (bytes === 0) return `0 KB`;
     const i: number = Math.floor(Math.log(bytes) / Math.log(k));
     const formattedSize: number = parseFloat((bytes / Math.pow(k, i)).toFixed(dm));

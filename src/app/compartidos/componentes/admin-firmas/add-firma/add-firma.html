@@ -1,5 +1,5 @@
 <div class="add-firma">
-  @if (etapa == 'carga') {
+  @if (etapa === 'carga') {
   <p-fileupload class="up-firma"
                 (onSelect)="seleccionaImagen($event)"
                 (onBeforeUpload)="procesaImagen($event)"
@@ -29,24 +29,24 @@
     </ng-template>
   </p-fileupload>
   }
-  @if (etapa == 'procesamiento') {
+  @if (etapa === 'procesamiento') {
   <mgp-procesa-firma @cortina
                      [archivo]="archivo"
                      (cancela)="eliminaImagen(null)"
                      (procesa)="guardarFirma($event)" />
   }
-  @if (etapa == 'cargando') {
+  @if (etapa === 'cargando') {
   <div class="cargando">
     <p-progress-spinner />
   </div>
   }
-  @if (etapa == 'grabado' && urlImagenFinal) {
+  @if (etapa === 'grabado' && urlImagenFinal) {
   <div class="grabado">
     @if (!erroresCarga.json && !erroresCarga.png) {
     <h3>Los siguientes datos han sido almacenados correctamente:</h3>
     <div class="firma-final">
       <div class="firma">
-        <img [src]="urlImagenFinal">
+        <img [src]="urlImagenFinal" alt="Imagen de la firma">
       </div>
       <div class="datos">
         <div class="nombres">

@@ -21,8 +21,8 @@ import { Data, MenuElemento, VarData } from '@servicios/data';
   styleUrl: './app.scss'
 })
 export class App implements OnInit {
-  configLoaded: boolean = false;
-  dataVars: boolean = false;
+  configLoaded = false;
+  dataVars = false;
   seccionActual?: string;
   contenidos: MenuElemento[] = [];
   rolMinimo?: string;
@@ -36,7 +36,7 @@ export class App implements OnInit {
   // Usar signal directamente
   protected usuario: Signal<Usuario | null | undefined> = this.authServicio.usuario;
 
-  tienePermiso: boolean = false;
+  tienePermiso = false;
 
   constructor() {
     // Effect para detectar cambios en el usuario
@@ -55,7 +55,7 @@ export class App implements OnInit {
     }
   }
   inicializa(): void {
-    this.data.init().subscribe((data: VarData) => {
+    this.data.init().subscribe((_data: VarData) => {
       this.seccionActual = this.router.url.split('?')[0];
       this.contenidos = this.data.elementosMenu;
       this.rolMinimo = this.seccionActual ? this.contenidos.find((item: MenuElemento) => item["route"] == this.seccionActual)?.rol : undefined;

@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Data } from '@servicios/data';
 import { BehaviorSubject } from 'rxjs';
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Firma {
   export interface FirmaMetadata {
     nombres: string;
@@ -13,7 +14,7 @@ export namespace Firma {
   }
   export interface Firma {
     nombre: string;
-    url: String;
+    url: string;
     uuid?: string;
     metadata?: FirmaMetadata;
   }
@@ -27,7 +28,7 @@ export class Firmas {
   private archivos: Firma.Firma[] = [];
   private metadatos: Firma.FirmaMetadata[] = [];
   private todasFirmas: BehaviorSubject<Firma.Firma[]> = new BehaviorSubject<Firma.Firma[]>([]);
-  constructor(private dataServicio: Data) { }
+  private dataServicio: Data = inject(Data);
   getFirmas(): BehaviorSubject<Firma.Firma[]> {
     this.listFirmas();
     return this.todasFirmas;
@@ -41,8 +42,8 @@ export class Firmas {
     const totalFirmas: number = firmas.length - 1;
     if (totalFirmas > -1) {
       const firma: any = firmas[numFirma];
-      const params: { [key: string]: any } = { uuid: firma.uuid, mimeType: firma.mimeType };
-      const opciones: { [key: string]: any } | undefined = (firma.mimeType != 'application/json') ? { responseType: 'blob', observe: 'response' } : undefined;
+      const params: Record<string, any> = { uuid: firma.uuid, mimeType: firma.mimeType };
+      const opciones: Record<string, any> | undefined = (firma.mimeType != 'application/json') ? { responseType: 'blob', observe: 'response' } : undefined;
       this.dataServicio.getFirmas(params, opciones)
         .subscribe((resp: any) => {
           if (firma.mimeType == 'application/json') {
@@ -75,8 +76,8 @@ export class Firmas {
     });
     this.todasFirmas.next(this.firmas);
   }
-  private labelToKey(objeto: { label: string, valor: string }[]): { [key: string]: string } | Firma.FirmaMetadata {
-    const obj: { [key: string]: string } = {};
+  private labelToKey(objeto: { label: string, valor: string }[]): Record<string, string> | Firma.FirmaMetadata {
+    const obj: Record<string, string> = {};
     objeto.forEach((item: { label: string, valor: string }) => obj[item.label] = item.valor);
     return obj;
   }

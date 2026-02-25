@@ -13,9 +13,7 @@ export interface EndpointConfig {
   status: 'active';
 }
 
-export interface ApiEndpoints {
-  [key: string]: EndpointConfig;
-}
+export type ApiEndpoints = Record<string, EndpointConfig>;
 
 /**
  * Configuración de endpoints - API v2 completa

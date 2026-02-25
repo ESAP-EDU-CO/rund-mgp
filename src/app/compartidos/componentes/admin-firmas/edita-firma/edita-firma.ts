@@ -4,6 +4,7 @@ import { Data } from '@servicios/data';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Firma, Firmas } from '@servicios/firmas';
+import { LoggerService } from '@servicios/logger.service';
 
 @Component({
   selector: 'mgp-edita-firma',
@@ -26,17 +27,16 @@ import { Firma, Firmas } from '@servicios/firmas';
   ]
 })
 export class EditaFirma implements OnInit, OnChanges {
-  @Input() activo: boolean = false;
+  @Input() activo = false;
   firmas: Firma.Firma[] = [];
   archivos: Firma.Firma[] = [];
   metadatos: Firma.FirmaMetadata[] = [];
-  hayFirmas: boolean = false;
+  hayFirmas = false;
   confirmaciones: boolean[] = [];
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  constructor(
-    private dataServicio: Data,
-    private firmasServicio: Firmas,
-  ) { }
+  private dataServicio: Data = inject(Data);
+  private firmasServicio: Firmas = inject(Firmas);
+  private logger: LoggerService = inject(LoggerService);
   ngOnInit(): void {
     this.listaFirmas();
   }
@@ -70,16 +70,16 @@ export class EditaFirma implements OnInit, OnChanges {
                   if (!delJSON.error) {
                     this.listaFirmas();
                     this.dataServicio.vaciaPapelera().subscribe((resp:any) => {
-                      if (resp.error) console.log('Error al vaciar la papelera: ' + resp.error);
+                      if (resp.error) this.logger.log('Error al vaciar la papelera: ' + resp.error);
                     });
                     //this.getFirmas();
                   } else {
-                    console.log('Error al borrar el JSON');
+                    this.logger.log('Error al borrar el JSON');
                   }
                 });
             }
           } else {
-            console.log('Error al borrar el PNG');
+            this.logger.log('Error al borrar el PNG');
           }
         });
     }

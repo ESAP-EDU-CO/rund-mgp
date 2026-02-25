@@ -22,7 +22,7 @@ export class ProcesaFirma implements OnDestroy, OnChanges {
   @Output() procesa: EventEmitter<{ datos: Firma.FirmaMetadata, blob: Blob }> = new EventEmitter<{ datos: Firma.FirmaMetadata, blob: Blob }>();
   @ViewChild('imgFirma') private imagen: ElementRef | undefined;
   @ViewChild('instrucciones') private instruccionesFirma!: Popover;
-  umbral: number = 128;
+  umbral = 128;
   imagenProcesadaUrl: string | null = null;
   datos: Firma.FirmaMetadata = { nombres: '', apellidos: '', cargo: '', fecha: new Date() };
   blob!: Blob;
@@ -30,7 +30,7 @@ export class ProcesaFirma implements OnDestroy, OnChanges {
   imagenHTML: HTMLImageElement | undefined;
   origenCrop: { x: number, y: number } | undefined;
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  constructor(private imagenServicio: Imagen) { }
+  private imagenServicio: Imagen = inject(Imagen);
   ngOnChanges(changes: SimpleChanges) {
     if (changes['archivo']) {
       if (this.archivo) this.procesarImagen();

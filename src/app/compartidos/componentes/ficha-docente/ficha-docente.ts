@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, O
 import { FormsModule } from '@angular/forms';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
-import { Data, DataCategoria, DatoDemografico, DatosProfesor } from '@servicios/data';
+import { Data, DataCategoria, DatoDemografico } from '@servicios/data';
 import { simp, compara } from '@librerias/textos';
 
 interface ModeloCategorias {
@@ -10,6 +10,7 @@ interface ModeloCategorias {
   value: string;
   children?: ModeloCategorias[];
 }
+// eslint-disable-next-line @typescript-eslint/no-namespace
 namespace Ficha {
   export interface Opcion {
     label: string;
@@ -48,10 +49,10 @@ export class FichaDocente implements OnChanges {
   @Output() validado: EventEmitter<string[]> = new EventEmitter<string[]>();
   private data: Data = inject(Data);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private catPrefix: string = '/okm:categories/RUND/DOCENTES/';
+  private catPrefix = '/okm:categories/RUND/DOCENTES/';
   private categorias: ModeloCategorias[] = [];
   private datosProfesor: { label: string, valor: string }[] = [];
-  private convCat: { [key: string]: string } = {
+  private convCat: Record<string, string> = {
     'Nivel de Formación': 'Nivel educativo'
   };
   private singleCat: string[] = [
@@ -63,7 +64,7 @@ export class FichaDocente implements OnChanges {
     'VINCULACION_Y_CATEGORIA/VINCULACION',
   ];
   private catProfesor: string[] = [];
-  loading: boolean = true;
+  loading = true;
   categoriasProfesor: Ficha.Panel[] = [];
   constructor() {
     this.data.getCategorias().subscribe((resp: DataCategoria[]) => {
@@ -152,7 +153,7 @@ export class FichaDocente implements OnChanges {
             // Evalúa si existe información relacionada con el profesor en infoProfesor
             const panelLabel: string | undefined = Object.keys(this.infoProfesor).find((key: string) => key == panel.label);
             if (panelLabel) {
-              const selectorProf: { [key: string]: string | string[] } = this.infoProfesor[panelLabel] as { [key: string]: string | string[]; };
+              const selectorProf: Record<string, string | string[]> = this.infoProfesor[panelLabel] as Record<string, string | string[]>;
               const selectorLabel: string | undefined = Object.keys(selectorProf).find((key: string) => key == selector.label);
               if (selectorLabel) {
                 const opcionProf: string | string[] = selectorProf[selectorLabel];

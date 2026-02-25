@@ -1,7 +1,7 @@
 <div class="datos"
      #vistaDatos>
   @for (elemento of estructura; track elemento.value; let numElemento = $index) {
-  @if (elemento.tipo == 'parrafo') {
+  @if (elemento.tipo === 'parrafo') {
   <!---->
   <textarea pTextarea
             class="parrafo"
@@ -28,7 +28,7 @@
   </p-editor>
   !---->
   }
-  @if (elemento.tipo == 'tabla') {
+  @if (elemento.tipo === 'tabla') {
   <p-table class="tabla"
            [value]="elemento.value.filas">
     <ng-template #header>
@@ -82,7 +82,7 @@
     }
   </p-table>
   }
-  @if (elemento.tipo == 'firma') {
+  @if (elemento.tipo === 'firma') {
   <div class="edit-firma">
     <div class="firma">
       <p-select [options]="datosFirmas"

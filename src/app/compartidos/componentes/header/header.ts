@@ -23,7 +23,7 @@ export class Header implements OnInit {
   // Usar el signal directamente del servicio
   protected usuario = this.authServicio.usuario;
 
-  enLogin: boolean = false;
+  enLogin = false;
 
   ngOnInit(): void {
     this.data.getImagen('logoESAP.svg')

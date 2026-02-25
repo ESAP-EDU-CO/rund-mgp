@@ -32,7 +32,7 @@ export class Carga implements OnInit {
   docentesOptions: Docentes[] = [];
   arrayCSV: any[] = [];
   columnasCSV: string[] = [];
-  rawCSV: string = '';
+  rawCSV = '';
   //*
   labelsCSV: string[] = []; // La primera línea de arrayCSV, que contiene las etiquetas
   profesorSeleccionado: string[] = []; // La fila de arrayCSV que corresponde al docente seleccionado
@@ -42,17 +42,16 @@ export class Carga implements OnInit {
   archivosYaCargados: number[] = []; // Index de los archivos que ya ha sido cargados en el backend, que se le indican a CargaDocumento para que los marque como OK
   infoProfesor: DatosProfesor | undefined;
   //*/
-  selectedDocentes: string = '';
-  selectedActivos: string = '';
-  selectedVinculados: string = '';
+  selectedDocentes = '';
+  selectedActivos = '';
+  selectedVinculados = '';
   formulario: FormGroup;
-  loading: boolean = false;
+  loading = false;
   uploadedFiles: any[] = [];
   readonly MAX_FILES = 50;
-  constructor(
-    private dataServicio: Data,
-    private messageService: MessageService
-  ) {
+  private dataServicio = inject(Data);
+  private messageService = inject(MessageService);
+  constructor() {
     this.formulario = new FormGroup({
       cedula: new FormControl('', Validators.required),
       docente: new FormControl('NA'),
@@ -101,7 +100,7 @@ export class Carga implements OnInit {
     this.limpiaLista();
     this.cdr.detectChanges();
   }
-  async submitArchivos(archivos: ArchivoDocente[], numCarga: number = 0): Promise<void> {
+  async submitArchivos(archivos: ArchivoDocente[], numCarga = 0): Promise<void> {
     /**
      * Cada payload está compuesto por el archivo (tipo File) y un objeto 'propiedades' con la forma {label:string, valor:any} que, a su vez, contiene los nodos:
      * - taxonomia: string Ruta de la carpeta del documento (vacía si es la cédula)
@@ -167,7 +166,7 @@ export class Carga implements OnInit {
   }
   //*/
   onUpload(event: any) {
-    for (let file of event.files) {
+    for (const file of event.files) {
       this.uploadedFiles.push(file);
     }
 
@@ -234,7 +233,7 @@ export class Carga implements OnInit {
   resetForm() {
     this.uploadedFiles = [];
   }
-  onError(event: any) {
+  onError(_event: any) {
     this.messageService.add({
       severity: 'error',
       summary: 'Error',

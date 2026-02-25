@@ -4,7 +4,7 @@ import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { ExtraeDatos } from "@componentes/extrae-datos/extrae-datos";
 import { Auth, Rol } from '@servicios/auth';
 
-type Herramienta = { titulo: string, vinculo: string, descripcion: string, rolMinimo: Rol };
+interface Herramienta { titulo: string, vinculo: string, descripcion: string, rolMinimo: Rol }
 
 @Component({
   selector: 'mgp-herramientas',
@@ -33,7 +33,7 @@ export class Herramientas {
     },
   ];
   actualTool: Herramienta | undefined;
-  modalVisible: boolean = false;
+  modalVisible = false;
   abreHerramienta(vinculo: string): void {
     this.actualTool = this.herramientas.find((h: Herramienta) => h.vinculo === vinculo);
     this.modalVisible = true;

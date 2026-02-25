@@ -7,6 +7,7 @@ import { AutofillEvent, AutofillMonitor } from '@angular/cdk/text-field';
 import { Data, Documento } from '@servicios/data';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { FileServicio } from '@servicios/file';
+import { LoggerService } from '@servicios/logger.service';
 
 interface DataCert {
   plantilla: string;
@@ -37,9 +38,10 @@ export class Validacion implements AfterViewInit, OnDestroy {
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private dataServicio: Data = inject(Data);
   private fileServicio: FileServicio = inject(FileServicio);
-  idLen: number = 16;
+  private logger = inject(LoggerService);
+  idLen = 16;
   certificado: string | null = null;
-  idCertificado: string = '';
+  idCertificado = '';
   dataCertificado: any[] | null = null;
   constructor() {
     this.router.events.pipe(
@@ -80,8 +82,8 @@ export class Validacion implements AfterViewInit, OnDestroy {
         .subscribe((blob: Blob) => {
           if (blob.type == 'application/json; charset=utf-8') {
             blob.text()
-              .then((v: string) => console.log(v))
-              .catch((e: any) => console.log(e));
+              .then((v: string) => this.logger.log(v))
+              .catch((e: any) => this.logger.log(e));
             return;
           }
           const nombreArchivo: string = datos.nombre + '_' + datos.fecha + '.' + tipo

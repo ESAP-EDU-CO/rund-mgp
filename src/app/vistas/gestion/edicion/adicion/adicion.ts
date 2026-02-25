@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Data, DatoArchivo, DatosCarpeta, ListadoProps } from '@servicios/data';
 import { FileServicio } from '@servicios/file';
+import { LoggerService } from '@servicios/logger.service';
 
 @Component({
   selector: 'mgp-adicion',
@@ -17,16 +18,17 @@ export class Adicion implements OnDestroy {
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private fileServicio: FileServicio = inject(FileServicio);
   private dataServicio: Data = inject(Data);
+  private logger = inject(LoggerService);
   profesor: InputSignal<any> = input<any>();
   documentos: InputSignal<DatoArchivo[]> = input<DatoArchivo[]>([]);
   finAdicion: OutputEmitterRef<void> = output<void>();
   archivo: File | undefined;
   prevista: { nombre: string, peso: string | undefined, miniaturaURL: string } | undefined;
   categoria?: string;
-  esReemplazo: boolean = false;
+  esReemplazo = false;
   comentario?: string;
   salida: any;
-  mimeTypes: { [key: string]: string } = {
+  mimeTypes: Record<string, string> = {
     'application/pdf': 'PDF',
     'application/msword': 'WORD_DOC',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'WORD_DOCX',
@@ -55,8 +57,8 @@ export class Adicion implements OnDestroy {
   async selecciona(ev: any): Promise<void> {
     this.archivo = ev.currentFiles[0];
     const nombre: string = this.archivo?.name as string;
-    let miniaturaURL: string = '';
-    let peso: string = '';
+    let miniaturaURL = '';
+    let peso = '';
     if (this.archivo) {
       peso = this.archivo?.size < (1024 * 1024) ?
         (this.archivo?.size / 1024).toFixed(2) + ' KB' :
@@ -125,7 +127,7 @@ export class Adicion implements OnDestroy {
       { label: 'categorias', valor: [] },
     ];
     this.dataServicio.postCargaFiles(propiedades, this.archivo as File).subscribe((resp: any) => {
-      console.log(resp);
+      this.logger.log(resp);
       if (resp.success) {
         this.salida = { error: false, mensaje: 'El documento se ha cargado correctamente en el repositorio' };
         this.finAdicion.emit();

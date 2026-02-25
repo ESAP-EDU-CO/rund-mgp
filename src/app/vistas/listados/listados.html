@@ -51,7 +51,7 @@
                 <strong>{{prop.label}}:</strong>
               </div>
               <div class="mgp-col datos">
-                @if (prop.label == 'Comentario') {
+                @if (prop.label === 'Comentario') {
                 <input type="text"
                        class="comentario"
                        pInputText
@@ -59,7 +59,7 @@
                 <small>Escriba un comentario sobre la nueva versión del documento</small>
                 } @else {
                 <span [innerHTML]="prop.valor"></span>
-                @if (prop.label == 'Nombre') {
+                @if (prop.label === 'Nombre') {
                 <small class="nombre">Nombre normalizado para efectos de registro</small>
                 }
                 }

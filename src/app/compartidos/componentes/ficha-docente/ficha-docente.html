@@ -40,7 +40,7 @@
       @for (selector of panel.selectores; let numSelector = $index, ultimo = $last; track numSelector) {
       <div class="selector">
         <span class="label">{{selector.label}}</span>
-        @if (selector.tipo == 'single'){
+        @if (selector.tipo === 'single'){
         <p-select class="select"
                   (onChange)="setCategorias()"
                   [options]="selector.options"

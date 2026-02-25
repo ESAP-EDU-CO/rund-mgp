@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import ExcelJS, { CellValue, Workbook } from 'exceljs';
+import ExcelJS, { Workbook } from 'exceljs';
 
 type TipoCelda = 'number' | 'string' | 'mixed';
 
@@ -7,13 +7,12 @@ type TipoCelda = 'number' | 'string' | 'mixed';
   providedIn: 'root'
 })
 export class Excel {
-  constructor() { }
   lee(archivo: File, numHoja: number): Promise<any[]> {
-    return new Promise<any[]>((resolve: any, reject: any) => {
+    return new Promise<any[]>((resolve: any, _reject: any) => {
       const excel: Workbook = new ExcelJS.Workbook();
       const data: any[] = [];
       archivo.arrayBuffer().then((buffer: ArrayBuffer) => {
-        excel.xlsx.load(buffer).then((val: ExcelJS.Workbook) => {
+        excel.xlsx.load(buffer).then((_val: ExcelJS.Workbook) => {
           const hoja: ExcelJS.Worksheet = excel.worksheets[numHoja];
           hoja.eachRow((fila: ExcelJS.Row) => data.push(fila.values));
           resolve(data);
@@ -21,18 +20,18 @@ export class Excel {
       });
     });
   }
-  normaliza(data: any[][]): Array<string | number>[] {
-    const datos: Array<string | number>[] = [];
+  normaliza(data: any[][]): (string | number)[][] {
+    const datos: (string | number)[][] = [];
     const colTipo: TipoCelda[] = this.tipoFila(data);
-    data.forEach((fila: Array<any>) => {
-      const celdas: Array<string | number> = [];
+    data.forEach((fila: any[]) => {
+      const celdas: (string | number)[] = [];
       fila.forEach((celda: any, numCelda: number) => celdas.push(this.aCadena(celda, colTipo[numCelda] == 'number' ? 0 : 'N/A')));
       datos.push(celdas);
     });
     return datos;
   }
   private aCadena(el: any, valorNull: string | number): string | number {
-    const dateRE: RegExp = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/;
+    const dateRE = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/;
     const txstRE: RegExp[] = [/\\n/, /\s+/];
     if (!el) return valorNull;
     if (el.toString().match(dateRE)) return new Date(el).toLocaleDateString('es-CO');
@@ -55,7 +54,7 @@ export class Excel {
   }
   private tipoFila(data: any[][]): TipoCelda[] {
     const numFilas: number = data.length;
-    const conteo: { textos: number, numeros: number }[] = data[0].map((celda: any) => { return { textos: 0, numeros: 0 } });
+    const conteo: { textos: number, numeros: number }[] = data[0].map((_celda: any) => { return { textos: 0, numeros: 0 } });
     data.forEach((fila: any[]) => {
       fila.forEach((celda: any, numCol: number) => this.tipoCelda(celda) == 'number' ? conteo[numCol].numeros++ : conteo[numCol].textos++);
     });

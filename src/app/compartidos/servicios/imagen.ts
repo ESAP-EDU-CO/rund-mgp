@@ -39,7 +39,7 @@ export class Imagen {
     if (img.alpha) {
       for (let x = 0; x < img.width; x++) {
         for (let y = 0; y < img.height; y++) {
-          const [r, g, b, a] = img.getPixelXY(x, y);
+          const [, , , a] = img.getPixelXY(x, y);
           if (a < 128) img.setPixelXY(x, y, [255, 255, 255, 255]);
         }
       }

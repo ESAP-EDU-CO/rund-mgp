@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Excel } from '@servicios/excel';
 import { TipoListado } from '@servicios/data';
@@ -21,9 +21,9 @@ interface ReporteARCA {
 export class VistaExcel implements OnInit {
   @Input() archivo: File | undefined;
   @Output() reconoceTipo: EventEmitter<TipoListado.Propiedades> = new EventEmitter<TipoListado.Propiedades>();
-  @Output() emiteCSV: EventEmitter<Array<string | number>[]> = new EventEmitter<Array<string | number>[]>();
-  data: Array<string | number>[] = [];
-  encabezados: Array<string | number> = [];
+  @Output() emiteCSV: EventEmitter<(string | number)[][]> = new EventEmitter<(string | number)[][]>();
+  data: (string | number)[][] = [];
+  encabezados: (string | number)[] = [];
   anchoCeldas: string[] = [];
   tipos: TipoListado.Propiedades[] = [
     {
@@ -142,13 +142,13 @@ export class VistaExcel implements OnInit {
       reporte: 'EVAR46'
     }
   ];
-  constructor(private excel: Excel) { }
+  private excel: Excel = inject(Excel);
   ngOnInit(): void {
     if (this.archivo) this.excel.lee(this.archivo, 0).then((datos: any[]) => {
       const matchARCA: ReporteARCA[] = this.reportesARCA.filter((r: ReporteARCA) => datos[0][1].toString().includes(r.encabezado));
       if (matchARCA.length > 0) datos = this.formateaReporteARCA(datos, matchARCA[0].reporte);
       this.encabezados = datos.shift();
-      const tipoListado: TipoListado.Propiedades = this.determinaTipoListado();
+      this.determinaTipoListado();
       this.encabezados.splice(0, 1);
       datos.forEach((d: any[]) => d.splice(0, 1));
       const indicesValidos: number[] = this.encabezados
@@ -172,7 +172,7 @@ export class VistaExcel implements OnInit {
   determinaTipoListado(): TipoListado.Propiedades { // Determina el tipo de listado según el mayor número de coincidencias en el encabezado
     const coincidencias: number[] = [];
     this.tipos.forEach((tipo: TipoListado.Propiedades) => {
-      let coincidencia: number = 0;
+      let coincidencia = 0;
       this.encabezados.forEach((enc: string | number) => {
         if (tipo.encabezados.includes(enc)) coincidencia++;
       });

@@ -1,6 +1,5 @@
 import { Component, Input, OnChanges, Output, SimpleChanges, EventEmitter, ChangeDetectorRef, inject } from '@angular/core';
 import { ProcesaFirma } from '../procesa-firma/procesa-firma';
-import { animate, style, transition, trigger } from '@angular/animations';
 import { Data } from '@servicios/data';
 import { Firma } from '@servicios/firmas';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
@@ -17,7 +16,7 @@ type Etapa = 'carga' | 'procesamiento' | 'cargando' | 'grabado';
   styleUrl: './add-firma.scss',
 })
 export class AddFirma implements OnChanges {
-  @Input() activo: boolean = true;
+  @Input() activo = true;
   @Output() cerrar: EventEmitter<void> = new EventEmitter<void>();
   etapa: Etapa | undefined = 'carga';
   archivo!: File;
@@ -25,14 +24,14 @@ export class AddFirma implements OnChanges {
   datosFirma: Firma.FirmaMetadata | undefined;
   erroresCarga: { png: string | boolean, json: string | boolean } = { png: false, json: false };
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  constructor(private dataServicio: Data) { }
+  private dataServicio: Data = inject(Data);
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['activo'].currentValue && !changes['activo'].previousValue) this.cambiaEtapa('carga');
   }
   seleccionaImagen(ev: any): void {
     this.archivo = ev.currentFiles[0];
   }
-  procesaImagen(ev: any): void {
+  procesaImagen(_ev: any): void {
     this.cambiaEtapa('procesamiento');
   }
   eliminaImagen(ev: any): void {

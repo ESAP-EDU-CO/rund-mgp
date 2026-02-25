@@ -1,12 +1,13 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, inject } from '@angular/core';
 import { DomSanitizer, SafeHtml, SafeStyle, SafeUrl, SafeResourceUrl } from '@angular/platform-browser';
 
 @Pipe({
   name: 'safe',
+  // eslint-disable-next-line @angular-eslint/prefer-standalone
   standalone: false
 })
 export class SafePipe implements PipeTransform {
-  constructor(protected sanitizer: DomSanitizer) { }
+  protected sanitizer: DomSanitizer = inject(DomSanitizer);
   public transform(value: any, type: string): SafeHtml | SafeStyle | SafeUrl | SafeResourceUrl {
     switch (type) {
       case 'html': return this.sanitizer.bypassSecurityTrustHtml(value);

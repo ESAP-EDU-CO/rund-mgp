@@ -26,7 +26,7 @@ export function simp(texto: string): string {
  * @param b Segunda cadena.
  * @returns Un número entre 0 (sin similitud) y 1 (completamente iguales).
  */
-export function compara(a: string, b: string, l: number = 0.7): boolean {
+export function compara(a: string, b: string, l = 0.7): boolean {
   const maxLength: number = Math.max(a.length, b.length);
   if (maxLength === 0) return true;
   if (b.includes(a)) return true;

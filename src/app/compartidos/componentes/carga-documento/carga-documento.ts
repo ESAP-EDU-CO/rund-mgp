@@ -1,5 +1,5 @@
 
-import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { simp, compara } from '@librerias/textos';
 import { IconsModule } from '@modulos/icons/icons-module';
@@ -33,7 +33,7 @@ export class CargaDocumento implements OnChanges {
     { origen: ['ESTUDIO DE HOJA DE VIDA'], categoria: 'ESTUDIO_DE_HOJA_DE_VIDA', label: 'Estudio de hoja de vida' },
     { origen: ['DOCUMENTOS ADICIONALES'], categoria: 'DOCUMENTOS_ADICIONALES', label: 'Documentos adicionales' },
   ];
-  @Input() mimeTypes: { [key: string]: string }[] = [
+  @Input() mimeTypes: Record<string, string>[] = [
     { 'application/pdf': 'PDF' },
     { 'application/msword': 'WORD_DOC' },
     { 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'WORD_DOCX' },
@@ -47,14 +47,14 @@ export class CargaDocumento implements OnChanges {
     { 'application/vnd.oasis.opendocument.graphics': 'ODG' },
   ]; // Tipos MIME permitidos
   @Input() archivosCargados: number[] = [];; // Archivo docente que ya se ha cargado, para que se elimine de la lista de archivos a cargar
-  @Input() cedulaRequerida: boolean = true; // Indica si se requiere al menos un archivo marcado como cédula
+  @Input() cedulaRequerida = true; // Indica si se requiere al menos un archivo marcado como cédula
   @Input() archivosProfesor: DatoArchivo[] = []; // Archivos que ya tiene el profesor en rund-core, para marcar los que ya han sido cargados
   @Output() documentos: EventEmitter<ArchivoDocente[]> = new EventEmitter<ArchivoDocente[]>(); // Emite los archivos que se deben cargar al componente padre
   @Output() cleanArchivos: EventEmitter<boolean> = new EventEmitter<boolean>(); // Emite un evento para limpiar los archivos cargados
   @Output() todosCargados: EventEmitter<boolean> = new EventEmitter<boolean>(); // Emite un evento cuando todos los archivos han sido cargados
   archivos: ArchivoDocente[] = []; // Lista de archivos que serán cargados al RUND
-  dragging: boolean = false; // Indica si se está arrastrando un archivo
-  loading: boolean = false; // Indica si se está en el modo de carga de archivos
+  dragging = false; // Indica si se está arrastrando un archivo
+  loading = false; // Indica si se está en el modo de carga de archivos
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['archivosProfesor']) {
       this.cdr.detectChanges();
@@ -142,13 +142,13 @@ export class CargaDocumento implements OnChanges {
    * @param ruta La ruta original de donde se obtuvo el archivo
    */
   private procesaArchivo(archivo: File, ruta: string): void {
-    const mimeType: { [key: string]: string } | undefined = this.mimeTypes.find((m: { [key: string]: string }) => m[archivo.type]);
+    const mimeType: Record<string, string> | undefined = this.mimeTypes.find((m: Record<string, string>) => m[archivo.type]);
     if (!mimeType) return; // Si el tipo MIME no está permitido, no procesar el archivo
     const taxOr: string = ruta.trim().replace('/' + archivo.name, '').split('/').pop()?.replace(/\d\.\s/g, '') || 'DOCUMENTOS ADICIONALES';
     const carpeta: DatosCarpeta = this.carpetas.find(
       (c: DatosCarpeta) => c.origen.some((o: string) => compara(simp(o), simp(taxOr)))
     ) || this.carpetas[this.carpetas.length - 1];
-    const origen: string = 'ONEDRIVE_ESAP';
+    const origen = 'ONEDRIVE_ESAP';
     // Normalizar el nombre del archivo para evitar problemas con mayúsculas y minúsculas
     const nombreLimpio = archivo.name.toLowerCase().replace(/\.[^/.]+$/, '');
     // Verificar si el archivo es una cédula basándose en el nombre del archivo
@@ -269,7 +269,7 @@ export class CargaDocumento implements OnChanges {
      * @param entry FileSystemEntry
      * @param path Ruta base
      */
-  private async procesarEntry(entry: any, path: string = ''): Promise<void> {
+  private async procesarEntry(entry: any, path = ''): Promise<void> {
     if (entry.isFile) {
       // Es un archivo
       const file: File = await new Promise((resolve, reject) => {
@@ -297,8 +297,7 @@ export class CargaDocumento implements OnChanges {
     this.dragging = false;
     if (!event.dataTransfer) return;
     const items: DataTransferItemList = event.dataTransfer.items;
-    for (let i = 0; i < items.length; i++) {
-      const item: DataTransferItem = items[i];
+    for (const item of Array.from(items)) {
       if (item.kind === 'file') {
         const entry = item.webkitGetAsEntry();
         if (entry) await this.procesarEntry(entry);

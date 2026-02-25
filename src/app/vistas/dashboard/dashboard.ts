@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectorRef, Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { Chart } from '@componentes/chart/chart';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
@@ -17,11 +17,9 @@ import { ChartData, ChartOptions, DataCategoria, DataChart, Data } from '@servic
 })
 export class Dashboard implements OnInit {
   categorias!: DataCategoria[];
-  constructor(
-    @Inject(PLATFORM_ID) private platID: any,
-    private data: Data,
-    private cdr: ChangeDetectorRef,
-  ) { }
+  private platID = inject(PLATFORM_ID);
+  private data = inject(Data);
+  private cdr = inject(ChangeDetectorRef);
   ngOnInit(): void {
     this.init();
   }
@@ -41,7 +39,7 @@ export class Dashboard implements OnInit {
   calculaTotales(numCat:number):{ label:string, cantidad:number } {
     const cat:DataCategoria = this.categorias[numCat];
     const label:string = cat.label as string;
-    let cantidad:number = 0;
+    let cantidad = 0;
     if (cat.children && cat.children[0].children && cat.children[0].children[0].children)
       cat.children[0].children[0].children.forEach((hijo:any) => cantidad += hijo.numDocs);
     return { label:label, cantidad:cantidad };
@@ -75,7 +73,7 @@ export class Dashboard implements OnInit {
     };
     return { nombre, data, opciones, tipoChart };
   }
-  private sumaDocs(nodo: DataCategoria, numDocs: number = 0): number {
+  private sumaDocs(nodo: DataCategoria, numDocs = 0): number {
     if (nodo.numDocs) numDocs += nodo.numDocs;
     if (nodo.children) {
       nodo.children.forEach((subnodo: DataCategoria) => {
@@ -85,8 +83,8 @@ export class Dashboard implements OnInit {
     return numDocs;
   }
   suficientesNodos(nodo: DataCategoria): boolean {
-    const hijos: number = nodo.children ? nodo.children.length : 0;
-    const numDocs: number = this.sumaDocs(nodo);
+    const _hijos: number = nodo.children ? nodo.children.length : 0;
+    const _numDocs: number = this.sumaDocs(nodo);
     return true;
     //return numDocs > (hijos * 5) && hijos > 1;
   }

@@ -28,12 +28,12 @@ export class BorraDocumentos implements OnDestroy {
   finEliminar: OutputEmitterRef<void> = output();
   private dataServicio: Data = inject(Data);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private labels: { [key: string]: string } = this.dataServicio.labels;
+  private labels: Record<string, string> = this.dataServicio.labels;
   listaArchivos: ListaArchivos[] = [];
   archivosBorrar: ListaArchivos[] = [];
-  dataVisible: boolean = false;
-  eliminando: boolean = false;
-  textoBotonEliminar: string = 'Confirmar eliminación';
+  dataVisible = false;
+  eliminando = false;
+  textoBotonEliminar = 'Confirmar eliminación';
   constructor() {
     effect(async () => this.cargaDatos());
   }
@@ -77,8 +77,7 @@ export class BorraDocumentos implements OnDestroy {
     this.textoBotonEliminar = 'Eliminando...';
     this.eliminando = true;
     const shadowArchivos: ListaArchivos[] = JSON.parse(JSON.stringify(this.archivosBorrar));
-    for (let i: number = 0; i < shadowArchivos.length; i++) {
-      const archivo: ListaArchivos = shadowArchivos[i];
+    for (const archivo of shadowArchivos) {
       const res: any = await lastValueFrom(this.dataServicio.deleteFile(archivo.uuid));
       if (res.eliminado) {
         const posBorrar: number = this.archivosBorrar.findIndex((a: ListaArchivos) => a.uuid === archivo.uuid);
@@ -93,7 +92,7 @@ export class BorraDocumentos implements OnDestroy {
     this.cdr.detectChanges();
     this.finEliminar.emit();
   }
-  private async pausa(ms: number = 500): Promise<boolean> {
+  private async pausa(ms = 500): Promise<boolean> {
     return new Promise<boolean>((resolve) => setTimeout(() => resolve(true), ms));
   }
   ngOnDestroy(): void {

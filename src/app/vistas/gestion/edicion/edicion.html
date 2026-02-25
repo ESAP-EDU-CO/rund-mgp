@@ -3,7 +3,7 @@
     <div class="header">
       <div class="selector">
         <h4>Seleccione el profesor/a por nombre o cédula</h4>
-        @if (cargandoProfesores == 100) {
+        @if (cargandoProfesores === 100) {
         <p-autocomplete [(ngModel)]="profesor"
                         [dropdown]="true"
                         [suggestions]="profesoresFiltrados"
@@ -58,13 +58,13 @@
                       icon="pi pi-download" />
             <p-button pTooltip="Ver información del documento seleccionado"
                       tooltipPosition="top"
-                      [disabled]="numSel() != 1"
+                      [disabled]="numSel() !== 1"
                       severity="info"
                       (onClick)="accionesArchivos('watch')"
                       icon="pi pi-eye" />
             <p-button pTooltip="Reemplazar el documento seleccionado por otro documento"
                       tooltipPosition="top"
-                      [disabled]="numSel() != 1"
+                      [disabled]="numSel() !== 1"
                       severity="warn"
                       (onClick)="accionesArchivos('change')"
                       icon="pi pi-refresh" />

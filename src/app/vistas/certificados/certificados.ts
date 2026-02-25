@@ -9,6 +9,7 @@ import { SelectItemGroup } from 'primeng/api';
 import { Preview } from "@componentes/documentos/preview/preview";
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { Firma, Firmas } from '@servicios/firmas';
+import { LoggerService } from '@servicios/logger.service';
 
 export interface Prevista {
   background: string;
@@ -41,6 +42,7 @@ export class Certificados implements OnInit {
   private fileServicio: FileServicio = inject(FileServicio);
   private firmasServicio: Firmas = inject(Firmas);
   private configService = inject(ConfigService);
+  private logger = inject(LoggerService);
   ngOnInit(): void {
     this.dataServicio.loadDocumentos().then((resp: boolean) => {
       if (resp) {
@@ -85,8 +87,8 @@ export class Certificados implements OnInit {
         .subscribe((blob: Blob) => {
           if (blob.type == 'application/json; charset=utf-8') {
             blob.text()
-              .then((v: string) => console.log(v))
-              .catch((e: any) => console.log(e));
+              .then((v: string) => this.logger.log(v))
+              .catch((e: any) => this.logger.log(e));
             return;
           }
           const nombreArchivo: string = labelCert + '_' + fecha + '.' + tipo
@@ -130,16 +132,17 @@ export class Certificados implements OnInit {
         dato.plantilla = this.ajustaCert1231(dato, datosCertificado);
         break;
       case '1051':
-        console.log(this.columnas);
+        this.logger.log(this.columnas);
         datosCertificado = [];
         dato.value.forEach((sel: { label: string, value: number }) => {
           const fila: string[] = [];
           dato.encabezados.forEach((encabezado: string) => {
             switch (encabezado) {
-              case 'No.':
+              case 'No.': {
                 const numDatos: number = datosCertificado.length + 1;
                 fila.push(numDatos.toString());
                 break;
+              }
               case 'Acta':
                 fila.push(this.columnas['Acto Administrativo de Vinculación'][sel.value]);
                 break;
@@ -152,7 +155,7 @@ export class Certificados implements OnInit {
         dato.plantilla = this.ajustaCert1051(dato, datosCertificado);
         break;
       default:
-        console.log('No se encontró el label del grupo ', this.certificadoSeleccionado);
+        this.logger.warn('No se encontró el label del grupo ', this.certificadoSeleccionado);
         break;
     }
     this.preview.estructura = dato.plantilla.estructura;
@@ -171,7 +174,7 @@ export class Certificados implements OnInit {
         { colspan: 2, texto: datosCertificado.filas.map((fila: any[]) => fila[1]).reduce((a: number, c: number) => a + c, 0) + ' PUNTOS POR BONIFICACIÓN' },
       ]
     };
-    console.log(tabla);
+    this.logger.log(tabla);
     dato.plantilla.estructura[posTabla].value = tabla;
     if (dato.plantilla.estructura[posNombre].value && typeof dato.plantilla.estructura[posNombre].value == 'string')
       dato.plantilla.estructura[posNombre].value = dato.plantilla.estructura[posNombre].value

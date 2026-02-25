@@ -29,7 +29,7 @@ export class FileServicio {
       compressionOptions: { level: 6 }
     });
   }
-  async generaMiniaturaPDF(archivoPDF: File, maxWidth: number = 80): Promise<string> {
+  async generaMiniaturaPDF(archivoPDF: File, maxWidth = 80): Promise<string> {
     if (!isPlatformBrowser(this.platID)) return '';
     await this.loadPdfJs();
     if (!this.pdfjsLib) throw new Error('No se pudo cargar pdfjs-dist');

@@ -19,9 +19,9 @@ import { Data, MenuElemento } from '@servicios/data';
 })
 export class Menu implements OnInit {
   elementosMenu: MenuElemento[] | undefined;
-  conteo: number = 0;
+  conteo = 0;
   itemsUsados: string[] = [];
-  seccionActual: string = '';
+  seccionActual = '';
 
   private router = inject(Router);
   private authServicio = inject(Auth);

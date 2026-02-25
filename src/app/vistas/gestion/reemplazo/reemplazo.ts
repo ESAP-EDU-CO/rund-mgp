@@ -26,8 +26,8 @@ export class Reemplazo implements OnDestroy {
   async selecciona(ev: any): Promise<void> {
     this.archivo = ev.currentFiles[0];
     const nombre: string = this.archivo?.name as string;
-    let miniaturaURL: string = '';
-    let peso: string = '';
+    let miniaturaURL = '';
+    let peso = '';
     if (this.archivo) {
       peso = this.archivo?.size < (1024 * 1024) ?
         (this.archivo?.size / 1024).toFixed(2) + ' KB' :
@@ -68,7 +68,7 @@ export class Reemplazo implements OnDestroy {
       this.cdr.detectChanges();
     };
   }
-  elimina(ev: any): void {
+  elimina(_ev: any): void {
     this.prevista = undefined;
     this.archivo = undefined;
     this.cdr.detectChanges();

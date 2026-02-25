@@ -13,7 +13,7 @@ import { Prevista } from '@vistas/certificados/certificados';
 })
 export class Preview implements AfterViewInit {
   @Input() preview: Prevista | undefined;
-  fontSize: string = '10px';
+  fontSize = '10px';
   elemento: HTMLElement = document.querySelector('.preview .vista') as HTMLElement;
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -31,7 +31,7 @@ export class Preview implements AfterViewInit {
     });
   }
   estableceEM(): string {
-    const size: number = 10; // Tamaño estándar relativo de caracter
+    const size = 10; // Tamaño estándar relativo de caracter
     this.elemento = document.querySelector('.preview .vista') as HTMLElement;
     const anchoRegular: number = this.elemento.offsetWidth / 60; // A lo ancho, una hoja carta tiene 60 caracteres de 10px
     return '' + Math.round(anchoRegular / 10 * size) + 'px';

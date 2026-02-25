@@ -5,8 +5,11 @@
       <h3>Firma</h3>
       <div class="icono">
         <i class="pi pi-question-circle"
+           tabindex="0"
            (mouseover)="instrucciones.show($event)"
-           (mouseout)="instrucciones.hide()">
+           (mouseout)="instrucciones.hide()"
+           (focus)="instrucciones.show($event)"
+           (blur)="instrucciones.hide()">
         </i>
       </div>
       <p-popover #instrucciones>

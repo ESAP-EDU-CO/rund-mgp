@@ -9,7 +9,7 @@ import { BorraDocumentos } from "./borra-documentos/borra-documentos";
 import { Reemplazo } from "../reemplazo/reemplazo";
 import { Adicion } from './adicion/adicion';
 
-export type Profesor = { nombre: string, documentoIdentidad: string };
+export interface Profesor { nombre: string, documentoIdentidad: string }
 export const iconoFormato: any = {
   PDF: 'pi-file-pdf',
   XLSX: 'pi-file-excel',
@@ -36,19 +36,19 @@ export class Edicion implements OnInit {
   private dataServicio: Data = inject(Data);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private profesores: any;
-  labels: { [key: string]: string } = this.dataServicio.labels;
+  labels: Record<string, string> = this.dataServicio.labels;
   profeSeleccionado: any;
   profesoresFiltrados: Profesor[] = [];
   profesor?: Profesor;
   arbolArchivos: TreeNode[] = [];
   archivosSeleccionados: TreeNode[] = [];
-  dialogoVisible: boolean = false;
+  dialogoVisible = false;
   tipoDialogo: 'download' | 'delete' | 'change' | 'add' | 'watch' | undefined;
   archivos: DatoArchivo[] = [];
   archivosProfe: DatoArchivo[] = [];
-  cargandoProfesores: number = 0;
-  tituloDialogo: string = '';
-  dialogoCerrable: boolean = true;
+  cargandoProfesores = 0;
+  tituloDialogo = '';
+  dialogoCerrable = true;
   modoDocumento: 'watch' | 'download' = 'watch';
   async ngOnInit(): Promise<void> {
     this.labels['DOCUMENTO_DE_IDENTIDAD'] = 'Documento de identidad';
@@ -151,7 +151,7 @@ export class Edicion implements OnInit {
   }
   private generaArbolArchivos(archivos: DatoArchivo[]): TreeNode[] {
     const raiz: TreeNode[] = [];
-    const tiposArchivos: { [key: string]: TreeNode } = {};
+    const tiposArchivos: Record<string, TreeNode> = {};
     archivos.forEach((archivo: DatoArchivo) => {
       if (archivo && archivo.formato !== 'JSON' && archivo.formato !== '') {
         const key: string = '' + Object.keys(tiposArchivos).length;

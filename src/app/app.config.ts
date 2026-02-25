@@ -21,14 +21,14 @@ const estilo: any = definePreset(
   // Aura v21 ya usa azul como color primario por defecto
   components: {
     tree: {
-      css: ({ dt }: any) => `
+      css: (_dt: any) => `
         .p-tree-node-selectable {
           line-break: anywhere;
         }
       `,
     },
     dialog: {
-      css: ({ dt }: any) => `
+      css: (_dt: any) => `
         .p-dialog-content {
           overflow-y: hidden;
         }

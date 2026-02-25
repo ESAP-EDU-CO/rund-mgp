@@ -5,6 +5,7 @@ import { FileServicio } from '@servicios/file';
 import { PrimengModule } from "@modulos/primeng/primeng-module";
 import { BorraDocumentos } from '../borra-documentos/borra-documentos';
 import { Reemplazo } from '@vistas/gestion/reemplazo/reemplazo';
+import { LoggerService } from '@servicios/logger.service';
 
 type Modo = 'watch' | 'download';
 interface DescargaResponse {
@@ -38,6 +39,7 @@ export class DownloadPreview implements OnDestroy {
   private fileServicio: FileServicio = inject(FileServicio);
   private sanitizer: DomSanitizer = inject(DomSanitizer);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private logger = inject(LoggerService);
   private blobUrl: string | undefined;
   private formatos: any = {
     'application/pdf': 'PDF',
@@ -46,11 +48,11 @@ export class DownloadPreview implements OnDestroy {
     'image/jpeg': 'JPG',
     'image/png': 'PNG',
   }
-  private labels: { [key: string]: string } = this.dataServicio.labels;
+  private labels: Record<string, string> = this.dataServicio.labels;
   uuid?: string;
   propiedades: { clave: string, valor: string }[] = [];
   pdfUrl: SafeResourceUrl | undefined;
-  textoError: string = '';
+  textoError = '';
   archivosDescarga: ListaDescarga[] = [];
   constructor() {
     effect(async () => {
@@ -66,7 +68,7 @@ export class DownloadPreview implements OnDestroy {
       if (profesorActual && archivosActuales && archivosActuales.length > 0) {
         const cedula: string = profesorActual.DOCUMENTO_DE_IDENTIDAD;
         switch (modoActual) {
-          case 'watch':
+          case 'watch': {
             const nombre: string = archivosActuales[0].nombre;
             try {
               const consulta: any = await this.dataServicio.getArchivoProfesorUuid(cedula, nombre);
@@ -107,15 +109,16 @@ export class DownloadPreview implements OnDestroy {
                   this.cdr.detectChanges();
                 }
               } else {
-                console.error(consulta.error);
+                this.logger.error(consulta.error);
                 this.textoError = consulta.error;
               }
             } catch (error) {
-              console.error(error);
+              this.logger.error(error);
               this.textoError = error as string;
             }
             break;
-          case 'download':
+          }
+          case 'download': {
             this.archivosDescarga = archivosActuales.map((archivo: DatoArchivo) => ({ nombre: archivo.nombre, blob: undefined, descargado: false }));
             this.archivosDescarga.forEach(async (archivoEnDescaga: ListaDescarga, index: number) => {
               try {
@@ -125,10 +128,10 @@ export class DownloadPreview implements OnDestroy {
                   if (!descarga.error) this.archivosDescarga[index].blob = descarga.blob;
                   this.cdr.detectChanges();
                 } else {
-                  console.error(consulta.error);
+                  this.logger.error(consulta.error);
                 }
               } catch (error) {
-                console.error(error);
+                this.logger.error(error);
                 this.textoError = error as string;
               }
             });
@@ -144,7 +147,7 @@ export class DownloadPreview implements OnDestroy {
                 await this.pausa();
               });
               const zip: Blob = await this.fileServicio.creaZipDesdeBlobs(this.archivosDescarga);
-              console.log(zip);
+              this.logger.log(zip);
               const fecha: string = new Date().toLocaleDateString().replace(/\//g, '');
               this.fileServicio.descarga(zip, cedula + '-documentacion-' + fecha + '.zip');
             }
@@ -152,6 +155,7 @@ export class DownloadPreview implements OnDestroy {
             this.cdr.detectChanges();
             this.cerrar.emit();
             break;
+          }
         }
       }
     });
@@ -168,10 +172,10 @@ export class DownloadPreview implements OnDestroy {
       return { blob: consulta, blobUrl: blobUrl, pdfUrl: pdfUrl, error: undefined };
     }
     if (consulta.type != 'application/json') return { blob: consulta, blobUrl: undefined, pdfUrl: undefined, error: undefined };
-    console.error('ERROR: ', consulta);
+    this.logger.error('ERROR: ', consulta);
     return { blob: consulta, blobUrl: undefined, pdfUrl: undefined, error: consulta };
   }
-  private async pausa(ms: number = 500): Promise<boolean> {
+  private async pausa(ms = 500): Promise<boolean> {
     return new Promise<boolean>((resolve) => setTimeout(() => resolve(true), ms));
   }
   ngOnDestroy(): void {

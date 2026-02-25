@@ -15,7 +15,7 @@
         </p-floatLabel>
         <div class="filtros-varios">
           @for (dato of filtros; track $index) {
-          @if (dato.type == 'multi') {
+          @if (dato.type === 'multi') {
           <p-floatLabel>
             <p-multiSelect [options]="dato.options"
                            [(ngModel)]="dato.value"
@@ -27,7 +27,7 @@
                    [innerHTML]="dato.label"></label>
           </p-floatLabel>
           }
-          @if (dato.type == 'select') {
+          @if (dato.type === 'select') {
           <p-floatLabel>
             <p-select [options]="dato.options"
                       [(ngModel)]="dato.value"
@@ -42,7 +42,7 @@
                    [innerHTML]="dato.label"></label>
           </p-floatLabel>
           }
-          @if (dato.type == 'number' || dato.type == 'text'){
+          @if (dato.type === 'number' || dato.type === 'text'){
           <input [(ngModel)]="dato.value"
                  [id]="'filtro-' + $index"
                  [type]="dato.type" />

@@ -36,7 +36,7 @@ export class Login implements OnInit {
   protected loginForm: FormGroup;
 
   // URL de retorno después del login exitoso
-  private returnUrl: string = '/';
+  private returnUrl = '/';
 
   logo: string | ArrayBuffer | null = null;
 

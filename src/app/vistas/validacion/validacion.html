@@ -19,7 +19,7 @@
       </div>
       <p-button label="Consultar"
                 (onClick)="validaID()"
-                [disabled]="idCertificado.length != idLen" />
+                [disabled]="idCertificado.length !== idLen" />
     </div>
     @if (certificado) {
     @if (dataCertificado) {
