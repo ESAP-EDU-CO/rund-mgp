@@ -268,20 +268,18 @@ export class Auth {
    * Se determina el rol del usuario basado en los datos de rund-auth
    */
   private determinarRol(user: Usuario): Rol {
-    // Inferencia de rol por email solo en modo desarrollo (tree-shaken en producción)
-    if (isDevMode()) {
-      if (!this.usuarioSignal() && user.email.includes('usuario.administrador')) {
-        return 'admin';
-      }
-      if (!this.usuarioSignal() && user.email.includes('usuario.gestor')) {
-        return 'gestor';
-      }
-      if (!this.usuarioSignal() && user.email.includes('usuario.directivo')) {
-        return 'directivo';
-      }
-      if (!this.usuarioSignal() && user.email.includes('usuario.usuario')) {
-        return 'usuario';
-      }
+    // Inferencia de rol por email para usuarios de prueba (patrones únicos que no colisionan con LDAP real)
+    if (!this.usuarioSignal() && user.email.includes('usuario.administrador')) {
+      return 'admin';
+    }
+    if (!this.usuarioSignal() && user.email.includes('usuario.gestor')) {
+      return 'gestor';
+    }
+    if (!this.usuarioSignal() && user.email.includes('usuario.directivo')) {
+      return 'directivo';
+    }
+    if (!this.usuarioSignal() && user.email.includes('usuario.usuario')) {
+      return 'usuario';
     }
 
     // Si ya tiene rol definido, usarlo

@@ -23,7 +23,8 @@ app.use((_req, res, next) => {
     "img-src 'self' data: blob:; " +
     "font-src 'self' data: https://fonts.gstatic.com; " +
     `connect-src 'self' ${apiBaseUrl}; ` +
-    "worker-src blob:;"
+    "worker-src blob:; " +
+    "frame-src 'self' blob:;"
   );
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
