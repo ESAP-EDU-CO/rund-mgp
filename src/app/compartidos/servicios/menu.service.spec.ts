@@ -1,0 +1,97 @@
+import { TestBed } from '@angular/core/testing';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+
+import { MenuService } from './menu.service';
+
+const mockIcon: IconDefinition = {
+  prefix: 'fas',
+  iconName: 'gauge',
+  icon: [512, 512, [], 'f624', 'M0 0'],
+};
+
+describe('MenuService', () => {
+  let service: MenuService;
+  let faLibrarySpy: jasmine.SpyObj<FaIconLibrary>;
+
+  beforeEach(() => {
+    faLibrarySpy = jasmine.createSpyObj('FaIconLibrary', ['getIconDefinition', 'addIconPacks', 'addIcons']);
+    faLibrarySpy.getIconDefinition.and.returnValue(mockIcon as any);
+
+    TestBed.configureTestingModule({
+      providers: [
+        MenuService,
+        { provide: FaIconLibrary, useValue: faLibrarySpy },
+      ],
+    });
+
+    service = TestBed.inject(MenuService);
+  });
+
+  it('debería crearse correctamente', () => {
+    expect(service).toBeTruthy();
+  });
+
+  describe('getElementosMenu()', () => {
+    it('debería retornar un arreglo con 7 elementos de menú', () => {
+      const elementos = service.getElementosMenu();
+      expect(elementos.length).toBe(7);
+    });
+
+    it('debería contener las rutas correctas', () => {
+      const elementos = service.getElementosMenu();
+      const rutas = elementos.map(e => e['route']);
+      expect(rutas).toContain('/dashboard');
+      expect(rutas).toContain('/consultas');
+      expect(rutas).toContain('/listados');
+      expect(rutas).toContain('/gestion');
+      expect(rutas).toContain('/certificados');
+      expect(rutas).toContain('/herramientas');
+      expect(rutas).toContain('/validacion');
+    });
+
+    it('debería contener los labels correctos', () => {
+      const elementos = service.getElementosMenu();
+      const labels = elementos.map(e => e.label);
+      expect(labels).toContain('Panel de control');
+      expect(labels).toContain('Consultas');
+      expect(labels).toContain('Listados');
+      expect(labels).toContain('Gestión');
+      expect(labels).toContain('Certificados');
+      expect(labels).toContain('Herramientas');
+      expect(labels).toContain('Validación');
+    });
+
+    it('debería contener los roles correctos', () => {
+      const elementos = service.getElementosMenu();
+      const roles = elementos.map(e => e.rol);
+      expect(roles).toContain('directivo');
+      expect(roles).toContain('gestor');
+      expect(roles).toContain('usuario');
+    });
+
+    it('debería retornar la misma instancia en llamadas sucesivas (caché)', () => {
+      const primera = service.getElementosMenu();
+      const segunda = service.getElementosMenu();
+      expect(primera).toBe(segunda);
+    });
+
+    it('debería llamar a getIconDefinition para construir los iconos FontAwesome', () => {
+      service.getElementosMenu();
+      expect(faLibrarySpy.getIconDefinition).toHaveBeenCalledWith('fas', 'gauge');
+      expect(faLibrarySpy.getIconDefinition).toHaveBeenCalledWith('fas', 'magnifying-glass-chart');
+      expect(faLibrarySpy.getIconDefinition).toHaveBeenCalledWith('fas', 'file-arrow-up');
+      expect(faLibrarySpy.getIconDefinition).toHaveBeenCalledWith('fas', 'file-alt');
+      expect(faLibrarySpy.getIconDefinition).toHaveBeenCalledWith('fas', 'check-double');
+    });
+
+    it('los elementos PrimeNG deben tener icono PrimeIcons', () => {
+      const elementos = service.getElementosMenu();
+      const primeng = elementos.filter(e => e.tipo === 'PrimeNG');
+      expect(primeng.length).toBe(2);
+      primeng.forEach(e => {
+        expect(e.icon).toBeDefined();
+      });
+    });
+  });
+});
