@@ -43,3 +43,7 @@ Thumbs.db
 
 # Docker
 .dockerignore
+
+# Oh My Claude
+.omc/
+
