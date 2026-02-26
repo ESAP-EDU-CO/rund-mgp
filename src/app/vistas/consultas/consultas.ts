@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Chart } from '@componentes/chart/chart';
 import { PipesModule } from '@modulos/pipes/pipes-module';
@@ -31,8 +31,7 @@ interface DataConsulta {
 export class Consultas implements OnInit {
   private data: Data = inject(Data);
   private fileServicio: FileServicio = inject(FileServicio);
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private platID = inject(PLATFORM_ID);
+private platID = inject(PLATFORM_ID);
   private logger: LoggerService = inject(LoggerService);
   dataConsulta: DataConsulta[] = [];
   placeholders: string[] = ['Variables eje X', 'Variables eje Y'];
@@ -82,7 +81,7 @@ export class Consultas implements OnInit {
         if (supercat.label !== 'Documentos') this.dataConsulta.push(panel); // Las categorías de los documentos se deben organizar mejor
       }
     });
-    this.cdr.detectChanges();
+    
   }
   creaTabla(panel: DataConsulta): void {
     panel.dataTabla = undefined;
@@ -90,7 +89,7 @@ export class Consultas implements OnInit {
       this.data.getCruce(panel.seleccion.map((s: string) => this.findData(s)?.uuid as string)).subscribe((_dataTabla: DataTabla) => {
         panel.dataTabla = _dataTabla;
         this.creaChart(panel);
-        this.cdr.detectChanges();
+        
       });
     }
   }
@@ -154,7 +153,7 @@ export class Consultas implements OnInit {
     if (tipo === 'pdf') tipoArchivo = 'PDF';
     if (tipo === 'xlsx') tipoArchivo = 'Excel';
     this.esperando = true;
-    this.cdr.detectChanges();
+    
     this.mensajeEspera = 'Descargando ' + tipoArchivo + '...';
     const nombre: string = 'RUND - Consulta de ' + panel.dataTabla?.nomCol + ' contra ' + panel.dataTabla?.nomFil + '.' + tipo;
     this.data.getConsultaFile(tipo, panel.dataTabla as DataTabla).subscribe((blob: Blob) => {
@@ -166,7 +165,7 @@ export class Consultas implements OnInit {
       }
       this.fileServicio.descarga(blob, nombre);
       this.esperando = false;
-      this.cdr.detectChanges();
+      
       if (tipo == 'pdf') {
         this.data.delTemp().subscribe((resp: { borrados: string[], aBorrar: string[] }) => {
           if (!resp || resp.borrados.length != resp.aBorrar.length)

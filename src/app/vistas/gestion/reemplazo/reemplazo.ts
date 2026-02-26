@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, input, InputSignal, OnDestroy, output, OutputEmitterRef } from '@angular/core';
+import { Component, inject, input, InputSignal, OnDestroy, output, OutputEmitterRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Data, DatoArchivo } from '@servicios/data';
@@ -14,8 +14,7 @@ import { FileServicio } from '@servicios/file';
   styleUrl: './reemplazo.scss',
 })
 export class Reemplazo implements OnDestroy {
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private fileServicio: FileServicio = inject(FileServicio);
+private fileServicio: FileServicio = inject(FileServicio);
   private data: Data = inject(Data);
   finReemplazo: OutputEmitterRef<void> = output();
   profesor: InputSignal<any> = input<any>();
@@ -42,13 +41,13 @@ export class Reemplazo implements OnDestroy {
       miniaturaURL: miniaturaURL,
       comentario: ''
     };
-    this.cdr.detectChanges();
+    
   }
   async reemplaza(): Promise<void> {
     const resp: any = await this.data.getArchivoProfesorUuid(this.profesor()['DOCUMENTO_DE_IDENTIDAD'] as string, this.docOriginal()?.nombre as string);
     if (!resp.success) {
       this.salida = { error: true, mensaje: 'El documento original no se encontró en el repositorio' };
-      this.cdr.detectChanges();
+      
       return;
     }
     try {
@@ -65,13 +64,13 @@ export class Reemplazo implements OnDestroy {
       }
     } catch (error: any) {
       this.salida = { error: true, mensaje: error.error.error + ': ' + error.message };
-      this.cdr.detectChanges();
+      
     };
   }
   elimina(_ev: any): void {
     this.prevista = undefined;
     this.archivo = undefined;
-    this.cdr.detectChanges();
+    
   }
   dato(dato: 'tipo' | 'formato'): string {
     return dato === 'tipo' ?

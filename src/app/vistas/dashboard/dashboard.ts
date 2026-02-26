@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { Chart } from '@componentes/chart/chart';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
@@ -19,19 +19,18 @@ export class Dashboard implements OnInit {
   categorias!: DataCategoria[];
   private platID = inject(PLATFORM_ID);
   private data = inject(Data);
-  private cdr = inject(ChangeDetectorRef);
-  ngOnInit(): void {
+ngOnInit(): void {
     this.init();
   }
   init(): void {
     if (isPlatformBrowser(this.platID)) {
       if (this.data.dataCategorias) {
         this.categorias = this.data.dataCategorias.filter((d:DataCategoria) => d.label !== null && d.label !== 'Documentos'); // Si no tiene label, no se incluye
-        this.cdr.detectChanges();
+        
       } else {
         this.data.getCategorias().subscribe((resp: DataCategoria[]) => {
           this.categorias = this.data.setCategorias(resp).filter((d:DataCategoria) => d.label !== null && d.label !== 'Documentos'); // Si no tiene label, no se incluye
-          this.cdr.detectChanges();
+          
         });
       }
     }

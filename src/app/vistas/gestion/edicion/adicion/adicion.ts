@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, input, InputSignal, OnDestroy, output, OutputEmitterRef } from '@angular/core';
+import { Component, inject, input, InputSignal, OnDestroy, output, OutputEmitterRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Data, DatoArchivo, DatosCarpeta, ListadoProps } from '@servicios/data';
@@ -15,8 +15,7 @@ import { LoggerService } from '@servicios/logger.service';
   styleUrl: './adicion.scss',
 })
 export class Adicion implements OnDestroy {
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private fileServicio: FileServicio = inject(FileServicio);
+private fileServicio: FileServicio = inject(FileServicio);
   private dataServicio: Data = inject(Data);
   private logger = inject(LoggerService);
   profesor: InputSignal<any> = input<any>();
@@ -73,14 +72,14 @@ export class Adicion implements OnDestroy {
       miniaturaURL: miniaturaURL,
     };
     this.validaReemplazo();
-    this.cdr.detectChanges();
+    
   }
   elimina(): void {
     this.prevista = undefined;
     this.archivo = undefined;
     this.categoria = undefined;
     this.esReemplazo = false;
-    this.cdr.detectChanges();
+    
   }
   validaReemplazo(): void {
     const archivos: DatoArchivo[] = this.documentos();
@@ -96,7 +95,7 @@ export class Adicion implements OnDestroy {
       const resp: any = await this.dataServicio.getArchivoProfesorUuid(cedula, this.archivo?.name as string);
       if (!resp.success) {
         this.salida = { error: true, mensaje: 'El documento original no se encontró en el repositorio' };
-        this.cdr.detectChanges();
+        
         return;
       }
       try {
@@ -113,7 +112,7 @@ export class Adicion implements OnDestroy {
         }
       } catch (error: any) {
         this.salida = { error: true, mensaje: error.error.error + ': ' + error.message };
-        this.cdr.detectChanges();
+        
       };
       return;
     }

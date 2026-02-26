@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, OnDestroy, Output, EventEmitter, ElementRef, ViewChild, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, OnDestroy, Output, EventEmitter, ElementRef, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Firma } from '@servicios/firmas';
@@ -29,8 +29,7 @@ export class ProcesaFirma implements OnDestroy, OnChanges {
   cropSize: CropSize | undefined;
   imagenHTML: HTMLImageElement | undefined;
   origenCrop: { x: number, y: number } | undefined;
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private imagenServicio: Imagen = inject(Imagen);
+private imagenServicio: Imagen = inject(Imagen);
   ngOnChanges(changes: SimpleChanges) {
     if (changes['archivo']) {
       if (this.archivo) this.procesarImagen();
@@ -48,7 +47,7 @@ export class ProcesaFirma implements OnDestroy, OnChanges {
     try {
       this.blob = await this.imagenServicio.procesa(this.archivo, this.umbral);
       this.imagenProcesadaUrl = URL.createObjectURL(this.blob);
-      this.cdr.detectChanges();
+      
     } catch (error) {
       console.error('Error procesando imagen:', error);
       this.imagenProcesadaUrl = null;
@@ -57,7 +56,7 @@ export class ProcesaFirma implements OnDestroy, OnChanges {
   firmaCargada(): void {
     this.imagenHTML = this.imagen?.nativeElement as HTMLImageElement;
     this.cropSize = { x: 0, y: 0, width: this.imagenHTML.width, height: this.imagenHTML.height };
-    this.cdr.detectChanges();
+    
   }
   haceCrop(eje: Coordenadas, dg: DragEvent): void {
     if (dg.type == 'dragstart') {
@@ -110,7 +109,7 @@ export class ProcesaFirma implements OnDestroy, OnChanges {
   }
   private revocarUrl() {
     if (this.imagenProcesadaUrl) URL.revokeObjectURL(this.imagenProcesadaUrl);
-    this.cdr.detectChanges();
+    
   }
   guardar(): void {
     this.datos.fecha = new Date();

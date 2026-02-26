@@ -1,5 +1,5 @@
 
-import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { simp, compara } from '@librerias/textos';
 import { IconsModule } from '@modulos/icons/icons-module';
@@ -19,7 +19,7 @@ import { PipesModule } from '@modulos/pipes/pipes-module';
   styleUrl: './carga-documento.scss'
 })
 export class CargaDocumento implements OnChanges {
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef); // Para detectar cambios en la vista cuando se usa Angular Zoneless
+// Para detectar cambios en la vista cuando se usa Angular Zoneless
   @Input() carpetas: DatosCarpeta[] = [
     { origen: ['DATOS BASICOS'], categoria: 'DATOS_BASICOS', label: 'Datos básicos' },
     { origen: ['TITULOS DE FORMACION', 'FORMACION ACADEMICA'], categoria: 'TITULOS_DE_FORMACION', label: 'Títulos de formación' },
@@ -57,7 +57,7 @@ export class CargaDocumento implements OnChanges {
   loading = false; // Indica si se está en el modo de carga de archivos
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['archivosProfesor']) {
-      this.cdr.detectChanges();
+      
     }
   }
   progresoCarga(): number {
@@ -65,7 +65,7 @@ export class CargaDocumento implements OnChanges {
     const porcentaje: number = Math.floor(this.archivosCargados.length / this.archivos.length * 100);
     if (porcentaje >= 100) {
       this.loading = false; // Detiene el modo de carga si se ha alcanzado el 100%
-      this.cdr.detectChanges();
+      
       this.todosCargados.emit(true); // Emite un evento indicando que todos los archivos han sido cargados
       return 100; // Asegura que el porcentaje no supere el 100%
     }
@@ -96,7 +96,7 @@ export class CargaDocumento implements OnChanges {
     if (this.archivos.length === 0) { // Si se limpian todos los archivos, también se limpia la lista de archivos cargados
       this.cleanArchivos.emit(true); // Emite un evento para limpiar los archivos cargados
     }
-    this.cdr.detectChanges();
+    
   }
   /**
    * Marca un archivo como cédula, actualizando su propiedad esCedula; marca todos los demás archivos como no cédula
@@ -104,7 +104,7 @@ export class CargaDocumento implements OnChanges {
    */
   marcaCedula(ev: any): void {
     this.archivos.forEach((a: ArchivoDocente, i: number) => a.esCedula = i == ev.value);
-    this.cdr.detectChanges();
+    
   }
   /**
    * Cambia la carpeta de un archivo cargado, actualizando su taxonomía y tipo
@@ -116,7 +116,7 @@ export class CargaDocumento implements OnChanges {
     const archivo: ArchivoDocente = this.archivos[numArchivo];
     archivo.taxonomia = carpeta;
     archivo.tipo = carpeta.categoria;
-    this.cdr.detectChanges();
+    
   }
   /**
    * Devuelve el icono correspondiente al tipo de archivo basado en el valor de la variable mimeTypes
@@ -175,7 +175,7 @@ export class CargaDocumento implements OnChanges {
       const ruta = (file as any).webkitRelativePath || file.name;
       this.procesaArchivo(file, ruta);
     });
-    this.cdr.detectChanges();
+    
   }
   /**
      * Maneja la selección de archivos y carpetas del FileUpload
@@ -211,7 +211,7 @@ export class CargaDocumento implements OnChanges {
     const ruta: string = this.obtenerRutaCompleta(file);
     // Agregar el archivo con su ruta a la lista
     this.procesaArchivo(file, ruta);
-    this.cdr.detectChanges();
+    
   }
   /**
      * Extrae la ruta completa del archivo, incluyendo carpetas y subcarpetas
@@ -286,7 +286,7 @@ export class CargaDocumento implements OnChanges {
       const nuevaRuta: any = path ? `${path}/${entry.name}` : entry.name;
       for (const childEntry of entries) await this.procesarEntry(childEntry, nuevaRuta);
     }
-    this.cdr.detectChanges();
+    
   }
   /**
  * Maneja el evento de drop para carpetas arrastradas

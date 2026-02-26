@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { VistaDatos } from '@componentes/documentos/vista-datos/vista-datos';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
@@ -37,8 +37,7 @@ export class Certificados implements OnInit {
   columnas: any;
   preview: Prevista | undefined;
   listaFirmas: Firma.Firma[] = [];
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private dataServicio: Data = inject(Data);
+private dataServicio: Data = inject(Data);
   private fileServicio: FileServicio = inject(FileServicio);
   private firmasServicio: Firmas = inject(Firmas);
   private configService = inject(ConfigService);
@@ -47,13 +46,13 @@ export class Certificados implements OnInit {
     this.dataServicio.loadDocumentos().then((resp: boolean) => {
       if (resp) {
         this.listaCertificados = this.dataServicio.documentos.grupos;
-        this.cdr.detectChanges();
+        
       }
     });
     this.firmasServicio.getFirmas().subscribe((firmas: Firma.Firma[]) => {
       this.listaFirmas = [];
       if (firmas.length > 0) this.listaFirmas = firmas;
-      this.cdr.detectChanges();
+      
     });
   }
   seleccionaCertificado(origenes: number[]): void {
@@ -74,7 +73,7 @@ export class Certificados implements OnInit {
             });
             return filtro;
           });
-          this.cdr.detectChanges();
+          
         });
     });
   }
@@ -93,7 +92,7 @@ export class Certificados implements OnInit {
           }
           const nombreArchivo: string = labelCert + '_' + fecha + '.' + tipo
           this.fileServicio.descarga(blob, nombreArchivo);
-          this.cdr.detectChanges();
+          
         });
     }
   }
@@ -160,7 +159,7 @@ export class Certificados implements OnInit {
     }
     this.preview.estructura = dato.plantilla.estructura;
     this.preview.plantilla = dato.plantilla.plantilla;
-    this.cdr.detectChanges();
+    
   }
   private ajustaCert1231(dato: Documento.Dato, datosCertificado: any): Documento.Plantilla { // Ajusta los datos según esta plantilla particular
     const posTabla: number = dato.plantilla.estructura.findIndex((val: Documento.Estructura) => val.tipo == 'tabla');

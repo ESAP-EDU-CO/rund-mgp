@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, inject, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, OnDestroy, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
@@ -35,8 +35,7 @@ export class Validacion implements AfterViewInit, OnDestroy {
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private router: Router = inject(Router);
   private autoFillMonitor: AutofillMonitor = inject(AutofillMonitor);
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private dataServicio: Data = inject(Data);
+private dataServicio: Data = inject(Data);
   private fileServicio: FileServicio = inject(FileServicio);
   private logger = inject(LoggerService);
   idLen = 16;
@@ -88,7 +87,7 @@ export class Validacion implements AfterViewInit, OnDestroy {
           }
           const nombreArchivo: string = datos.nombre + '_' + datos.fecha + '.' + tipo
           this.fileServicio.descarga(blob, nombreArchivo);
-          this.cdr.detectChanges();
+          
         });
     }
   }
@@ -105,7 +104,7 @@ export class Validacion implements AfterViewInit, OnDestroy {
         } else {
           this.dataCertificado = null;
         }
-        this.cdr.detectChanges();
+        
       });
     }
   }

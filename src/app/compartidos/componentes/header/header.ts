@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { EventType, Router } from '@angular/router';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Auth } from '@servicios/auth';
@@ -14,9 +14,7 @@ import { Data } from '@servicios/data';
 })
 export class Header implements OnInit {
   protected logo: string | ArrayBuffer | null = null;
-
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private data: Data = inject(Data);
+private data: Data = inject(Data);
   private authServicio: Auth = inject(Auth);
   private router: Router = inject(Router);
 
@@ -30,12 +28,12 @@ export class Header implements OnInit {
       .subscribe((logo: string | ArrayBuffer | null) => {
         if (logo) {
           this.logo = logo;
-          this.cdr.detectChanges();
+          
         }
       });
     this.router.events.subscribe((ev: any) => {
       if (ev.type == EventType.NavigationEnd) this.enLogin = ev.url.split('?')[0] === '/login';
-      this.cdr.detectChanges();
+      
     });
   }
 

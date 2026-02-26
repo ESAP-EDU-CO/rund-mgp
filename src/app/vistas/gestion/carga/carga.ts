@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormControl, Validators, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
@@ -37,7 +37,6 @@ export class Carga implements OnInit {
   labelsCSV: string[] = []; // La primera línea de arrayCSV, que contiene las etiquetas
   profesorSeleccionado: string[] = []; // La fila de arrayCSV que corresponde al docente seleccionado
   clavesCSV: string[] = ['Vinculación', 'Nombre completo', 'Territorial', 'Categoría', 'Nivel de Formación']; // Las etiquetas que se mostrarán en la ficha del docente
-  cdr: ChangeDetectorRef = inject(ChangeDetectorRef); // Para detectar cambios en la vista cuando se usa Angular Zoneless
   datosValidados: string[] = []; // Indica si los datos del docente han sido validados y se puede iniciar la carga de documentos
   archivosYaCargados: number[] = []; // Index de los archivos que ya ha sido cargados en el backend, que se le indican a CargaDocumento para que los marque como OK
   infoProfesor: DatosProfesor | undefined;
@@ -82,9 +81,7 @@ export class Carga implements OnInit {
             } as Docentes;
           });
         },
-        error: (error: any) => console.error('Error al obtener el CSV:', error),
-        complete: () => this.cdr.detectChanges()
-      });
+        error: (error: any) => console.error('Error al obtener el CSV:', error)});
   }
   filterProfesores(event: any) {
     const query = event.query.toLowerCase();
@@ -98,7 +95,7 @@ export class Carga implements OnInit {
     this.profesorSeleccionado = this.arrayCSV.filter(fila => fila[1] === event.value.value)[0];
     this.infoProfesor = await this.dataServicio.getInfoProfesor(this.profesorSeleccionado[1]);
     this.limpiaLista();
-    this.cdr.detectChanges();
+    
   }
   async submitArchivos(archivos: ArchivoDocente[], numCarga = 0): Promise<void> {
     /**
@@ -138,7 +135,7 @@ export class Carga implements OnInit {
               });
             } else {
               this.archivosYaCargados.push(numCarga);
-              this.cdr.detectChanges();
+              
             }
             this.submitArchivos(archivos, numCarga + 1);
           },
@@ -159,7 +156,7 @@ export class Carga implements OnInit {
   }
   limpiaLista(): void {
     this.archivosYaCargados = [];
-    this.cdr.detectChanges();
+    
   }
   todosCargados(): void {
     // Todos los archivos han sido cargados!!!

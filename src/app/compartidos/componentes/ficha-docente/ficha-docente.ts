@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
@@ -49,8 +49,7 @@ export class FichaDocente implements OnChanges {
   @Input() infoProfesor: DatoDemografico = { archivosProfesor: [], datosDemograficos: [] }
   @Output() validado: EventEmitter<string[]> = new EventEmitter<string[]>();
   private data: Data = inject(Data);
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private logger: LoggerService = inject(LoggerService);
+private logger: LoggerService = inject(LoggerService);
   private catPrefix = '/okm:categories/RUND/DOCENTES/';
   private categorias: ModeloCategorias[] = [];
   private datosProfesor: { label: string, valor: string }[] = [];
@@ -75,7 +74,7 @@ export class FichaDocente implements OnChanges {
       if (cat.length > 0) this.categorias = this.mapDataCategorias(cat);
       this.cargarDocente();
       this.loading = false;
-      this.cdr.detectChanges();
+      
     });
   }
   ngOnChanges(changes: SimpleChanges): void {

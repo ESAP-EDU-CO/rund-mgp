@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, effect, inject, input, InputSignal, OnDestroy, output, OutputEmitterRef } from '@angular/core';
+import { Component, effect, inject, input, InputSignal, OnDestroy, output, OutputEmitterRef } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Data, DatoArchivo } from '@servicios/data';
 import { FileServicio } from '@servicios/file';
@@ -38,8 +38,7 @@ export class DownloadPreview implements OnDestroy {
   private dataServicio: Data = inject(Data);
   private fileServicio: FileServicio = inject(FileServicio);
   private sanitizer: DomSanitizer = inject(DomSanitizer);
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private logger = inject(LoggerService);
+private logger = inject(LoggerService);
   private blobUrl: string | undefined;
   private formatos: any = {
     'application/pdf': 'PDF',
@@ -100,13 +99,13 @@ export class DownloadPreview implements OnDestroy {
                   { clave: 'Fecha de creación:', valor: fecha.created },
                   { clave: 'Última modificación:', valor: fecha.modified },
                 ];
-                this.cdr.detectChanges();
+                
                 const descarga: DescargaResponse = await this.descargaArchivo(consulta.uuid);
                 if (descarga.blobUrl && descarga.pdfUrl) {
                   this.blobUrl = descarga.blobUrl;
                   this.pdfUrl = descarga.pdfUrl;
                   this.textoError = '';
-                  this.cdr.detectChanges();
+                  
                 }
               } else {
                 this.logger.error(consulta.error);
@@ -126,7 +125,7 @@ export class DownloadPreview implements OnDestroy {
                 if (consulta.uuid && !consulta.error) {
                   const descarga: DescargaResponse = await this.descargaArchivo(consulta.uuid);
                   if (!descarga.error) this.archivosDescarga[index].blob = descarga.blob;
-                  this.cdr.detectChanges();
+                  
                 } else {
                   this.logger.error(consulta.error);
                 }
@@ -143,7 +142,7 @@ export class DownloadPreview implements OnDestroy {
             if (this.archivosDescarga.length > 1) {
               this.archivosDescarga.forEach(async (a: ListaDescarga, i: number) => {
                 this.archivosDescarga[i].descargado = true;
-                this.cdr.detectChanges();
+                
                 await this.pausa();
               });
               const zip: Blob = await this.fileServicio.creaZipDesdeBlobs(this.archivosDescarga);
@@ -152,7 +151,7 @@ export class DownloadPreview implements OnDestroy {
               this.fileServicio.descarga(zip, cedula + '-documentacion-' + fecha + '.zip');
             }
             this.textoError = '';
-            this.cdr.detectChanges();
+            
             this.cerrar.emit();
             break;
           }

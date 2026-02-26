@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
@@ -34,8 +34,7 @@ export const iconoFormato: any = {
 })
 export class Edicion implements OnInit {
   private dataServicio: Data = inject(Data);
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private profesores: any;
+private profesores: any;
   labels: Record<string, string> = this.dataServicio.labels;
   profeSeleccionado: any;
   profesoresFiltrados: Profesor[] = [];
@@ -59,12 +58,12 @@ export class Edicion implements OnInit {
       this.cargandoProfesores = 0;
       Object.keys(this.profesores).forEach(async (cedula: string, index: number) => {
         this.cargandoProfesores = Math.round(((index + 1) / totalProfesores) * 100);
-        this.cdr.detectChanges();
+        
         const archivos: DatoArchivo[] | undefined = await this.getArchivosProfe(cedula);
         if (archivos) this.profesoresFiltrados.push({ nombre: this.profesores[cedula]['NOMBRE_Y_APELLIDO'], documentoIdentidad: cedula });
       });
       this.cargandoProfesores = 100;
-      this.cdr.detectChanges();
+      
     });
   }
   filtrarProfesores(ev: any): void {
@@ -84,7 +83,7 @@ export class Edicion implements OnInit {
       this.archivosProfe = await this.getArchivosProfe(cedula) as DatoArchivo[];
       this.arbolArchivos = this.generaArbolArchivos(this.archivosProfe);
       this.profeSeleccionado = this.profesores[cedula];
-      this.cdr.detectChanges();
+      
     }
   }
   accionesArchivos(accion: 'download' | 'delete' | 'change' | 'add' | 'watch'): void {

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Data } from '@servicios/data';
 import { PipesModule } from '@modulos/pipes/pipes-module';
@@ -33,8 +33,7 @@ export class EditaFirma implements OnInit, OnChanges {
   metadatos: Firma.FirmaMetadata[] = [];
   hayFirmas = false;
   confirmaciones: boolean[] = [];
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private dataServicio: Data = inject(Data);
+private dataServicio: Data = inject(Data);
   private firmasServicio: Firmas = inject(Firmas);
   private logger: LoggerService = inject(LoggerService);
   ngOnInit(): void {
@@ -50,7 +49,7 @@ export class EditaFirma implements OnInit, OnChanges {
       this.confirmaciones = Array(this.firmas.length).fill(false);
       //setTimeout(() => this.hayFirmas = this.firmas.filter((firma: Firma.Firma) => !firma.metadata).length == 0 && this.firmas.length > 0, 500);
       this.hayFirmas = this.firmas.filter((firma: Firma.Firma) => !firma.metadata).length == 0 && this.firmas.length > 0;
-      this.cdr.detectChanges();
+      
     });
   }
   confirmaEliminacion(index: number): void {

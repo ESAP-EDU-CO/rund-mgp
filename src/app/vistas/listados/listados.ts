@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { VistaExcel } from '@componentes/vista-excel/vista-excel';
 import { PipesModule } from '@modulos/pipes/pipes-module';
@@ -39,8 +39,7 @@ export class Listados {
   loadingDialog = false;
   private data: Data = inject(Data);
   private confirmationService: ConfirmationService = inject(ConfirmationService);
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private configService = inject(ConfigService);
+private configService = inject(ConfigService);
   constructor() {
     // Se usa para generar una ruta directa, para el componente <p-fileUpload>, sin que pase por data.ts
     // Usar ConfigService.getApiBaseUrl() que se configura dinámicamente desde /api/config
@@ -60,7 +59,7 @@ export class Listados {
         this.loadingDialog = false;
         if (!resp.listado.error || resp.listado.error == 0) this.cargaCorrecta();
         else this.errorCarga(resp);
-        this.cdr.detectChanges();
+        
       });
     if (this.csvData) {
       const { archivo, propiedades } = this.generaCSV(this.csvData);
@@ -86,7 +85,7 @@ export class Listados {
   seleccionaFile(ev: any): void {
     this.loadingDialog = true;
     this.archivo = ev.files[0];
-    this.cdr.detectChanges();
+    
   }
   borraFile(_ev: any): void {
     this.archivo = undefined;
@@ -117,7 +116,7 @@ export class Listados {
           this.listadoProps.push({ label: 'Uuid', valor: dupe.uuid });
           this.confirmarReemplazo(mensaje);
         }
-        this.cdr.detectChanges();
+        
       });
   }
   recibeCSV(csv: (string | number)[][]): void {
@@ -182,7 +181,7 @@ export class Listados {
       acceptLabel: 'Cerrar',
       rejectVisible: false,
     });
-    this.cdr.detectChanges();
+    
   }
   formatSize(bytes: number): string {
     const k = 1024;

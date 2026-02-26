@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, effect, inject, input, InputSignal, OnDestroy, output, OutputEmitterRef } from '@angular/core';
+import { Component, effect, inject, input, InputSignal, OnDestroy, output, OutputEmitterRef } from '@angular/core';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Data, DatoArchivo } from '@servicios/data';
@@ -27,8 +27,7 @@ export class BorraDocumentos implements OnDestroy {
   headless: InputSignal<boolean> = input<boolean>(false);
   finEliminar: OutputEmitterRef<void> = output();
   private dataServicio: Data = inject(Data);
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private labels: Record<string, string> = this.dataServicio.labels;
+private labels: Record<string, string> = this.dataServicio.labels;
   listaArchivos: ListaArchivos[] = [];
   archivosBorrar: ListaArchivos[] = [];
   dataVisible = false;
@@ -66,12 +65,12 @@ export class BorraDocumentos implements OnDestroy {
         fechaCreacion: fecha.created,
         fechaModificacion: fecha.modified
       });
-      this.cdr.detectChanges();
+      
     });
     await this.pausa();
     this.archivosBorrar = JSON.parse(JSON.stringify(this.listaArchivos));
     this.dataVisible = true;
-    this.cdr.detectChanges();
+    
   }
   async eliminaDocumentos(): Promise<void> {
     this.textoBotonEliminar = 'Eliminando...';
@@ -85,11 +84,11 @@ export class BorraDocumentos implements OnDestroy {
         this.archivosBorrar.splice(posBorrar, 1);
         this.listaArchivos.splice(posLista, 1);
       }
-      this.cdr.detectChanges();
+      
     }
     this.eliminando = false;
     this.textoBotonEliminar = 'Confirmar eliminación';
-    this.cdr.detectChanges();
+    
     this.finEliminar.emit();
   }
   private async pausa(ms = 500): Promise<boolean> {

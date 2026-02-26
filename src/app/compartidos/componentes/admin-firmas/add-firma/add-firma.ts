@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, Output, SimpleChanges, EventEmitter, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, Input, OnChanges, Output, SimpleChanges, EventEmitter, inject } from '@angular/core';
 import { ProcesaFirma } from '../procesa-firma/procesa-firma';
 import { Data } from '@servicios/data';
 import { Firma } from '@servicios/firmas';
@@ -23,8 +23,7 @@ export class AddFirma implements OnChanges {
   urlImagenFinal: string | undefined;
   datosFirma: Firma.FirmaMetadata | undefined;
   erroresCarga: { png: string | boolean, json: string | boolean } = { png: false, json: false };
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private dataServicio: Data = inject(Data);
+private dataServicio: Data = inject(Data);
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['activo'].currentValue && !changes['activo'].previousValue) this.cambiaEtapa('carga');
   }
@@ -52,6 +51,6 @@ export class AddFirma implements OnChanges {
   }
   private cambiaEtapa(etapa: Etapa): void {
     this.etapa = etapa;
-    this.cdr.detectChanges();
+    
   }
 }

@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectorRef, Component, effect, inject, OnInit, PLATFORM_ID, Signal } from '@angular/core';
+import { Component, effect, inject, OnInit, PLATFORM_ID, Signal } from '@angular/core';
 import { EventType, Router, RouterOutlet } from '@angular/router';
 import { Header } from '@componentes/header/header';
 import { Menu } from '@componentes/menu/menu';
@@ -31,9 +31,7 @@ export class App implements OnInit {
   private data: Data = inject(Data);
   private authServicio: Auth = inject(Auth);
   private router: Router = inject(Router);
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-
-  // Usar signal directamente
+// Usar signal directamente
   protected usuario: Signal<Usuario | null | undefined> = this.authServicio.usuario;
 
   tienePermiso = false;
@@ -62,7 +60,7 @@ export class App implements OnInit {
       this.tienePermiso = this.authServicio.tienePermisos(this.rolMinimo as Rol, this.usuario()?.rol as Rol);
       this.dataVars = true;
       if (this.usuario() && this.seccionActual === '/login') this.router.navigate(['/']);
-      this.cdr.detectChanges();
+      
     });
   }
 }

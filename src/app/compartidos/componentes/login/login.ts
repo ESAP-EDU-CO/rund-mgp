@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, isDevMode, OnInit, signal } from '@angular/core';
+import { Component, inject, isDevMode, OnInit, signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Auth } from '../../servicios/auth';
@@ -22,9 +22,7 @@ export class Login implements OnInit {
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
   private dataServicio: Data = inject(Data);
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-
-  // Solo mostrar controles de desarrollo en entorno no-producción
+// Solo mostrar controles de desarrollo en entorno no-producción
   protected readonly isDev = isDevMode();
 
   // Signals para el estado del componente
@@ -57,7 +55,7 @@ export class Login implements OnInit {
   }
   async ngOnInit(): Promise<void> {
     this.logo = await firstValueFrom(this.dataServicio.getImagen('logoESAP.svg'));
-    this.cdr.detectChanges();
+    
   }
   /**
    * Se procesa el formulario de login
