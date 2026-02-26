@@ -3,12 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, map, throwError } from 'rxjs';
 import { ConfigService } from './config.service';
 import { getEndpointUrl } from './api-config';
-import { DataCategoria, CategoriaBase, DataTabla } from './data-types';
-
-interface Anivel {
-  label: string;
-  superLabel: string;
-}
+import { DataCategoria, CategoriaBase, DataTabla, Anivel } from './data-types';
 
 @Injectable({ providedIn: 'root' })
 export class CategoriaService {

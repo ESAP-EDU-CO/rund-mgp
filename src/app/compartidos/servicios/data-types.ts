@@ -138,6 +138,14 @@ export namespace Documento {
     datos: Dato[];
   }
 }
+export interface Anivel {
+  label: string;
+  superLabel: string;
+}
+export interface InfoProfesor {
+  archivosProfesor: { nombre: string, categorias: string[][] }[];
+  datosDemograficos: { nombre: string, categorias: DatoDemografico[] };
+}
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace TipoListado {
   export type Origen = 'OneDrive ESAP' | 'ARCA' | 'RUND Side-car';

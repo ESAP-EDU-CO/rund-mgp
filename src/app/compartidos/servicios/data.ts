@@ -11,18 +11,10 @@ import { MenuService } from './menu.service';
 import {
   DataCategoria, CategoriaBase, DataTabla, VarData, Documento,
   ListadoProps, MenuElemento, DatoArchivo, DatoDemografico, DatosProfesor,
+  Anivel, InfoProfesor,
 } from './data-types';
 
 export * from './data-types';
-
-interface Anivel {
-  label: string;
-  superLabel: string;
-}
-interface InfoProfesor {
-  archivosProfesor: { nombre: string, categorias: string[][] }[];
-  datosDemograficos: { nombre: string, categorias: DatoDemografico[] };
-}
 
 @Injectable({
   providedIn: 'root',
@@ -43,7 +35,6 @@ export class Data {
     { label: 'Direcciones territoriales', superLabel: 'Distribución territorial' }
   ];
 
-  // Proxy getters/setters — backward compat for components that read/write via Data
   get dataCategorias(): DataCategoria[] | undefined { return this.categoriaService.dataCategorias; }
   set dataCategorias(val: DataCategoria[] | undefined) { this.categoriaService.dataCategorias = val; }
   get categorias(): CategoriaBase[] { return this.categoriaService.categorias; }
@@ -83,7 +74,6 @@ export class Data {
     const options: any = opciones ? { params: params, ...opciones } : { params: params };
     return this.http.get<any>(endpoint, options);
   }
-  // Delegated to CategoriaService
   getCategorias(): Observable<DataCategoria[]> {
     return this.categoriaService.getCategorias();
   }

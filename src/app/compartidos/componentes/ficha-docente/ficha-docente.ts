@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Data, DataCategoria, DatoDemografico } from '@servicios/data';
+import { LoggerService } from '@servicios/logger.service';
 import { simp, compara } from '@librerias/textos';
 
 interface ModeloCategorias {
@@ -49,6 +50,7 @@ export class FichaDocente implements OnChanges {
   @Output() validado: EventEmitter<string[]> = new EventEmitter<string[]>();
   private data: Data = inject(Data);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private logger: LoggerService = inject(LoggerService);
   private catPrefix = '/okm:categories/RUND/DOCENTES/';
   private categorias: ModeloCategorias[] = [];
   private datosProfesor: { label: string, valor: string }[] = [];
@@ -118,7 +120,7 @@ export class FichaDocente implements OnChanges {
       });
       this.completaDatos();
     } else {
-      console.warn('Datos incompletos para cargar la ficha del docente.');
+      this.logger.warn('Datos incompletos para cargar la ficha del docente.');
     }
   }
   private completaDatos(): void {
