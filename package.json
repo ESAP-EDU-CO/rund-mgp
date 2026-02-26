@@ -11,7 +11,8 @@
     "test:coverage": "ng test --watch=false --code-coverage",
     "serve:ssr:rund-mgp": "node dist/rund-mgp/server/server.mjs",
     "lint": "ng lint",
-    "lint:fix": "ng lint --fix"
+    "lint:fix": "ng lint --fix",
+    "postinstall": "node scripts/patch-ssr.js"
   },
   "private": true,
   "dependencies": {
