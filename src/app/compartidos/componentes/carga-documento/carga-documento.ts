@@ -1,5 +1,5 @@
 
-import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { simp, compara } from '@librerias/textos';
 import { IconsModule } from '@modulos/icons/icons-module';
@@ -18,8 +18,7 @@ import { PipesModule } from '@modulos/pipes/pipes-module';
   templateUrl: './carga-documento.html',
   styleUrl: './carga-documento.scss'
 })
-export class CargaDocumento implements OnChanges {
-// Para detectar cambios en la vista cuando se usa Angular Zoneless
+export class CargaDocumento {
   @Input() carpetas: DatosCarpeta[] = [
     { origen: ['DATOS BASICOS'], categoria: 'DATOS_BASICOS', label: 'Datos básicos' },
     { origen: ['TITULOS DE FORMACION', 'FORMACION ACADEMICA'], categoria: 'TITULOS_DE_FORMACION', label: 'Títulos de formación' },
@@ -55,11 +54,6 @@ export class CargaDocumento implements OnChanges {
   archivos: ArchivoDocente[] = []; // Lista de archivos que serán cargados al RUND
   dragging = false; // Indica si se está arrastrando un archivo
   loading = false; // Indica si se está en el modo de carga de archivos
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['archivosProfesor']) {
-      
-    }
-  }
   progresoCarga(): number {
     if (this.archivos.length === 0) return 0; // Evita división por cero
     const porcentaje: number = Math.floor(this.archivosCargados.length / this.archivos.length * 100);
