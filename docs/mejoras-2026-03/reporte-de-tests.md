@@ -1,9 +1,9 @@
 # Informe de Pruebas y Correcciones de Seguridad — rund-mgp
 
 **Proyecto:** RUND Management Portal (rund-mgp)
-**Versión:** Angular 21.1.5 / Node.js 25.6.1
-**Fecha:** 26 de febrero de 2026 (actualizado)
-**Alcance:** Sprint 1, Sprint 2 y Sprint 3 del Plan de Mejora de Calidad
+**Versión:** Angular 21.2.0 / Node.js 25.6.1
+**Fecha:** 28 de febrero de 2026 (actualizado)
+**Alcance:** Sprint 1, Sprint 2 y Sprint 3 del Plan de Mejora de Calidad + correcciones post-plan
 
 ---
 
@@ -293,6 +293,8 @@ El workflow de CI (`.github/workflows/test.yml`) usa `npm ci --no-audit` para ev
 
 Las 5 vulnerabilidades restantes de Quill (sin fix disponible) están mitigadas mediante la CSP estricta implementada en `server.ts` (ver sección 4.1). Se documenta como deuda técnica a resolver cuando Quill publique una versión corregida.
 
+> **Corrección post-plan (28 Feb 2026):** Se detectó la vulnerabilidad GHSA-prjf-86w9-mfqv (Angular i18n XSS, severidad alta) en `@angular/core` ≤21.1.5. Resuelta actualizando Angular a **21.2.0** mediante `npm audit fix`. El workflow `security.yml` fue ajustado a `--audit-level=critical` para no bloquear por Quill (HIGH sin fix upstream, ya mitigado por CSP).
+
 ### 4.3 Protección del Botón de Login de Desarrollo
 
 El botón "Login de Desarrollo" del componente `login` ahora se renderiza únicamente cuando `isDevMode()` es `true` (builds de desarrollo). En producción, el bloque es eliminado por tree-shaking del compilador de Angular.
@@ -309,7 +311,7 @@ El método `devLogin()` en `auth.ts` llama al endpoint `api/v2/auth/dev/login` s
 
 | Componente | Versión |
 |------------|---------|
-| Angular | 21.1.5 |
+| Angular | 21.2.0 |
 | Node.js | 25.6.1 |
 | Karma | 6.4.4 |
 | Jasmine | (incluido en Karma) |
@@ -319,4 +321,4 @@ El método `devLogin()` en `auth.ts` llama al endpoint `api/v2/auth/dev/login` s
 
 ---
 
-*Informe generado el 26 de febrero de 2026. Commits verificados: `fde6b02` → `372c86e` en `origin/main`.*
+*Informe generado el 28 de febrero de 2026. Commits verificados: `fde6b02` → `2a0828c` en `origin/main`.*
