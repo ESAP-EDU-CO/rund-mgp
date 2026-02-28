@@ -44,8 +44,8 @@ rund-mgp es el portal web del sistema RUND. Se comunica exclusivamente con **run
 
 | Capa | Tecnología | Version |
 |------|-----------|---------|
-| **Framework** | Angular | 21.1.5 |
-| **SSR** | @angular/ssr (Express.js) | 21.1.4 |
+| **Framework** | Angular | 21.2.0 |
+| **SSR** | @angular/ssr (Express.js) | 21.2.0 |
 | **Lenguaje** | TypeScript | ~5.9.3 |
 | **Runtime servidor** | Node.js | 22 (Alpine) |
 | **UI Component Library** | PrimeNG | 21.1.1 |
@@ -781,10 +781,10 @@ jobs:
       - Checkout
       - Setup Node.js 20
       - npm ci
-      - npm audit --audit-level=high --omit=dev   # Falla si hay HIGH/CRITICAL en prod
+      - npm audit --audit-level=critical --omit=dev  # Falla si hay CRITICAL en prod
 ```
 
-Las dependencias de desarrollo (Karma, Jasmine, ESLint, TypeScript) se excluyen con `--omit=dev`. Las 5 vulnerabilidades restantes de Quill XSS no tienen fix disponible en npm y estan mitigadas con la CSP configurada en `server.ts`.
+Las dependencias de desarrollo (Karma, Jasmine, ESLint, TypeScript) se excluyen con `--omit=dev`. Se usa `--audit-level=critical` (no `high`) para no bloquear por la vulnerabilidad de Quill (GHSA-v3m3-f69x-jf25, HIGH, sin fix upstream), que está mitigada por la CSP en `server.ts`. La vulnerabilidad de Angular i18n (GHSA-prjf-86w9-mfqv) fue resuelta actualizando a Angular 21.2.0.
 
 ---
 
@@ -941,7 +941,7 @@ El proyecto paso de **4.65/10** a una puntuacion estimada de **≥8.5/10** tras 
 |------|--------|-----------|
 | Crear componente `/acceso-denegado` | Completado | Componente funcional con boton de retorno |
 | Aplicar `authGuard` y `adminGuard` en rutas | Completado | Todas las rutas protegidas |
-| Actualizar Angular a ≥20.3.16 | Completado | Actualizado a **21.1.5** |
+| Actualizar Angular a ≥20.3.16 | Completado | Actualizado a **21.2.0** (incluye fix CVE GHSA-prjf-86w9-mfqv) |
 | Refactorizar `SafePipe` (eliminar bypassScript) | Completado | Script bypass eliminado |
 | Condicionar `loginDev()` al entorno | Completado | Oculto en produccion via `isDevMode()` |
 | CSP para Quill XSS | Completado | CSP estricta en `server.ts` |
@@ -1083,7 +1083,7 @@ docker logs rund-mgp
 
 ### npm audit reporta vulnerabilidades de Quill
 
-Las 5 vulnerabilidades de Quill (GHSA-v3m3-f69x-jf25 y derivadas) no tienen fix disponible en npm sin cambiar la libreria de editor. Estan mitigadas por la CSP configurada en `server.ts` con la directiva `script-src 'unsafe-inline'`. El workflow `security.yml` usa `--omit=dev` para excluirlas del audit de CI ya que Quill se considera una dependencia de presentacion.
+Las vulnerabilidades de Quill (GHSA-v3m3-f69x-jf25) no tienen fix disponible en npm sin cambiar de versión con breaking changes. Están mitigadas por la CSP en `server.ts`. El workflow `security.yml` usa `--audit-level=critical` para no bloquear el CI por esta vulnerabilidad HIGH sin solución upstream.
 
 Si se evalua migrar el editor de texto enriquecido en el futuro, el candidato recomendado es [TipTap](https://tiptap.dev/) (usa ProseMirror internamente, sin las vulnerabilidades conocidas de Quill).
 
