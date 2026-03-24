@@ -22,6 +22,7 @@ WORKDIR /app
 
 # Copia archivos de configuración de dependencias
 COPY package*.json ./
+COPY scripts/ ./scripts/
 
 # Instala todas las dependencias (incluidas las de desarrollo)
 RUN npm ci

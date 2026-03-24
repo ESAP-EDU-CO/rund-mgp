@@ -1,7 +1,8 @@
-import { Component, inject, isDevMode, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Auth } from '../../servicios/auth';
+import { ConfigService } from '../../servicios/config.service';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 
 import { Data } from '@servicios/data';
@@ -19,11 +20,11 @@ import { firstValueFrom } from 'rxjs';
 export class Login implements OnInit {
   private authService = inject(Auth);
   private router = inject(Router);
+  private configService = inject(ConfigService);
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
   private dataServicio: Data = inject(Data);
-// Solo mostrar controles de desarrollo en entorno no-producción
-  protected readonly isDev = isDevMode();
+  protected readonly isDev = this.configService.getConfig().devFakeLogin ?? false;
 
   // Signals para el estado del componente
   protected cargando = this.authService.cargando;

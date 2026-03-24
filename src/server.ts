@@ -33,7 +33,10 @@ app.use((_req, res, next) => {
 });
 
 app.get('/api/config', (_req, res) => {
-  res.json({ apiBaseUrl: apiBaseUrl });
+  res.json({
+    apiBaseUrl: apiBaseUrl,
+    devFakeLogin: process.env['DEV_FAKE_LOGIN'] === 'true',
+  });
 });
 /**
  * Example Express Rest API endpoints can be defined here.

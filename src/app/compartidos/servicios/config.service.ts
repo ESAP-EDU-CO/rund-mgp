@@ -19,6 +19,7 @@ export interface AppConfig {
   apiBaseUrl: string;
   environment: string;
   version: string;
+  devFakeLogin?: boolean;
 }
 
 @Injectable({
