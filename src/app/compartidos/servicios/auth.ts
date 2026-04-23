@@ -83,7 +83,10 @@ export class Auth {
     return this.http.post<LoginResponse>(
       loginUrl,
       { username, password },
-      { withCredentials: true } // IMPORTANTE: enviar cookies
+      {
+        withCredentials: true, // IMPORTANTE: enviar cookies
+        headers: { 'X-App-Id': 'rund-mgp' }
+      }
     ).pipe(
       tap((response) => {
         if (response.success && response.user) {
