@@ -1,6 +1,10 @@
 .menu {
   .menu-item-activo {
-    background-color: var(--p-surface-600) !important;
+    background-color: var(--p-surface-200) !important;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: var(--p-surface-600) !important;
+    }
   }
   .item {
     min-width: 16em;
