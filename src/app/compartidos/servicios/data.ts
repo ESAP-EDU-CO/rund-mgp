@@ -285,6 +285,12 @@ export class Data {
     formData.append('datosExtraer', JSON.stringify(datosExtraer));
     return this.http.post<any>(this.getUrl('extraeDatos'), formData);
   }
+  getExtractionStatistics(): Observable<any> {
+    return this.http.get<any>(this.getUrl('extractionStatistics'));
+  }
+  getQueueStats(): Observable<any> {
+    return this.http.get<any>(this.getUrl('queueStats'));
+  }
   private normalizaNombre(nombre: string): string {
     return nombre.trim().replace(/\s+/g, '_').toUpperCase();
   }

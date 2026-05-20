@@ -33,9 +33,9 @@ describe('MenuService', () => {
   });
 
   describe('getElementosMenu()', () => {
-    it('debería retornar un arreglo con 7 elementos de menú', () => {
+    it('debería retornar un arreglo con 8 elementos de menú', () => {
       const elementos = service.getElementosMenu();
-      expect(elementos.length).toBe(7);
+      expect(elementos.length).toBe(8);
     });
 
     it('debería contener las rutas correctas', () => {
@@ -45,6 +45,7 @@ describe('MenuService', () => {
       expect(rutas).toContain('/consultas');
       expect(rutas).toContain('/listados');
       expect(rutas).toContain('/gestion');
+      expect(rutas).toContain('/extraccion');
       expect(rutas).toContain('/certificados');
       expect(rutas).toContain('/herramientas');
       expect(rutas).toContain('/validacion');
@@ -57,6 +58,7 @@ describe('MenuService', () => {
       expect(labels).toContain('Consultas');
       expect(labels).toContain('Listados');
       expect(labels).toContain('Gestión');
+      expect(labels).toContain('Extracción de datos');
       expect(labels).toContain('Certificados');
       expect(labels).toContain('Herramientas');
       expect(labels).toContain('Validación');
@@ -88,7 +90,7 @@ describe('MenuService', () => {
     it('los elementos PrimeNG deben tener icono PrimeIcons', () => {
       const elementos = service.getElementosMenu();
       const primeng = elementos.filter(e => e.tipo === 'PrimeNG');
-      expect(primeng.length).toBe(2);
+      expect(primeng.length).toBe(3);
       primeng.forEach(e => {
         expect(e.icon).toBeDefined();
       });

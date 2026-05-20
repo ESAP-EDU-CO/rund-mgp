@@ -1,0 +1,39 @@
+.extraccion {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem;
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    gap: 1rem;
+
+    .card-stat {
+      text-align: center;
+
+      .valor {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .etiqueta {
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+        opacity: 0.75;
+      }
+    }
+  }
+
+  .footer {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    text-align: right;
+  }
+}

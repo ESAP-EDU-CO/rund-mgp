@@ -171,6 +171,14 @@ export const API_ENDPOINTS: ApiEndpoints = {
   extraeDatos: {
     endpoint: 'api/v2/ai/extraer',
     status: 'active'
+  },
+  extractionStatistics: {
+    endpoint: 'api/v2/ai/extraction/statistics',
+    status: 'active'
+  },
+  queueStats: {
+    endpoint: 'api/v2/ai/queue/stats',
+    status: 'active'
   }
 };
 
