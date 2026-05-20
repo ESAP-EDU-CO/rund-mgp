@@ -83,6 +83,8 @@ private logger: LoggerService = inject(LoggerService);
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['docente'] && this.docente && this.docente.length > 0) || changes['infoProfesor']) {
       this.actualizaDatos();
+      const fechaNacStr: string | undefined = (this.infoProfesor as any)?.['FECHA_NACIMIENTO'];
+      if (fechaNacStr) this.fechaNacimiento = new Date(fechaNacStr + 'T00:00:00');
     }
   }
   private actualizaDatos(): void {
