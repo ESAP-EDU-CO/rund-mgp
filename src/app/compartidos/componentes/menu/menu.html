@@ -2,9 +2,9 @@
   <p-menu [model]="elementosMenu">
     <ng-template #item
                  let-item>
-      @if (permiso(item, usuario()?.rol)){
+      @if (item.visible !== false && permiso(item, usuario()?.rol)){
       <a class="item p-menu-item-link"
-         [class.surface-200]="seccionActual === item.route"
+         routerLinkActive="menu-item-activo"
          [routerLink]="item.route"
          pRipple>
         <div class="icono">

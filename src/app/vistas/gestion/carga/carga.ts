@@ -38,6 +38,7 @@ export class Carga implements OnInit {
   profesorSeleccionado: string[] = []; // La fila de arrayCSV que corresponde al docente seleccionado
   clavesCSV: string[] = ['Vinculación', 'Nombre completo', 'Territorial', 'Categoría', 'Nivel de Formación']; // Las etiquetas que se mostrarán en la ficha del docente
   datosValidados: string[] = []; // Indica si los datos del docente han sido validados y se puede iniciar la carga de documentos
+  fechaNacimiento: string | null = null;
   archivosYaCargados: number[] = []; // Index de los archivos que ya ha sido cargados en el backend, que se le indican a CargaDocumento para que los marque como OK
   infoProfesor: DatosProfesor | undefined;
   //*/
@@ -121,6 +122,7 @@ export class Carga implements OnInit {
       { label: 'categorias', valor: archivo.esCedula ? this.datosValidados || [] : [] },
       { label: 'esCedula', valor: archivo.esCedula || false },
       { label: 'cedula', valor: this.profesorSeleccionado[1] || 'NA' },
+      { label: 'fecha_nacimiento', valor: archivo.esCedula ? (this.fechaNacimiento || '') : '' },
     ];
     try {
       this.dataServicio.postCargaFiles(propiedades, archivo.archivo)
@@ -153,6 +155,9 @@ export class Carga implements OnInit {
       console.error('Se cometió un error al preparar la carga del archivo:', error);
       this.submitArchivos(archivos, numCarga + 1);
     }
+  }
+  onFechaNacimiento(fecha: string | null): void {
+    this.fechaNacimiento = fecha;
   }
   limpiaLista(): void {
     this.archivosYaCargados = [];

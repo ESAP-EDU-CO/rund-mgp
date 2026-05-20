@@ -39,8 +39,20 @@
     <div class="panel">
       @for (selector of panel.selectores; let numSelector = $index, ultimo = $last; track numSelector) {
       <div class="selector">
-        <span class="label">{{selector.label}}</span>
-        @if (selector.tipo === 'single'){
+        <span class="label">{{ selector.id === 'PERFIL_DOCENTE/RANGO_ETARIO' ? 'Fecha de nacimiento' : selector.label }}</span>
+        @if (selector.id === 'PERFIL_DOCENTE/RANGO_ETARIO') {
+        <div class="rango-etario">
+          <p-datepicker [(ngModel)]="fechaNacimiento"
+                        [maxDate]="hoy"
+                        dateFormat="dd/mm/yy"
+                        placeholder="Fecha de nacimiento"
+                        appendTo="body"
+                        (onSelect)="onFechaNacimientoChange($event, numPanel, numSelector)" />
+          @if (categoriasProfesor[numPanel].selectores[numSelector].selected) {
+          <small class="rango-calculado">Rango: {{ $any(categoriasProfesor[numPanel].selectores[numSelector].selected).label }}</small>
+          }
+        </div>
+        } @else if (selector.tipo === 'single'){
         <p-select class="select"
                   (onChange)="setCategorias()"
                   [options]="selector.options"

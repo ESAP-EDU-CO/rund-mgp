@@ -59,6 +59,7 @@ export interface MenuElemento extends MenuItem {
   estilo?: 'material-symbols-outlined' | 'material-symbols-rounded';
   faIcon?: IconDefinition;
   rol: Rol;
+  visible?: boolean;
 }
 export interface DatosCarpeta {
   origen: string[];

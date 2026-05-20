@@ -1,4 +1,7 @@
 .menu {
+  .menu-item-activo {
+    background-color: var(--p-surface-600) !important;
+  }
   .item {
     min-width: 16em;
     display: flex;

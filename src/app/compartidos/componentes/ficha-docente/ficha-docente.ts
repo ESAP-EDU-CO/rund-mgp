@@ -48,6 +48,9 @@ export class FichaDocente implements OnChanges {
   @Input() claves: string[] = [];
   @Input() infoProfesor: DatoDemografico = { archivosProfesor: [], datosDemograficos: [] }
   @Output() validado: EventEmitter<string[]> = new EventEmitter<string[]>();
+  @Output() fechaNacimientoEmitida: EventEmitter<string | null> = new EventEmitter<string | null>();
+  fechaNacimiento: Date | null = null;
+  readonly hoy = new Date();
   private data: Data = inject(Data);
 private logger: LoggerService = inject(LoggerService);
   private catPrefix = '/okm:categories/RUND/DOCENTES/';
@@ -107,6 +110,27 @@ private logger: LoggerService = inject(LoggerService);
     });
     const panelesValidados: number = this.categoriasProfesor.filter((panel: Ficha.Panel) => panel.validado).length;
     if (panelesValidados == this.categoriasProfesor.length) this.validado.emit(this.catProfesor);
+  }
+  onFechaNacimientoChange(fecha: Date | null, numPanel: number, numSelector: number): void {
+    this.fechaNacimientoEmitida.emit(fecha ? fecha.toISOString().split('T')[0] : null);
+    if (!fecha) return;
+    const edad = this.calcularEdad(fecha);
+    const selector = this.categoriasProfesor[numPanel].selectores[numSelector];
+    const opcion = selector.options.find(o => this.edadEnRango(edad, o.label));
+    if (opcion) { selector.selected = opcion; this.setCategorias(); }
+  }
+  private calcularEdad(fechaNac: Date): number {
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - fechaNac.getFullYear();
+    const m = hoy.getMonth() - fechaNac.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < fechaNac.getDate())) edad--;
+    return edad;
+  }
+  private edadEnRango(edad: number, label: string): boolean {
+    const nums = label.match(/\d+/g)?.map(Number) || [];
+    if (nums.length === 1) return edad >= nums[0];
+    if (nums.length >= 2) return edad >= nums[0] && edad <= nums[1];
+    return false;
   }
   private cargarDocente(): void {
     this.datosProfesor = [];

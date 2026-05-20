@@ -35,6 +35,7 @@
         <ng-template #panel>
           <div class="ficha">
             <mgp-ficha-docente (validado)="datosValidados = $event"
+                               (fechaNacimientoEmitida)="onFechaNacimiento($event)"
                                [infoProfesor]="infoProfesor ? infoProfesor.datosDemograficos : {}"
                                [docente]="profesorSeleccionado"
                                [claves]="clavesCSV"
