@@ -52,6 +52,8 @@ private profesores: any;
   async ngOnInit(): Promise<void> {
     this.labels['DOCUMENTO_DE_IDENTIDAD'] = 'Documento de identidad';
     this.labels['CEDULA'] = 'Documento de identidad';
+    this.labels['FECHA_NACIMIENTO'] = 'Fecha de nacimiento';
+    this.labels['INVESTIGACION_2024'] = 'Investigación 2024';
     this.dataServicio.getIndiceDocente().subscribe((resp: any) => {
       this.profesores = resp.indice;
       const totalProfesores: number = Object.keys(this.profesores).length;
@@ -175,7 +177,17 @@ private profesores: any;
     });
     return raiz;
   }
+  private readonly ORDEN_FICHA = [
+    'NOMBRE_Y_APELLIDO', 'DOCUMENTO_DE_IDENTIDAD', 'FECHA_NACIMIENTO',
+    'CORREO_INSTITUCIONAL', 'CORREO_PERSONAL', 'TELEFONO',
+    'PERFIL_ACADEMICO', 'PREGRADO', 'ESPECIALIZACION', 'MAESTRIA',
+    'DOCTORADO', 'POSTDOCTORADO', 'INVESTIGACION_2024',
+    'TERRITORIAL', 'CATEGORIA', 'NUCLEO_TEMATICO', 'NIVEL_DE_FORMACION',
+    'VINCULACION', 'ORIGEN_DE_VINCULACION', 'ACTO_ADMINISTRATIVO_DE_VINCULACION',
+    'INICIO_DE_VINCULACION', 'FIN_DE_VINCULACION', 'ULTIMA_EVALUACION',
+    'DEDICACION', 'SITUACION_ADMINISTRATIVA', 'PUNTAJE_SALARIAL',
+  ];
   claves(obj: any): string[] {
-    return Object.keys(obj);
+    return this.ORDEN_FICHA.filter(key => key in obj);
   }
 }
