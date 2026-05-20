@@ -44,9 +44,10 @@ export class Extraccion implements OnInit {
       queue: this.dataServicio.getQueueStats(),
     }).subscribe({
       next: ({ stats, queue }) => {
-        const meta = stats.metadata ?? {};
-        const byStatus = stats.statistics?.by_status ?? {};
-        const byCategory = stats.statistics?.by_category ?? {};
+        const statsData = stats.statistics ?? {};          // unwrap proxy wrapper
+        const meta = statsData.metadata ?? {};
+        const byStatus = statsData.statistics?.by_status ?? {};
+        const byCategory = statsData.statistics?.by_category ?? {};
 
         this.totalDocs = meta.total_documents ?? 0;
         this.completados = byStatus.completado ?? 0;
