@@ -40,6 +40,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
 
+  {
+    path: 'extraccion',
+    loadComponent: () => import('@vistas/extraccion/extraccion').then(m => m.Extraccion),
+    canActivate: [authGuard],
+  },
+
   // Rutas protegidas con adminGuard (solo administradores)
   {
     path: 'gestion',

@@ -31,6 +31,7 @@ export class MenuService {
         { label: 'Consultas', faIcon: this.faMagnifyingGlassChart, route: '/consultas', rol: 'directivo', visible: false },
         { label: 'Listados', tipo: 'PrimeNG', icon: 'pi pi-list-check', route: '/listados', rol: 'gestor' },
         { label: 'Gestión', faIcon: this.faFileArrowUp, route: '/gestion', rol: 'gestor' },
+        { label: 'Extracción de datos', tipo: 'PrimeNG', icon: 'pi pi-chart-bar', route: '/extraccion', rol: 'gestor' },
         { label: 'Certificados', faIcon: this.faFileAlt, route: '/certificados', rol: 'gestor', visible: false },
         { label: 'Herramientas', tipo: 'PrimeNG', icon: 'pi pi-wrench', route: '/herramientas', rol: 'gestor', visible: false },
         { label: 'Validación', faIcon: this.faCheckDouble, route: '/validacion', rol: 'usuario', visible: false },
