@@ -33,6 +33,12 @@ export class Extraccion implements OnInit {
   ultimaActualizacion = '';
   categorias: CategoriaStats[] = [];
 
+  get labels(): Record<string, string> { return this.dataServicio.labels; }
+
+  labelCategoria(nombre: string): string {
+    return this.labels[nombre] ?? this.labels[nombre.toUpperCase()] ?? nombre;
+  }
+
   ngOnInit(): void {
     this.cargar();
   }

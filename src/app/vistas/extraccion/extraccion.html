@@ -67,7 +67,7 @@
       </ng-template>
       <ng-template #body let-cat>
         <tr>
-          <td>{{ cat.nombre }}</td>
+          <td>{{ labelCategoria(cat.nombre) }}</td>
           <td style="text-align:right;font-weight:600">{{ cat.total }}</td>
           <td style="text-align:right;color:var(--p-green-500)">{{ cat.completado }}</td>
           <td style="text-align:right;color:var(--p-orange-500)">{{ cat.procesando }}</td>
