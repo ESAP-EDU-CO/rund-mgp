@@ -254,6 +254,7 @@ export class Data {
               datosDemograficos[key] = value;
             }
           });
+          if (info.fechaNacimiento) (datosDemograficos as any)['FECHA_NACIMIENTO'] = info.fechaNacimiento;
           if (archivosProfesor && datosDemograficos) {
             resolve({ archivosProfesor: archivosProfesor, datosDemograficos: datosDemograficos as DatoDemografico });
           } else {
