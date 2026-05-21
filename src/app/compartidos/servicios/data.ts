@@ -291,6 +291,15 @@ export class Data {
   getQueueStats(): Observable<any> {
     return this.http.get<any>(this.getUrl('queueStats'));
   }
+  getExtraccionStats(): Observable<any> {
+    return this.http.get<any>(this.getUrl('extraccionStats'));
+  }
+  getExtraccionDocente(cedula: string, page = 1, size = 10): Observable<any> {
+    return this.http.get<any>(`${this.getUrl('extraccionDocente')}/${cedula}?page=${page}&size=${size}`);
+  }
+  async getJsonExtraido(cedula: string, nombreJson: string): Promise<any> {
+    return firstValueFrom(this.http.get<any>(`${this.getUrl('jsonExtraido')}/${cedula}/${nombreJson}`));
+  }
   private normalizaNombre(nombre: string): string {
     return nombre.trim().replace(/\s+/g, '_').toUpperCase();
   }

@@ -46,34 +46,30 @@ export class Extraccion implements OnInit {
   cargar(): void {
     this.loading = true;
     forkJoin({
-      stats: this.dataServicio.getExtractionStatistics(),
+      stats: this.dataServicio.getExtraccionStats(),
       queue: this.dataServicio.getQueueStats(),
     }).subscribe({
       next: ({ stats, queue }) => {
-        const statsData = stats.statistics ?? {};          // unwrap proxy wrapper
-        const meta = statsData.metadata ?? {};
-        const byStatus = statsData.statistics?.by_status ?? {};
-        const byCategory = statsData.statistics?.by_category ?? {};
+        const byStatus   = stats.por_estado   ?? {};
+        const byCategory = stats.por_categoria ?? {};
 
-        this.totalDocs = meta.total_documents ?? 0;
+        this.totalDocs  = stats.total_documentos ?? 0;
         this.completados = byStatus.completado ?? 0;
-        this.procesando = byStatus.procesando ?? 0;
-        this.errores = byStatus.error ?? 0;
-        this.pendientes = byStatus.pendiente ?? 0;
-        this.tasaExito = this.totalDocs > 0
-          ? Math.round((this.completados / this.totalDocs) * 100)
-          : 0;
-        this.ultimaActualizacion = meta.last_updated
-          ? new Date(meta.last_updated).toLocaleString('es-CO')
+        this.procesando  = byStatus.procesando ?? 0;
+        this.errores     = byStatus.error      ?? 0;
+        this.pendientes  = byStatus.pendiente  ?? 0;
+        this.tasaExito   = stats.tasa_exito    ?? 0;
+        this.ultimaActualizacion = stats.ultima_actualizacion
+          ? new Date(stats.ultima_actualizacion).toLocaleString('es-CO')
           : '—';
 
         this.categorias = Object.entries(byCategory).map(([nombre, v]: [string, any]) => ({
           nombre,
-          total: v.total ?? 0,
+          total:      v.total      ?? 0,
           completado: v.completado ?? 0,
           procesando: v.procesando ?? 0,
-          error: v.error ?? 0,
-          pendiente: v.pendiente ?? 0,
+          error:      v.error      ?? 0,
+          pendiente:  v.pendiente  ?? 0,
         }));
 
         this.colaActiva = queue.queue?.queue_size ?? 0;

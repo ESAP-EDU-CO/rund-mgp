@@ -50,6 +50,7 @@ private logger = inject(LoggerService);
   private labels: Record<string, string> = this.dataServicio.labels;
   uuid?: string;
   propiedades: { clave: string, valor: string }[] = [];
+  datosExtraidos: { clave: string, valor: string }[] = [];
   pdfUrl: SafeResourceUrl | undefined;
   textoError = '';
   archivosDescarga: ListaDescarga[] = [];
@@ -60,6 +61,7 @@ private logger = inject(LoggerService);
       const modoActual: Modo = this.modo();
       this.pdfUrl = undefined;
       this.propiedades = [];
+      this.datosExtraidos = [];
       if (this.blobUrl) {
         URL.revokeObjectURL(this.blobUrl);
         this.blobUrl = undefined;
@@ -99,7 +101,24 @@ private logger = inject(LoggerService);
                   { clave: 'Fecha de creación:', valor: fecha.created },
                   { clave: 'Última modificación:', valor: fecha.modified },
                 ];
-                
+
+                // Cargar datos extraídos del JSON side-car
+                const jsonNombre = nombre.replace(/\.[^.]+$/, '.json');
+                try {
+                  const jsonResp = await this.dataServicio.getJsonExtraido(cedula, jsonNombre);
+                  const extractData = jsonResp?.datos?.data ?? jsonResp?.datos;
+                  if (extractData && typeof extractData === 'object') {
+                    const omitir = new Set(['null', '', 'na', 'n/a']);
+                    this.datosExtraidos = Object.entries(extractData)
+                      .filter(([_, v]) => v !== null && v !== undefined && typeof v !== 'object'
+                        && !omitir.has(String(v).trim().toLowerCase()))
+                      .map(([k, v]) => ({
+                        clave: this.labels[k] ?? k.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase()),
+                        valor: String(v),
+                      }));
+                  }
+                } catch { this.datosExtraidos = []; }
+
                 const descarga: DescargaResponse = await this.descargaArchivo(consulta.uuid);
                 if (descarga.blobUrl && descarga.pdfUrl) {
                   this.blobUrl = descarga.blobUrl;

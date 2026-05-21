@@ -36,6 +36,7 @@ import { TagModule } from 'primeng/tag';
 import { PasswordModule } from 'primeng/password';
 import { MessageModule } from 'primeng/message';
 import { DatePickerModule } from 'primeng/datepicker';
+import { AccordionModule } from 'primeng/accordion';
 
 @NgModule({
   declarations: [],
@@ -77,6 +78,7 @@ import { DatePickerModule } from 'primeng/datepicker';
     PasswordModule,
     MessageModule,
     DatePickerModule,
+    AccordionModule,
   ],
   exports: [
     ButtonModule,
@@ -115,6 +117,7 @@ import { DatePickerModule } from 'primeng/datepicker';
     PasswordModule,
     MessageModule,
     DatePickerModule,
+    AccordionModule,
   ],
 })
 export class PrimengModule { }
