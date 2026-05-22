@@ -21,6 +21,20 @@ Frontend Angular 21 con SSR del sistema **RUND** (Registro Único Nacional Docen
 15. [Estado del Proyecto y Plan de Mejoras](#15-estado-del-proyecto-y-plan-de-mejoras)
 16. [Solución de Problemas](#16-solución-de-problemas)
 
+## Novedades Recientes (Mayo 2026)
+
+**Nuevas secciones y mejoras en la interfaz:**
+
+- **Sección "Extracción de datos"** (`/extraccion`): Panel visual con estadísticas en tiempo real de documentos procesados. Muestra total documentos, JSONs generados, estado por documento (procesando/pendientes/errores), tasa de éxito, estado de la cola activa y desglose por tipo de documento. Consume endpoints `GET /api/v2/extraccion/stats` y `GET /api/v2/ai/queue/stats`.
+
+- **Menú lateral mejorado**: Uso de `routerLinkActive` en lugar de comparación manual de rutas (mejor compatibilidad SSR). Propiedad `visible` para controlar aparición de items. Estilos adaptativos para modo claro/oscuro.
+
+- **Ficha docente actualizada**: Campo "Fecha de nacimiento" (date picker) reemplaza dropdown "Rango etario". Cálculo automático del rango de edad. Pre-población desde `infoProfesor.FECHA_NACIMIENTO`.
+
+- **Vista previa de documentos mejorada**: Acordeón con 3 paneles: "Datos del documento", "Datos extraídos", "Reemplazar documento". Los datos extraídos muestran campos del JSON side-car (omitiendo nulos). Botones Descargar/Eliminar repositorio en la parte superior.
+
+- **Nuevos módulos PrimeNG**: `DatePickerModule` y `AccordionModule` integrados en `PrimengModule` compartido.
+
 ---
 
 ## 1. Descripción del Proyecto
@@ -357,6 +371,7 @@ Si `/api/config` falla, se usa el fallback `http://localhost:3000`.
 | `/validacion` | — | Verificacion publica de certificados por ID |
 | `/acceso-denegado` | — | Pagina de acceso denegado |
 | `/listados` | `authGuard` | Gestion de listados docentes |
+| `/extraccion` | `authGuard` | Estadísticas y estado de extracción de datos AI (rol: gestor+) |
 | `/certificados` | `authGuard` | Generacion de certificados |
 | `/dashboard` | `authGuard` | Panel de estadisticas y graficos |
 | `/consultas` | `authGuard` | Consultas cruzadas de datos |
@@ -381,17 +396,18 @@ La jerarquia de privilegios es: `admin > gestor > directivo > usuario`.
 
 ### Menu de navegacion lateral
 
-El menu se construye dinamicamente por `MenuService` con iconos FontAwesome o PrimeNG:
+El menu se construye dinamicamente por `MenuService` con iconos FontAwesome o PrimeNG. Cada item tiene una propiedad `visible` que controla su aparicion en el menu (algunos items aun estan ocultos mientras se desarrollan funcionalidades complementarias). El menu usa `routerLinkActive` en lugar de comparacion manual de rutas para mayor compatibilidad con SSR:
 
-| Item | Ruta | Rol minimo requerido |
-|------|------|---------------------|
-| Panel de control | `/dashboard` | directivo |
-| Consultas | `/consultas` | directivo |
-| Listados | `/listados` | gestor |
-| Gestion | `/gestion` | gestor |
-| Certificados | `/certificados` | gestor |
-| Herramientas | `/herramientas` | gestor |
-| Validacion | `/validacion` | usuario |
+| Item | Ruta | Rol minimo requerido | Visible |
+|------|------|---------------------|---------|
+| Panel de control | `/dashboard` | directivo | no |
+| Consultas | `/consultas` | directivo | no |
+| Listados | `/listados` | gestor | sí |
+| Gestión | `/gestion` | gestor | sí |
+| Extracción de datos | `/extraccion` | gestor | sí |
+| Certificados | `/certificados` | gestor | no |
+| Herramientas | `/herramientas` | gestor | no |
+| Validación | `/validacion` | usuario | no |
 
 ---
 
@@ -567,7 +583,7 @@ Grupos de endpoints disponibles:
 | Listados | `csvData`, `loadList`, `indice`, `listadosDatos` |
 | Firmas | `firmas`, `firmaSubir` |
 | Autenticacion | `login`, `logout`, `session`, `refresh`, `devLogin` |
-| AI | `extraeDatos` |
+| AI / Extracción | `extraeDatos`, `extractionStatistics`, `queueStats`, `extraccionStats`, `extraccionDocente`, `jsonExtraido` |
 
 ---
 
