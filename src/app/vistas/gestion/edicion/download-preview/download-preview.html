@@ -21,17 +21,39 @@
                             [profesor]="profesor()"
                             [archivos]="archivos()" />
     </div>
-    @for (propiedad of propiedades; track propiedad) {
-    <div class="propiedad">
-      <h4>{{propiedad.clave}}</h4>
-      <p>{{propiedad.valor}}</p>
-    </div>
-    }
-    <p-card header="Reemplazar documento"
-            class="reemplazar">
-      <mgp-reemplazo [profesor]="profesor()"
-                     [docOriginal]="archivos()[0]" />
-    </p-card>
+    <p-accordion [value]="['datos-doc']" [multiple]="true">
+      <p-accordion-panel value="datos-doc">
+        <p-accordion-header>Datos del documento</p-accordion-header>
+        <p-accordion-content>
+          @for (propiedad of propiedades; track propiedad) {
+          <div class="propiedad">
+            <h4>{{propiedad.clave}}</h4>
+            <p>{{propiedad.valor}}</p>
+          </div>
+          }
+        </p-accordion-content>
+      </p-accordion-panel>
+      @if (datosExtraidos.length > 0) {
+      <p-accordion-panel value="datos-extraidos">
+        <p-accordion-header>Datos extraídos</p-accordion-header>
+        <p-accordion-content>
+          @for (dato of datosExtraidos; track $index) {
+          <div class="propiedad">
+            <h4>{{dato.clave}}</h4>
+            <p>{{dato.valor}}</p>
+          </div>
+          }
+        </p-accordion-content>
+      </p-accordion-panel>
+      }
+      <p-accordion-panel value="reemplazar">
+        <p-accordion-header>Reemplazar documento</p-accordion-header>
+        <p-accordion-content>
+          <mgp-reemplazo [profesor]="profesor()"
+                         [docOriginal]="archivos()[0]" />
+        </p-accordion-content>
+      </p-accordion-panel>
+    </p-accordion>
     } @else {
     <h2>{{textoError}}</h2>
     }
