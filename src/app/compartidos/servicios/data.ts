@@ -300,6 +300,12 @@ export class Data {
   async getJsonExtraido(cedula: string, nombreJson: string): Promise<any> {
     return firstValueFrom(this.http.get<any>(`${this.getUrl('jsonExtraido')}/${cedula}/${nombreJson}`));
   }
+  resetStuckJobs(): Observable<any> {
+    return this.http.post<any>(this.getUrl('resetStuckJobs'), {});
+  }
+  retryErrorJobs(): Observable<any> {
+    return this.http.post<any>(this.getUrl('retryErrorJobs'), {});
+  }
   private normalizaNombre(nombre: string): string {
     return nombre.trim().replace(/\s+/g, '_').toUpperCase();
   }

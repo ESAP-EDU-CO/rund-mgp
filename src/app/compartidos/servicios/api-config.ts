@@ -191,6 +191,14 @@ export const API_ENDPOINTS: ApiEndpoints = {
   jsonExtraido: {
     endpoint: 'api/v2/extraccion/json',
     status: 'active'
+  },
+  resetStuckJobs: {
+    endpoint: 'api/v2/ai/reset-stuck-jobs',
+    status: 'active'
+  },
+  retryErrorJobs: {
+    endpoint: 'api/v2/ai/retry-error-jobs',
+    status: 'active'
   }
 };
 
