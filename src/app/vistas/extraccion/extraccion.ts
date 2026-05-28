@@ -23,6 +23,8 @@ export class Extraccion implements OnInit {
   private dataServicio = inject(Data);
 
   loading = false;
+  resetting = false;
+  retrying = false;
   totalDocs = 0;
   completados = 0;
   procesando = 0;
@@ -41,6 +43,22 @@ export class Extraccion implements OnInit {
 
   ngOnInit(): void {
     this.cargar();
+  }
+
+  reencolarErrores(): void {
+    this.retrying = true;
+    this.dataServicio.retryErrorJobs().subscribe({
+      next: () => { this.retrying = false; this.cargar(); },
+      error: () => { this.retrying = false; },
+    });
+  }
+
+  resetearBloqueados(): void {
+    this.resetting = true;
+    this.dataServicio.resetStuckJobs().subscribe({
+      next: () => { this.resetting = false; this.cargar(); },
+      error: () => { this.resetting = false; },
+    });
   }
 
   cargar(): void {

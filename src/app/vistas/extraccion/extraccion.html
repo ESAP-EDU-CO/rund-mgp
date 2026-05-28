@@ -3,10 +3,26 @@
 
     <div class="header">
       <h3 style="margin:0">Extracción de datos</h3>
-      <p-button icon="pi pi-refresh"
-                label="Actualizar"
-                [loading]="loading"
-                (onClick)="cargar()" />
+      <div style="display:flex;gap:0.5rem">
+        @if (errores > 0) {
+        <p-button icon="pi pi-replay"
+                  label="Re-encolar errores ({{ errores }})"
+                  severity="danger"
+                  [loading]="retrying"
+                  (onClick)="reencolarErrores()" />
+        }
+        @if (procesando > 0) {
+        <p-button icon="pi pi-undo"
+                  label="Resetear bloqueados ({{ procesando }})"
+                  severity="warn"
+                  [loading]="resetting"
+                  (onClick)="resetearBloqueados()" />
+        }
+        <p-button icon="pi pi-refresh"
+                  label="Actualizar"
+                  [loading]="loading"
+                  (onClick)="cargar()" />
+      </div>
     </div>
 
     @if (loading) {
