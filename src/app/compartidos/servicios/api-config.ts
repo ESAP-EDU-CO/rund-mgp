@@ -199,6 +199,22 @@ export const API_ENDPOINTS: ApiEndpoints = {
   retryErrorJobs: {
     endpoint: 'api/v2/ai/retry-error-jobs',
     status: 'active'
+  },
+  schedulerStatus: {
+    endpoint: 'api/v2/ai/scheduler/status',
+    status: 'active'
+  },
+  schedulerStart: {
+    endpoint: 'api/v2/ai/scheduler/start',
+    status: 'active'
+  },
+  schedulerPause: {
+    endpoint: 'api/v2/ai/scheduler/pause',
+    status: 'active'
+  },
+  schedulerConfig: {
+    endpoint: 'api/v2/ai/scheduler/config',
+    status: 'active'
   }
 };
 
