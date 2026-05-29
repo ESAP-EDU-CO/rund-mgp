@@ -80,6 +80,8 @@ export interface DatoArchivo {
   formato: string;
   tipo: string;
   origen: string;
+  ia_clasificado?: boolean;
+  ia_tipo?: string;
 }
 export interface DatosProfesor {
   archivosProfesor: DatoArchivo[];

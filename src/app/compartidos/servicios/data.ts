@@ -235,11 +235,14 @@ export class Data {
             const formato: string[] | undefined = archivo.categorias.find((cat: string[]) => cat[0] == 'FORMATO');
             const tipo: string[] | undefined = archivo.categorias.find((cat: string[]) => cat[0] == 'TIPO');
             const origen: string[] | undefined = archivo.categorias.find((cat: string[]) => cat[0] == 'ORIGEN');
+            const ia: string[] | undefined = archivo.categorias.find((cat: string[]) => cat[0] == 'IA_CLASIFICADO');
             return {
               nombre: archivo.nombre,
               formato: formato ? formato[1] : '',
               tipo: tipo ? tipo[1] : '',
               origen: origen ? origen[1] : '',
+              ia_clasificado: !!ia,
+              ia_tipo: ia ? ia[1] : undefined,
             };
           });
           const datosDemograficos: any = {};

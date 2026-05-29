@@ -1,9 +1,10 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Data } from '@servicios/data';
-import { forkJoin } from 'rxjs';
+import { forkJoin, interval, Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 
 interface CategoriaStats {
   nombre: string;
@@ -20,13 +21,15 @@ interface CategoriaStats {
   templateUrl: './extraccion.html',
   styleUrl: './extraccion.scss'
 })
-export class Extraccion implements OnInit {
+export class Extraccion implements OnInit, OnDestroy {
   private dataServicio = inject(Data);
+  private destroy$ = new Subject<void>();
 
   // ─── Estado de carga ──────────────────────────────────────────────────────
-  loading   = false;
-  resetting = false;
-  retrying  = false;
+  loading          = false;
+  resetting        = false;
+  retrying         = false;
+  autoRefreshActivo = false;
 
   // ─── Métricas del índice ──────────────────────────────────────────────────
   totalDocs          = 0;
@@ -58,6 +61,18 @@ export class Extraccion implements OnInit {
 
   ngOnInit(): void {
     this.cargar();
+    // Auto-refresh cada 30 s mientras haya trabajos en cola
+    interval(30_000)
+      .pipe(
+        takeUntil(this.destroy$),
+        filter(() => this.colaActiva > 0)
+      )
+      .subscribe(() => this.cargar());
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   // ─── Carga principal ──────────────────────────────────────────────────────
@@ -92,7 +107,8 @@ export class Extraccion implements OnInit {
           pendiente:  v.pendiente  ?? 0,
         }));
 
-        this.colaActiva = queue.queue?.queue_size ?? 0;
+        this.colaActiva         = queue.queue?.queue_size ?? 0;
+        this.autoRefreshActivo  = this.colaActiva > 0;
 
         // Scheduler
         const s = scheduler.scheduler ?? {};

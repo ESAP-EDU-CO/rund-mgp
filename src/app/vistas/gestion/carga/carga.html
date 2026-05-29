@@ -37,6 +37,7 @@
             <mgp-ficha-docente (validado)="datosValidados = $event"
                                (fechaNacimientoEmitida)="onFechaNacimiento($event)"
                                [infoProfesor]="infoProfesor ? infoProfesor.datosDemograficos : {}"
+                               [archivosProfesor]="infoProfesor ? infoProfesor.archivosProfesor : []"
                                [docente]="profesorSeleccionado"
                                [claves]="clavesCSV"
                                [labels]="labelsCSV" />

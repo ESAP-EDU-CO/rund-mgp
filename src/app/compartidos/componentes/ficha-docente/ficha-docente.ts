@@ -2,7 +2,7 @@ import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChange
 import { FormsModule } from '@angular/forms';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
-import { Data, DataCategoria, DatoDemografico } from '@servicios/data';
+import { Data, DataCategoria, DatoDemografico, DatoArchivo } from '@servicios/data';
 import { LoggerService } from '@servicios/logger.service';
 import { simp, compara } from '@librerias/textos';
 
@@ -47,6 +47,11 @@ export class FichaDocente implements OnChanges {
   @Input() labels: string[] = [];
   @Input() claves: string[] = [];
   @Input() infoProfesor: DatoDemografico = { archivosProfesor: [], datosDemograficos: [] }
+  @Input() archivosProfesor: DatoArchivo[] = [];
+
+  get archivosIAClasificados(): DatoArchivo[] {
+    return this.archivosProfesor.filter(a => a.ia_clasificado);
+  }
   @Output() validado: EventEmitter<string[]> = new EventEmitter<string[]>();
   @Output() fechaNacimientoEmitida: EventEmitter<string | null> = new EventEmitter<string | null>();
   fechaNacimiento: Date | null = null;
