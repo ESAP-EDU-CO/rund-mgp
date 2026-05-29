@@ -76,4 +76,25 @@
   </p-panel>
   }
   }
+@if (archivosIAClasificados.length > 0) {
+<p-panel>
+  <ng-template #header>
+    <div class="panel-header">
+      <span>Clasificados por IA</span>
+      <p-tag severity="info"
+             icon="pi pi-microchip"
+             [value]="archivosIAClasificados.length + ' doc' + (archivosIAClasificados.length === 1 ? '' : 's')" />
+    </div>
+  </ng-template>
+  <div style="display:flex;flex-wrap:wrap;gap:0.5rem;padding:0.25rem 0">
+    @for (doc of archivosIAClasificados; track doc.nombre) {
+    <p-tag [value]="doc.nombre"
+           severity="info"
+           icon="pi pi-microchip"
+           [pTooltip]="'Tipo detectado: ' + (doc.ia_tipo ?? 'desconocido')"
+           tooltipPosition="top" />
+    }
+  </div>
+</p-panel>
+}
 </div>
