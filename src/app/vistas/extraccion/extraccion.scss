@@ -31,6 +31,34 @@
     }
   }
 
+  .scheduler-panel {
+    border: 1px solid var(--p-surface-200);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    background: var(--p-surface-50);
+
+    .scheduler-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .scheduler-config {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--p-surface-200);
+    }
+  }
+
   .footer {
     font-size: 0.8rem;
     opacity: 0.6;

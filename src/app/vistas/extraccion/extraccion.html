@@ -1,6 +1,7 @@
 <p-card>
   <div class="extraccion">
 
+    <!-- Cabecera con acciones de cola -->
     <div class="header">
       <h3 style="margin:0">Extracción de datos</h3>
       <div style="display:flex;gap:0.5rem">
@@ -8,6 +9,7 @@
         <p-button icon="pi pi-replay"
                   label="Re-encolar errores ({{ errores }})"
                   severity="danger"
+                  size="small"
                   [loading]="retrying"
                   (onClick)="reencolarErrores()" />
         }
@@ -15,11 +17,13 @@
         <p-button icon="pi pi-undo"
                   label="Resetear bloqueados ({{ procesando }})"
                   severity="warn"
+                  size="small"
                   [loading]="resetting"
                   (onClick)="resetearBloqueados()" />
         }
         <p-button icon="pi pi-refresh"
                   label="Actualizar"
+                  size="small"
                   [loading]="loading"
                   (onClick)="cargar()" />
       </div>
@@ -33,6 +37,7 @@
     </div>
     } @else {
 
+    <!-- Tarjetas de métricas -->
     <div class="cards">
       <p-card styleClass="card-stat">
         <div class="valor">{{ totalDocs }}</div>
@@ -63,6 +68,64 @@
       </p-card>
     </div>
 
+    <!-- Panel del scheduler nocturno -->
+    <div class="scheduler-panel">
+      <div class="scheduler-header">
+        <div style="display:flex;align-items:center;gap:0.75rem">
+          <span style="font-weight:600;font-size:0.95rem">Scheduler nocturno</span>
+          <p-tag [value]="schedulerHabilitado ? 'Activo' : 'Pausado'"
+                 [severity]="schedulerHabilitado ? 'success' : 'warn'" />
+          <span style="font-size:0.8rem;opacity:0.65">
+            {{ schedulerHoraInicio }}:00 – {{ schedulerHoraFin }}:00 hs · cada 30 min
+          </span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.4rem">
+          <p-button icon="pi pi-cog"
+                    [text]="true"
+                    severity="secondary"
+                    size="small"
+                    pTooltip="Configurar rango horario"
+                    (onClick)="schedulerConfigVisible = !schedulerConfigVisible" />
+          <p-button [icon]="schedulerHabilitado ? 'pi pi-pause' : 'pi pi-play'"
+                    [label]="schedulerHabilitado ? 'Pausar' : 'Activar'"
+                    [severity]="schedulerHabilitado ? 'warn' : 'success'"
+                    size="small"
+                    [loading]="schedulerCargando"
+                    (onClick)="toggleScheduler()" />
+        </div>
+      </div>
+
+      @if (schedulerUltimoRun) {
+      <div style="font-size:0.75rem;opacity:0.55;margin-top:0.25rem">
+        Último run: {{ schedulerUltimoRun }}
+      </div>
+      }
+
+      @if (schedulerConfigVisible) {
+      <div class="scheduler-config">
+        <span style="font-size:0.85rem">Rango horario:</span>
+        <input type="number"
+               [(ngModel)]="schedulerHoraInicioEditar"
+               min="0" max="23"
+               class="p-inputtext p-component"
+               style="width:4.5rem;text-align:center" />
+        <span style="opacity:0.7">:00 –</span>
+        <input type="number"
+               [(ngModel)]="schedulerHoraFinEditar"
+               min="0" max="23"
+               class="p-inputtext p-component"
+               style="width:4.5rem;text-align:center" />
+        <span style="opacity:0.7">:00</span>
+        <p-button label="Guardar"
+                  icon="pi pi-check"
+                  size="small"
+                  [loading]="schedulerCargando"
+                  (onClick)="guardarConfigScheduler()" />
+      </div>
+      }
+    </div>
+
+    <!-- Tabla por categoría -->
     <p-table [value]="categorias"
              [sortField]="'total'"
              [sortOrder]="-1"
