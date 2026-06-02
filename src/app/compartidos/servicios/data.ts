@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { catchError, firstValueFrom, forkJoin, map, Observable, Subscriber, tap, throwError } from 'rxjs';
+import { catchError, firstValueFrom, forkJoin, map, Observable, Subject, Subscriber, tap, throwError } from 'rxjs';
 import { Firma } from '@servicios/firmas';
 import { getEndpointUrl } from './api-config';
 import { ConfigService } from './config.service';
@@ -30,6 +30,7 @@ export class Data {
   public apiVersion = '2.0';
   public chartColors: string[] = ['blue', 'yellow', 'green', 'cyan', 'pink', 'indigo', 'orange', 'teal', 'bluegray', 'purple', 'red'];
   public documentos: Documento.Listado = {} as Documento.Listado;
+  public archivosCargados$ = new Subject<string>();
 
   private readonly aNivel: Anivel[] = [
     { label: 'Direcciones territoriales', superLabel: 'Distribución territorial' }

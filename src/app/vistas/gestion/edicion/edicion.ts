@@ -1,8 +1,9 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Data, DatoArchivo, DatosProfesor } from '@servicios/data';
+import { Subject, takeUntil } from 'rxjs';
 import { TreeNode } from 'primeng/api';
 import { DownloadPreview } from './download-preview/download-preview';
 import { BorraDocumentos } from "./borra-documentos/borra-documentos";
@@ -32,9 +33,10 @@ export const iconoFormato: any = {
   templateUrl: './edicion.html',
   styleUrl: './edicion.scss'
 })
-export class Edicion implements OnInit {
+export class Edicion implements OnInit, OnDestroy {
   private dataServicio: Data = inject(Data);
-private profesores: any;
+  private profesores: any;
+  private destroy$ = new Subject<void>();
   labels: Record<string, string> = this.dataServicio.labels;
   profeSeleccionado: any;
   profesoresFiltrados: Profesor[] = [];
@@ -60,13 +62,26 @@ private profesores: any;
       this.cargandoProfesores = 0;
       Object.keys(this.profesores).forEach(async (cedula: string, index: number) => {
         this.cargandoProfesores = Math.round(((index + 1) / totalProfesores) * 100);
-        
+
         const archivos: DatoArchivo[] | undefined = await this.getArchivosProfe(cedula);
         if (archivos) this.profesoresFiltrados.push({ nombre: this.profesores[cedula]['NOMBRE_Y_APELLIDO'], documentoIdentidad: cedula });
       });
       this.cargandoProfesores = 100;
-      
+
     });
+    this.dataServicio.archivosCargados$.pipe(takeUntil(this.destroy$)).subscribe((cedula: string) => {
+      if (!this.profesoresFiltrados.some(p => p.documentoIdentidad === cedula) && this.profesores?.[cedula]) {
+        this.profesoresFiltrados.push({ nombre: this.profesores[cedula]['NOMBRE_Y_APELLIDO'], documentoIdentidad: cedula });
+      }
+      if (this.profesor?.documentoIdentidad === cedula) {
+        this.obtieneArchivos();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
   filtrarProfesores(ev: any): void {
     const valorFiltro = ev.query.toLowerCase();
