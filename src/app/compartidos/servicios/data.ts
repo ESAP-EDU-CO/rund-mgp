@@ -322,6 +322,9 @@ export class Data {
   configScheduler(horaInicio: number, horaFin: number): Observable<any> {
     return this.http.post<any>(this.getUrl('schedulerConfig'), { hora_inicio: horaInicio, hora_fin: horaFin });
   }
+  searchDocumentos(query: string, limit = 10): Observable<any> {
+    return this.http.get<any>(`${this.getUrl('extraccionBuscar')}?q=${encodeURIComponent(query)}&limit=${limit}`);
+  }
   private normalizaNombre(nombre: string): string {
     return nombre.trim().replace(/\s+/g, '_').toUpperCase();
   }

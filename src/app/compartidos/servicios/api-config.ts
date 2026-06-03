@@ -215,6 +215,10 @@ export const API_ENDPOINTS: ApiEndpoints = {
   schedulerConfig: {
     endpoint: 'api/v2/ai/scheduler/config',
     status: 'active'
+  },
+  extraccionBuscar: {
+    endpoint: 'api/v2/extraccion/buscar',
+    status: 'active'
   }
 };
 
