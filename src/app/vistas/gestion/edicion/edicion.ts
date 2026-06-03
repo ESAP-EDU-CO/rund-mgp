@@ -60,13 +60,13 @@ export class Edicion implements OnInit, OnDestroy {
       this.profesores = resp.indice;
       const totalProfesores: number = Object.keys(this.profesores).length;
       this.cargandoProfesores = 0;
-      Object.keys(this.profesores).forEach(async (cedula: string, index: number) => {
-        this.cargandoProfesores = Math.round(((index + 1) / totalProfesores) * 100);
-
+      let completados = 0;
+      Object.keys(this.profesores).forEach(async (cedula: string) => {
         const archivos: DatoArchivo[] | undefined = await this.getArchivosProfe(cedula);
+        completados++;
+        this.cargandoProfesores = Math.round((completados / totalProfesores) * 100);
         if (archivos) this.profesoresFiltrados.push({ nombre: this.profesores[cedula]['NOMBRE_Y_APELLIDO'], documentoIdentidad: cedula });
       });
-      this.cargandoProfesores = 100;
 
     });
     this.dataServicio.archivosCargados$.pipe(takeUntil(this.destroy$)).subscribe((cedula: string) => {

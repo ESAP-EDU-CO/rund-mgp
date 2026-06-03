@@ -3,6 +3,9 @@
     <div class="header">
       <div class="selector">
         <h4>Seleccione el profesor/a por nombre o cédula</h4>
+        @if (cargandoOpciones) {
+        <p-skeleton width="16em" height="2.2rem" borderRadius="6px" />
+        } @else {
         <p-autoComplete [formControl]="$any(formulario.get('cedula'))"
                         [suggestions]="profesoresFiltrados"
                         (completeMethod)="filterProfesores($event)"
@@ -12,6 +15,7 @@
                         (onSelect)="selectProfesor($event)"
                         placeholder="Buscar por nombre o cédula">
         </p-autoComplete>
+        }
       </div>
       @if (profesorSeleccionado && profesorSeleccionado.length > 0) {
       <div class="nombre">

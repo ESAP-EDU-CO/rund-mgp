@@ -202,13 +202,14 @@ export class FichaDocente implements OnChanges, OnDestroy {
               const selectorLabel: string | undefined = Object.keys(selectorProf).find((key: string) => key == selector.label);
               if (selectorLabel) {
                 const opcionProf: string | string[] = selectorProf[selectorLabel];
+                const valores: string[] = Array.isArray(opcionProf) ? opcionProf : [opcionProf as string];
                 if (!Array.isArray(opcionProf) && selector.tipo == 'single') {
                   const opcionSel: Ficha.Opcion = selector.options.find((opc: Ficha.Opcion) => compara(simp(opc.label), simp(opcionProf as string))) as Ficha.Opcion;
                   if (selector.selected === undefined) selector.selected = opcionSel;
-                } else if (Array.isArray(opcionProf) && selector.tipo == 'multiple') {
-                  const opcionSel: Ficha.Opcion[] = opcionProf.map((val: string) => {
+                } else if (selector.tipo == 'multiple') {
+                  const opcionSel: Ficha.Opcion[] = valores.map((val: string) => {
                     return selector.options.find((opc: Ficha.Opcion) => compara(simp(opc.label), simp(val))) as Ficha.Opcion;
-                  });
+                  }).filter(Boolean);
                   if (opcionSel.length > 0 && selector.selected === undefined) selector.selected = opcionSel;
                 }
               }

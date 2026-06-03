@@ -1,4 +1,4 @@
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { Component, effect, inject, OnInit, PLATFORM_ID, Signal } from '@angular/core';
 import { EventType, Router, RouterOutlet } from '@angular/router';
 import { Header } from '@componentes/header/header';
@@ -31,6 +31,7 @@ export class App implements OnInit {
   private data: Data = inject(Data);
   private authServicio: Auth = inject(Auth);
   private router: Router = inject(Router);
+  private document: Document = inject(DOCUMENT);
 // Usar signal directamente
   protected usuario: Signal<Usuario | null | undefined> = this.authServicio.usuario;
 
@@ -50,6 +51,12 @@ export class App implements OnInit {
       this.router.events.subscribe((ev: any) => {
         if (ev.type == EventType.NavigationEnd) this.inicializa();
       });
+      // Sincroniza clase 'app-dark' en <html> con prefers-color-scheme
+      const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const applyDark = (dark: boolean) =>
+        this.document.documentElement.classList.toggle('app-dark', dark);
+      applyDark(darkQuery.matches);
+      darkQuery.addEventListener('change', (e) => applyDark(e.matches));
     }
   }
   inicializa(): void {

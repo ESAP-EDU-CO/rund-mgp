@@ -47,6 +47,7 @@ export class Carga implements OnInit {
   selectedVinculados = '';
   formulario: FormGroup;
   loading = false;
+  cargandoOpciones = true;
   uploadedFiles: any[] = [];
   readonly MAX_FILES = 50;
   private dataServicio = inject(Data);
@@ -82,8 +83,9 @@ export class Carga implements OnInit {
               viewValue: fila[3]
             } as Docentes;
           });
+          this.cargandoOpciones = false;
         },
-        error: (error: any) => console.error('Error al obtener el CSV:', error)});
+        error: (error: any) => { console.error('Error al obtener el CSV:', error); this.cargandoOpciones = false; }});
   }
   filterProfesores(event: any) {
     const query = event.query.toLowerCase();
