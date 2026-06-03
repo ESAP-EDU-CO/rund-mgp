@@ -97,4 +97,65 @@
   </div>
 </p-panel>
 }
+@if (loadingExtracciones) {
+<p-panel>
+  <ng-template #header>
+    <div class="panel-header">
+      <p-skeleton width="12rem" height="1rem" />
+    </div>
+  </ng-template>
+  <div style="display:flex;flex-direction:column;gap:0.5rem">
+    @for (n of [0,1,2]; track $index) {
+    <p-skeleton width="100%" height="1.5rem" />
+    }
+  </div>
+</p-panel>
+}
+@if (!loadingExtracciones && extraccionesDocente.length > 0) {
+<p-panel [toggleable]="true">
+  <ng-template #header>
+    <div class="panel-header">
+      <span>Datos extraídos por IA</span>
+      <p-tag severity="success"
+             icon="pi pi-database"
+             [value]="extraccionesDocente.length + ' extracción' + (extraccionesDocente.length === 1 ? '' : 'es')" />
+    </div>
+  </ng-template>
+  <p-table [value]="extraccionesDocente" size="small" [scrollable]="true">
+    <ng-template #header>
+      <tr>
+        <th>Documento</th>
+        <th>Tipo detectado</th>
+        <th>Confianza</th>
+        <th>Fecha extracción</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-doc>
+      <tr>
+        <td style="font-size:0.8rem;max-width:14rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"
+            [pTooltip]="nombreDocumento(doc.file_path)"
+            tooltipPosition="top">
+          {{ nombreDocumento(doc.file_path) }}
+        </td>
+        <td>
+          <p-tag [value]="labelTipo(doc.tipo_documento)"
+                 severity="secondary"
+                 icon="pi pi-tag" />
+        </td>
+        <td>
+          @if (doc.confidence_score != null) {
+          <p-tag [value]="doc.confidence_score + '%'"
+                 [severity]="confianzaSeverity(doc.confidence_score)" />
+          } @else {
+          <span style="opacity:0.5">—</span>
+          }
+        </td>
+        <td style="font-size:0.8rem">
+          {{ doc.completed_at ? (doc.completed_at | date:'dd/MM/yyyy':'':'es-CO') : '—' }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-panel>
+}
 </div>

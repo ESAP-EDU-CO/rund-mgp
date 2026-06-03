@@ -40,7 +40,8 @@
                                [archivosProfesor]="infoProfesor ? infoProfesor.archivosProfesor : []"
                                [docente]="profesorSeleccionado"
                                [claves]="clavesCSV"
-                               [labels]="labelsCSV" />
+                               [labels]="labelsCSV"
+                               [cedula]="profesorSeleccionado[1]" />
           </div>
         </ng-template>
         <ng-template #panel>

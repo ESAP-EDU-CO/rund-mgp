@@ -1,10 +1,12 @@
-import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PipesModule } from '@modulos/pipes/pipes-module';
 import { PrimengModule } from '@modulos/primeng/primeng-module';
 import { Data, DataCategoria, DatoDemografico, DatoArchivo } from '@servicios/data';
 import { LoggerService } from '@servicios/logger.service';
 import { simp, compara } from '@librerias/textos';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 interface ModeloCategorias {
   label: string;
@@ -42,12 +44,13 @@ namespace Ficha {
   templateUrl: './ficha-docente.html',
   styleUrl: './ficha-docente.scss'
 })
-export class FichaDocente implements OnChanges {
+export class FichaDocente implements OnChanges, OnDestroy {
   @Input() docente: string[] = [];
   @Input() labels: string[] = [];
   @Input() claves: string[] = [];
   @Input() infoProfesor: DatoDemografico = { archivosProfesor: [], datosDemograficos: [] }
   @Input() archivosProfesor: DatoArchivo[] = [];
+  @Input() cedula: string = '';
 
   get archivosIAClasificados(): DatoArchivo[] {
     return this.archivosProfesor.filter(a => a.ia_clasificado);
@@ -56,8 +59,11 @@ export class FichaDocente implements OnChanges {
   @Output() fechaNacimientoEmitida: EventEmitter<string | null> = new EventEmitter<string | null>();
   fechaNacimiento: Date | null = null;
   readonly hoy = new Date();
+  extraccionesDocente: any[] = [];
+  loadingExtracciones = false;
+  private destroy$ = new Subject<void>();
   private data: Data = inject(Data);
-private logger: LoggerService = inject(LoggerService);
+  private logger: LoggerService = inject(LoggerService);
   private catPrefix = '/okm:categories/RUND/DOCENTES/';
   private categorias: ModeloCategorias[] = [];
   private datosProfesor: { label: string, valor: string }[] = [];
@@ -91,6 +97,13 @@ private logger: LoggerService = inject(LoggerService);
       const fechaNacStr: string | undefined = (this.infoProfesor as any)?.['FECHA_NACIMIENTO'];
       if (fechaNacStr) this.fechaNacimiento = new Date(fechaNacStr + 'T00:00:00');
     }
+    if (changes['cedula'] && this.cedula) {
+      this.cargarExtracciones();
+    }
+  }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
   private actualizaDatos(): void {
     this.validado.emit([]);
@@ -205,6 +218,31 @@ private logger: LoggerService = inject(LoggerService);
       });
     });
     this.setCategorias();
+  }
+  private cargarExtracciones(): void {
+    this.loadingExtracciones = true;
+    this.extraccionesDocente = [];
+    this.data.getExtraccionDocente(this.cedula, 1, 50)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (resp) => {
+          const docs = resp.documentos ?? [];
+          this.extraccionesDocente = docs.filter((d: any) => d.status === 'completado');
+          this.loadingExtracciones = false;
+        },
+        error: () => { this.loadingExtracciones = false; }
+      });
+  }
+  nombreDocumento(filePath: string): string {
+    return filePath ? (filePath.split('/').pop() ?? filePath) : '—';
+  }
+  labelTipo(tipo: string): string {
+    return this.data.labels[tipo] ?? this.data.labels[tipo?.toUpperCase()] ?? (tipo?.replace(/_/g, ' ') ?? '—');
+  }
+  confianzaSeverity(score: number): 'success' | 'warn' | 'danger' {
+    if (score > 85) return 'success';
+    if (score > 60) return 'warn';
+    return 'danger';
   }
   private mapDataCategorias(categorias: DataCategoria[]): ModeloCategorias[] {
     return categorias.map((categoria: DataCategoria) => {
