@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormControl, Validators, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
@@ -51,6 +51,7 @@ export class Carga implements OnInit {
   readonly MAX_FILES = 50;
   private dataServicio = inject(Data);
   private messageService = inject(MessageService);
+  @ViewChild(CargaDocumento) private cargaDoc!: CargaDocumento;
   constructor() {
     this.formulario = new FormGroup({
       cedula: new FormControl('', Validators.required),
@@ -164,7 +165,10 @@ export class Carga implements OnInit {
     
   }
   todosCargados(): void {
-    // Todos los archivos han sido cargados!!!
+    if (this.profesorSeleccionado[1]) {
+      this.dataServicio.archivosCargados$.next(this.profesorSeleccionado[1]);
+    }
+    setTimeout(() => this.cargaDoc?.limpiar(), 1500);
   }
   //*/
   onUpload(event: any) {
