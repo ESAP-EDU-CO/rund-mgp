@@ -153,7 +153,7 @@
                    icon="pi pi-tag" />
           </td>
           <td>
-            @if (doc.confidence_score != null) {
+            @if (doc.confidence_score !== null) {
             <p-tag [value]="doc.confidence_score + '%'"
                    [severity]="confianzaSeverity(doc.confidence_score)" />
             } @else {

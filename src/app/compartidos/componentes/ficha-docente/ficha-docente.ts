@@ -50,7 +50,7 @@ export class FichaDocente implements OnChanges, OnDestroy {
   @Input() claves: string[] = [];
   @Input() infoProfesor: DatoDemografico = { archivosProfesor: [], datosDemograficos: [] }
   @Input() archivosProfesor: DatoArchivo[] = [];
-  @Input() cedula: string = '';
+  @Input() cedula = '';
 
   get archivosIAClasificados(): DatoArchivo[] {
     return this.archivosProfesor.filter(a => a.ia_clasificado);

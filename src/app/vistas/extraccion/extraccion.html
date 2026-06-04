@@ -168,6 +168,59 @@
 
     }
 
+    <!-- Búsqueda semántica -->
+    <div class="busqueda-panel">
+      <span style="font-weight:600;font-size:0.95rem">Buscar documentos</span>
+      <div style="display:flex;gap:0.5rem;margin-top:0.5rem">
+        <input pInputText
+               type="text"
+               placeholder="ej. certificado maestría, cédula, resolución…"
+               [(ngModel)]="busquedaQuery"
+               (keyup.enter)="buscar()"
+               style="flex:1" />
+        <p-button icon="pi pi-search"
+                  label="Buscar"
+                  size="small"
+                  [loading]="buscando"
+                  (onClick)="buscar()" />
+      </div>
+
+      @if (busquedaResultados.length > 0) {
+      <p-table [value]="busquedaResultados"
+               [sortField]="'similitud'"
+               [sortOrder]="-1"
+               size="small"
+               showGridlines
+               style="margin-top:0.75rem">
+        <ng-template #header>
+          <tr>
+            <th pSortableColumn="nombre">Documento <p-sortIcon field="nombre" /></th>
+            <th pSortableColumn="tipo">Tipo <p-sortIcon field="tipo" /></th>
+            <th pSortableColumn="similitud" style="text-align:right">Similitud <p-sortIcon field="similitud" /></th>
+            <th>Cédula profesor</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-r>
+          <tr>
+            <td>{{ r.nombre }}</td>
+            <td>{{ labelCategoria(r.tipo) }}</td>
+            <td style="text-align:right">
+              <p-tag [value]="(r.similitud * 100 | number:'1.0-0') + '%'"
+                     [severity]="r.similitud >= 0.6 ? 'success' : r.similitud >= 0.3 ? 'warn' : 'secondary'" />
+            </td>
+            <td>{{ r.cedula_profesor }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+      }
+
+      @if (busquedaSinResultados && !buscando) {
+      <div style="margin-top:0.75rem;opacity:0.6;font-size:0.875rem">
+        No se encontraron documentos para "{{ busquedaQuery }}".
+      </div>
+      }
+    </div>
+
     <div class="footer">Última actualización del índice: {{ ultimaActualizacion }}</div>
   </div>
 </p-card>

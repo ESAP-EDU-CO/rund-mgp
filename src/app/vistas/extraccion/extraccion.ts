@@ -52,6 +52,12 @@ export class Extraccion implements OnInit, OnDestroy {
   schedulerHoraInicioEditar = 22;
   schedulerHoraFinEditar    = 6;
 
+  // ─── Búsqueda semántica ───────────────────────────────────────────────────
+  busquedaQuery     = '';
+  busquedaResultados: any[] = [];
+  busquedaSinResultados = false;
+  buscando          = false;
+
   // ─── Labels ───────────────────────────────────────────────────────────────
   get labels(): Record<string, string> { return this.dataServicio.labels; }
 
@@ -158,6 +164,20 @@ export class Extraccion implements OnInit, OnDestroy {
         this.schedulerCargando   = false;
       },
       error: () => { this.schedulerCargando = false; },
+    });
+  }
+
+  buscar(): void {
+    const q = this.busquedaQuery.trim();
+    if (!q) { this.busquedaResultados = []; this.busquedaSinResultados = false; return; }
+    this.buscando = true;
+    this.dataServicio.searchDocumentos(q).subscribe({
+      next: (res) => {
+        this.busquedaResultados = res.results ?? [];
+        this.busquedaSinResultados = this.busquedaResultados.length === 0;
+        this.buscando = false;
+      },
+      error: () => { this.buscando = false; },
     });
   }
 
