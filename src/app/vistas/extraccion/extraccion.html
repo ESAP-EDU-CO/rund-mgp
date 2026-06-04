@@ -78,6 +78,19 @@
       </p-card>
     </div>
 
+    <!-- Cobertura por tipo -->
+    <div class="cobertura-tipos">
+      <span style="font-weight:600;font-size:0.95rem">Cobertura por tipo</span>
+      <div class="cobertura-grid">
+        @for (t of coberturaPorTipo; track t.tipo) {
+        <div class="tipo-card" [class.tipo-card--vacio]="t.count === 0">
+          <div class="tipo-count">{{ t.count }}</div>
+          <div class="tipo-label">{{ t.label }}</div>
+        </div>
+        }
+      </div>
+    </div>
+
     <!-- Panel del scheduler nocturno -->
     <div class="scheduler-panel">
       <div class="scheduler-header">

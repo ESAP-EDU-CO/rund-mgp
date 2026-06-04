@@ -65,6 +65,21 @@ export class Extraccion implements OnInit, OnDestroy {
     return this.labels[nombre] ?? this.labels[nombre.toUpperCase()] ?? nombre;
   }
 
+  get coberturaPorTipo(): { tipo: string; label: string; count: number }[] {
+    const TIPOS = [
+      { tipo: 'cedula',                label: 'Cédula' },
+      { tipo: 'certificado_laboral',   label: 'Cert. Laboral' },
+      { tipo: 'certificado_academico', label: 'Cert. Académico' },
+      { tipo: 'resolucion',            label: 'Resolución' },
+      { tipo: 'acta',                  label: 'Acta Evaluación' },
+      { tipo: 'certificado_idiomas',   label: 'Cert. Idiomas' },
+    ];
+    return TIPOS.map(t => ({
+      ...t,
+      count: this.categorias.find(c => c.nombre === t.tipo)?.completado ?? 0,
+    }));
+  }
+
   ngOnInit(): void {
     this.cargar();
     // Auto-refresh cada 30 s mientras haya trabajos en cola
