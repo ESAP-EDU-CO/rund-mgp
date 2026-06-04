@@ -219,6 +219,10 @@ export const API_ENDPOINTS: ApiEndpoints = {
   extraccionBuscar: {
     endpoint: 'api/v2/extraccion/buscar',
     status: 'active'
+  },
+  extraccionValidar: {
+    endpoint: 'api/v2/extraccion/validar',
+    status: 'active'
   }
 };
 

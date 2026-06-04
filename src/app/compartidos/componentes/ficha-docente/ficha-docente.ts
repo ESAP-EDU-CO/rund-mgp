@@ -61,6 +61,11 @@ export class FichaDocente implements OnChanges, OnDestroy {
   readonly hoy = new Date();
   extraccionesDocente: any[] = [];
   loadingExtracciones = false;
+  validacionIssues: any[] = [];
+  validacionScore: number | null = null;
+  validacionResumen: any = null;
+  loadingValidacion = false;
+  validacionRealizada = false;
   private destroy$ = new Subject<void>();
   private data: Data = inject(Data);
   private logger: LoggerService = inject(LoggerService);
@@ -233,6 +238,34 @@ export class FichaDocente implements OnChanges, OnDestroy {
         },
         error: () => { this.loadingExtracciones = false; }
       });
+  }
+  validarDocente(): void {
+    if (!this.cedula || this.loadingValidacion) return;
+    this.loadingValidacion = true;
+    this.validacionRealizada = false;
+    this.data.validateDocente(this.cedula)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (resp) => {
+          this.validacionIssues   = resp.issues   ?? [];
+          this.validacionScore    = resp.score     ?? null;
+          this.validacionResumen  = resp.resumen   ?? null;
+          this.validacionRealizada = true;
+          this.loadingValidacion  = false;
+        },
+        error: () => { this.loadingValidacion = false; }
+      });
+  }
+  issueSeverity(severidad: string): 'danger' | 'warn' | 'secondary' | 'info' {
+    const map: Record<string, 'danger' | 'warn' | 'secondary' | 'info'> = {
+      critical: 'danger', high: 'danger', medium: 'warn', low: 'secondary', info: 'info'
+    };
+    return map[severidad] ?? 'secondary';
+  }
+  scoreSeverity(score: number): 'success' | 'warn' | 'danger' {
+    if (score >= 80) return 'success';
+    if (score >= 50) return 'warn';
+    return 'danger';
   }
   nombreDocumento(filePath: string): string {
     return filePath ? (filePath.split('/').pop() ?? filePath) : '—';
