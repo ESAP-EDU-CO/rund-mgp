@@ -65,6 +65,51 @@ export class Extraccion implements OnInit, OnDestroy {
     return this.labels[nombre] ?? this.labels[nombre.toUpperCase()] ?? nombre;
   }
 
+  get coberturaPorTipo(): { tipo: string; label: string; count: number }[] {
+    // Aliases derivados de rund-ai/config/document_type_mapping.py
+    // por_categoria usa nombres de carpetas OpenKM, no nombres de schema AI
+    const ALIASES: Record<string, string[]> = {
+      cedula: [
+        'cedula', 'CEDULA', 'CEDULA_CIUDADANIA', 'DATOS_BASICOS',
+      ],
+      certificado_laboral: [
+        'certificado_laboral', 'EXPERIENCIA_DOCENTE', 'EXPERIENCIA_LABORAL',
+        'CERTIFICADO_LABORAL', 'CONSTANCIA_LABORAL', 'CERTIFICADO_DOCENTE',
+        'EXPERIENCIA_INVESTIGATIVA',
+      ],
+      certificado_academico: [
+        'certificado_academico', 'TITULOS_DE_FORMACION', 'FORMACION_ACADEMICA',
+        'CERTIFICADO_ACADEMICO', 'TITULO_UNIVERSITARIO', 'DIPLOMA', 'TITULO',
+        'ESPECIALIZACION', 'MAESTRIA', 'DOCTORADO', 'POSTDOCTORADO',
+        'PRODUCTIVIDAD_ACADEMICA', 'FORMACION_NO_FORMAL_ADICIONAL',
+      ],
+      resolucion: [
+        'resolucion', 'RESOLUCION', 'RESOLUCION_NOMBRAMIENTO', 'ACTO_ADMINISTRATIVO',
+      ],
+      acta: [
+        'acta', 'ACTA', 'ACTA_EVALUACION', 'EVALUACION_DOCENTE', 'ESTUDIO_DE_HOJA_DE_VIDA',
+      ],
+      certificado_idiomas: [
+        'certificado_idiomas', 'IDIOMAS', 'CERTIFICADO_IDIOMAS',
+        'SUFICIENCIA_IDIOMAS', 'CERTIFICACION_IDIOMAS',
+      ],
+    };
+    const TIPOS = [
+      { tipo: 'cedula',                label: 'Cédula' },
+      { tipo: 'certificado_laboral',   label: 'Cert. Laboral' },
+      { tipo: 'certificado_academico', label: 'Cert. Académico' },
+      { tipo: 'resolucion',            label: 'Resolución' },
+      { tipo: 'acta',                  label: 'Acta Evaluación' },
+      { tipo: 'certificado_idiomas',   label: 'Cert. Idiomas' },
+    ];
+    return TIPOS.map(t => ({
+      ...t,
+      count: this.categorias
+        .filter(c => (ALIASES[t.tipo] ?? [t.tipo]).includes(c.nombre))
+        .reduce((sum, c) => sum + c.completado, 0),
+    }));
+  }
+
   ngOnInit(): void {
     this.cargar();
     // Auto-refresh cada 30 s mientras haya trabajos en cola

@@ -31,6 +31,48 @@
     }
   }
 
+  .cobertura-tipos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .cobertura-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+      gap: 0.75rem;
+    }
+
+    .tipo-card {
+      background: var(--p-surface-50);
+      border: 1px solid var(--p-surface-200);
+      border-radius: 8px;
+      padding: 0.6rem 0.75rem;
+      text-align: center;
+      transition: opacity 0.2s;
+
+      &--vacio {
+        opacity: 0.4;
+      }
+
+      .tipo-count {
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--p-green-500);
+      }
+
+      &--vacio .tipo-count {
+        color: inherit;
+      }
+
+      .tipo-label {
+        font-size: 0.75rem;
+        margin-top: 0.2rem;
+        opacity: 0.75;
+      }
+    }
+  }
+
   .scheduler-panel {
     border: 1px solid var(--p-surface-200);
     border-radius: 8px;
@@ -77,6 +119,11 @@
 }
 
 :host-context(html.app-dark) {
+  .cobertura-tipos .tipo-card {
+    background: var(--p-surface-800);
+    border-color: var(--p-surface-700);
+  }
+
   .busqueda-panel {
     background: var(--p-surface-800);
     border-color: var(--p-surface-700);
