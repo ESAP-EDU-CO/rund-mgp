@@ -273,6 +273,20 @@ export class FichaDocente implements OnChanges, OnDestroy {
   labelTipo(tipo: string): string {
     return this.data.labels[tipo] ?? this.data.labels[tipo?.toUpperCase()] ?? (tipo?.replace(/_/g, ' ') ?? '—');
   }
+  get coberturaTipos(): { tipo: string; label: string; presente: boolean }[] {
+    const TIPOS = [
+      { tipo: 'cedula',                label: 'Cédula' },
+      { tipo: 'certificado_laboral',   label: 'Cert. Laboral' },
+      { tipo: 'certificado_academico', label: 'Cert. Académico' },
+      { tipo: 'resolucion',            label: 'Resolución' },
+      { tipo: 'acta',                  label: 'Acta Evaluación' },
+      { tipo: 'certificado_idiomas',   label: 'Cert. Idiomas' },
+    ];
+    return TIPOS.map(t => ({
+      ...t,
+      presente: this.extraccionesDocente.some(d => d.tipo_documento === t.tipo),
+    }));
+  }
   confianzaSeverity(score: number): 'success' | 'warn' | 'danger' {
     if (score > 85) return 'success';
     if (score > 60) return 'warn';
