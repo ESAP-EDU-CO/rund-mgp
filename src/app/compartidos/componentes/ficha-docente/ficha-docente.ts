@@ -309,6 +309,9 @@ export class FichaDocente implements OnChanges, OnDestroy {
       ),
     }));
   }
+  get coberturaTiposPresentes(): number {
+    return this.coberturaTipos.filter(t => t.presente).length;
+  }
   confianzaSeverity(score: number): 'success' | 'warn' | 'danger' {
     if (score > 85) return 'success';
     if (score > 60) return 'warn';
