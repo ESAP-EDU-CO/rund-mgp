@@ -1,7 +1,14 @@
 
 import { AfterViewInit, Component, Input } from '@angular/core';
 import { FirmaCertificado } from '@componentes/firma-certificado/firma-certificado';
-import { Prevista } from '@vistas/certificados/certificados';
+import { Documento } from '@servicios/data';
+
+export interface Prevista {
+  background: string;
+  estructura: Documento.Estructura[];
+  paddingTop: string;
+  plantilla: string;
+}
 
 @Component({
   selector: 'mgp-preview',

@@ -7,11 +7,7 @@ import {
   faFileExcel,
   faFilePowerpoint,
   faFile,
-  faCheckDouble,
-  faGauge,
-  faMagnifyingGlassChart,
   faFileArrowUp,
-  faFileAlt,
 } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
@@ -32,11 +28,7 @@ export class IconsModule {
       faFileExcel,
       faFilePowerpoint,
       faFile,
-      faCheckDouble,
-      faGauge,
-      faMagnifyingGlassChart,
       faFileArrowUp,
-      faFileAlt,
     );
   }
 }

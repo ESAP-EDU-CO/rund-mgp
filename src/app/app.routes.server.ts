@@ -7,10 +7,6 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
   },
   {
-    path: 'validacion',
-    renderMode: RenderMode.Prerender,
-  },
-  {
     path: 'acceso-denegado',
     renderMode: RenderMode.Prerender,
   },
@@ -21,23 +17,11 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server,
   },
   {
-    path: 'certificados',
-    renderMode: RenderMode.Server,
-  },
-  {
-    path: 'dashboard',
-    renderMode: RenderMode.Server,
-  },
-  {
-    path: 'consultas',
+    path: 'extraccion',
     renderMode: RenderMode.Server,
   },
   {
     path: 'gestion',
-    renderMode: RenderMode.Server,
-  },
-  {
-    path: 'herramientas',
     renderMode: RenderMode.Server,
   },
 

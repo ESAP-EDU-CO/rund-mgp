@@ -10,10 +10,6 @@ export const routes: Routes = [
     loadComponent: () => import('@componentes/login/login').then(m => m.Login),
   },
   {
-    path: 'validacion',
-    loadComponent: () => import('@vistas/validacion/validacion').then(m => m.Validacion),
-  },
-  {
     path: 'acceso-denegado',
     loadComponent: () => import('@componentes/acceso-denegado/acceso-denegado').then(m => m.AccesoDenegado),
   },
@@ -25,22 +21,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'certificados',
-    loadComponent: () => import('@vistas/certificados/certificados').then(m => m.Certificados),
-    canActivate: [authGuard],
-  },
-  {
-    path: 'dashboard',
-    loadComponent: () => import('@vistas/dashboard/dashboard').then(m => m.Dashboard),
-    canActivate: [authGuard],
-  },
-  {
-    path: 'consultas',
-    loadComponent: () => import('@vistas/consultas/consultas').then(m => m.Consultas),
-    canActivate: [authGuard],
-  },
-
-  {
     path: 'extraccion',
     loadComponent: () => import('@vistas/extraccion/extraccion').then(m => m.Extraccion),
     canActivate: [authGuard],
@@ -50,11 +30,6 @@ export const routes: Routes = [
   {
     path: 'gestion',
     loadComponent: () => import('@vistas/gestion/gestion').then(m => m.Gestion),
-    canActivate: [adminGuard],
-  },
-  {
-    path: 'herramientas',
-    loadComponent: () => import('@vistas/herramientas/herramientas').then(m => m.Herramientas),
     canActivate: [adminGuard],
   },
 
