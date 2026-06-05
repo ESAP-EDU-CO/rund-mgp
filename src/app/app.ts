@@ -60,6 +60,7 @@ export class App implements OnInit {
     }
   }
   inicializa(): void {
+    if (!this.authServicio.estaAutenticado()) return;
     this.data.init().subscribe({
       next: (_data: VarData) => {
         this.seccionActual = this.router.url.split('?')[0];
@@ -69,7 +70,7 @@ export class App implements OnInit {
         this.dataVars = true;
         if (this.usuario() && this.seccionActual === '/login') this.router.navigate(['/']);
       },
-      error: () => { /* sin sesión activa — el authGuard redirige a /login */ }
+      error: () => { /* sesión expirada — authGuard redirige a /login */ }
     });
   }
 }
