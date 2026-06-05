@@ -60,14 +60,16 @@ export class App implements OnInit {
     }
   }
   inicializa(): void {
-    this.data.init().subscribe((_data: VarData) => {
-      this.seccionActual = this.router.url.split('?')[0];
-      this.contenidos = this.data.elementosMenu;
-      this.rolMinimo = this.seccionActual ? this.contenidos.find((item: MenuElemento) => item["route"] == this.seccionActual)?.rol : undefined;
-      this.tienePermiso = this.authServicio.tienePermisos(this.rolMinimo as Rol, this.usuario()?.rol as Rol);
-      this.dataVars = true;
-      if (this.usuario() && this.seccionActual === '/login') this.router.navigate(['/']);
-      
+    this.data.init().subscribe({
+      next: (_data: VarData) => {
+        this.seccionActual = this.router.url.split('?')[0];
+        this.contenidos = this.data.elementosMenu;
+        this.rolMinimo = this.seccionActual ? this.contenidos.find((item: MenuElemento) => item["route"] == this.seccionActual)?.rol : undefined;
+        this.tienePermiso = this.authServicio.tienePermisos(this.rolMinimo as Rol, this.usuario()?.rol as Rol);
+        this.dataVars = true;
+        if (this.usuario() && this.seccionActual === '/login') this.router.navigate(['/']);
+      },
+      error: () => { /* sin sesión activa — el authGuard redirige a /login */ }
     });
   }
 }
