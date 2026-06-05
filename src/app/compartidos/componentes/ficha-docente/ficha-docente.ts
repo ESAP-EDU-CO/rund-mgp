@@ -330,7 +330,7 @@ export class FichaDocente implements OnChanges, OnDestroy {
     try {
       const resp = await this.data.getJsonExtraido(this.cedula, doc.json_nombre);
       const datos = resp?.datos;
-      this.datosExtraidos = datos?.datos_extraidos ?? datos ?? null;
+      this.datosExtraidos = datos?.datos_extraidos ?? datos?.data ?? datos ?? null;
     } catch {
       this.datosExtraidos = null;
     } finally {
@@ -342,11 +342,15 @@ export class FichaDocente implements OnChanges, OnDestroy {
     this.selectedExtraccion = null;
     this.datosExtraidos = null;
   }
-  get datosExtraidosEntries(): { key: string; value: string }[] {
+  get datosExtraidosEntries(): { key: string; value: string; isObject: boolean }[] {
     if (!this.datosExtraidos || typeof this.datosExtraidos !== 'object') return [];
     return Object.entries(this.datosExtraidos)
       .filter(([, v]) => v !== null && v !== undefined && v !== '')
-      .map(([k, v]) => ({ key: k, value: String(v) }));
+      .map(([k, v]) => ({
+        key: k,
+        isObject: typeof v === 'object',
+        value: typeof v === 'object' ? JSON.stringify(v, null, 2) : String(v),
+      }));
   }
   formatKey(key: string): string {
     return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());

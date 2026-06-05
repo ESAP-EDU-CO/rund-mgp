@@ -261,7 +261,11 @@
         <span style="min-width:8rem;font-size:0.78rem;color:var(--p-text-muted-color);flex-shrink:0">
           {{ formatKey(entry.key) }}
         </span>
+        @if (entry.isObject) {
+        <pre style="margin:0;font-size:0.78rem;white-space:pre-wrap;word-break:break-all;line-height:1.4">{{ entry.value }}</pre>
+        } @else {
         <span style="font-size:0.88rem;word-break:break-word">{{ entry.value }}</span>
+        }
       </div>
       }
     </div>
