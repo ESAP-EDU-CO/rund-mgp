@@ -61,6 +61,10 @@ export class FichaDocente implements OnChanges, OnDestroy {
   readonly hoy = new Date();
   extraccionesDocente: any[] = [];
   loadingExtracciones = false;
+  dialogVisible = false;
+  loadingDatos = false;
+  selectedExtraccion: any = null;
+  datosExtraidos: any = null;
   validacionIssues: any[] = [];
   validacionScore: number | null = null;
   validacionResumen: any = null;
@@ -316,6 +320,40 @@ export class FichaDocente implements OnChanges, OnDestroy {
     if (score > 85) return 'success';
     if (score > 60) return 'warn';
     return 'danger';
+  }
+  async verDetalle(doc: any): Promise<void> {
+    this.selectedExtraccion = doc;
+    this.datosExtraidos = null;
+    this.dialogVisible = true;
+    if (!doc.json_nombre) return;
+    this.loadingDatos = true;
+    try {
+      const resp = await this.data.getJsonExtraido(this.cedula, doc.json_nombre);
+      const datos = resp?.datos;
+      this.datosExtraidos = datos?.datos_extraidos ?? datos?.data ?? datos ?? null;
+    } catch {
+      this.datosExtraidos = null;
+    } finally {
+      this.loadingDatos = false;
+    }
+  }
+  cerrarDialog(): void {
+    this.dialogVisible = false;
+    this.selectedExtraccion = null;
+    this.datosExtraidos = null;
+  }
+  get datosExtraidosEntries(): { key: string; value: string; isObject: boolean }[] {
+    if (!this.datosExtraidos || typeof this.datosExtraidos !== 'object') return [];
+    return Object.entries(this.datosExtraidos)
+      .filter(([, v]) => v !== null && v !== undefined && v !== '')
+      .map(([k, v]) => ({
+        key: k,
+        isObject: typeof v === 'object',
+        value: typeof v === 'object' ? JSON.stringify(v, null, 2) : String(v),
+      }));
+  }
+  formatKey(key: string): string {
+    return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   }
   private mapDataCategorias(categorias: DataCategoria[]): ModeloCategorias[] {
     return categorias.map((categoria: DataCategoria) => {

@@ -160,6 +160,7 @@
           <th>Tipo detectado</th>
           <th>Confianza</th>
           <th>Fecha extracción</th>
+          <th></th>
         </tr>
       </ng-template>
       <ng-template #body
@@ -185,6 +186,15 @@
           </td>
           <td style="font-size:0.8rem">
             {{ doc.completed_at ? (doc.completed_at | date:'dd/MM/yyyy') : '—' }}
+          </td>
+          <td>
+            <p-button icon="pi pi-eye"
+                      size="small"
+                      severity="secondary"
+                      [text]="true"
+                      pTooltip="Ver datos extraídos"
+                      tooltipPosition="left"
+                      (onClick)="verDetalle(doc)" />
           </td>
         </tr>
       </ng-template>
@@ -215,6 +225,58 @@
     </div>
   </p-panel>
   }
+  <p-dialog [(visible)]="dialogVisible"
+            [modal]="true"
+            [draggable]="false"
+            [closable]="true"
+            [style]="{'max-width':'95vw'}"
+            (onHide)="cerrarDialog()">
+    <ng-template #header>
+      <div style="display:flex;align-items:center;gap:0.5rem">
+        <i class="pi pi-database" style="color:var(--p-primary-color)"></i>
+        <span style="font-weight:600;font-size:0.95rem">
+          {{ selectedExtraccion ? nombreDocumento(selectedExtraccion.file_path) : '' }}
+        </span>
+        @if (selectedExtraccion?.tipo_documento) {
+        <p-tag [value]="labelTipo(selectedExtraccion.tipo_documento)"
+               severity="secondary"
+               icon="pi pi-tag"
+               style="flex-shrink:0" />
+        }
+      </div>
+    </ng-template>
+    @if (loadingDatos) {
+    <div style="display:flex;flex-direction:column;gap:0.5rem;padding:0.5rem 0">
+      @for (n of [0,1,2,3]; track $index) {
+      <div style="display:flex;gap:0.75rem;align-items:center">
+        <p-skeleton width="7rem" height="0.9rem" />
+        <p-skeleton width="14rem" height="0.9rem" />
+      </div>
+      }
+    </div>
+    } @else if (datosExtraidosEntries.length > 0) {
+    <div style="display:flex;flex-direction:column;gap:0.4rem">
+      @for (entry of datosExtraidosEntries; track entry.key) {
+      <div style="display:flex;gap:0.5rem;align-items:baseline;border-bottom:1px solid var(--p-surface-200);padding:0.3rem 0">
+        <span style="min-width:8rem;font-size:0.78rem;color:var(--p-text-muted-color);flex-shrink:0">
+          {{ formatKey(entry.key) }}
+        </span>
+        @if (entry.isObject) {
+        <pre style="margin:0;font-size:0.78rem;white-space:pre-wrap;word-break:break-all;line-height:1.4">{{ entry.value }}</pre>
+        } @else {
+        <span style="font-size:0.88rem;word-break:break-word">{{ entry.value }}</span>
+        }
+      </div>
+      }
+    </div>
+    } @else {
+    <div style="display:flex;align-items:center;gap:0.5rem;padding:0.75rem 0;opacity:0.55;font-size:0.85rem">
+      <i class="pi pi-inbox"></i>
+      <span>Sin datos extraídos disponibles.</span>
+    </div>
+    }
+  </p-dialog>
+
   @if (validacionRealizada && !loadingValidacion) {
   <p-panel [toggleable]="true">
     <ng-template #header>
