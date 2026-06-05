@@ -118,6 +118,29 @@
     </div>
   </p-panel>
   }
+  @if (cedula && !loadingExtracciones) {
+  <p-panel>
+    <ng-template #header>
+      <div class="panel-header">
+        <span>Cobertura documental</span>
+        <p-tag [value]="coberturaTiposPresentes + '/6'"
+               severity="secondary"
+               icon="pi pi-folder-open" />
+      </div>
+    </ng-template>
+    @if (extraccionesDocente.length === 0) {
+    <div style="opacity:0.5;font-size:0.85rem;padding:0.25rem 0">Sin datos de extracción</div>
+    } @else {
+    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;padding:0.25rem 0">
+      @for (t of coberturaTipos; track t.tipo) {
+      <p-tag [value]="t.label"
+             [severity]="t.presente ? 'success' : 'danger'"
+             [icon]="t.presente ? 'pi pi-check' : 'pi pi-times'" />
+      }
+    </div>
+    }
+  </p-panel>
+  }
   @if (!loadingExtracciones && extraccionesDocente.length > 0) {
   <p-panel [toggleable]="true">
     <ng-template #header>

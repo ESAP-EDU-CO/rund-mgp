@@ -273,6 +273,45 @@ export class FichaDocente implements OnChanges, OnDestroy {
   labelTipo(tipo: string): string {
     return this.data.labels[tipo] ?? this.data.labels[tipo?.toUpperCase()] ?? (tipo?.replace(/_/g, ' ') ?? '—');
   }
+  get coberturaTipos(): { tipo: string; label: string; presente: boolean }[] {
+    const ALIASES: Record<string, string[]> = {
+      cedula: ['cedula', 'CEDULA', 'CEDULA_CIUDADANIA', 'DATOS_BASICOS'],
+      certificado_laboral: [
+        'certificado_laboral', 'EXPERIENCIA_DOCENTE', 'EXPERIENCIA_LABORAL',
+        'CERTIFICADO_LABORAL', 'CONSTANCIA_LABORAL', 'CERTIFICADO_DOCENTE',
+        'EXPERIENCIA_INVESTIGATIVA',
+      ],
+      certificado_academico: [
+        'certificado_academico', 'TITULOS_DE_FORMACION', 'FORMACION_ACADEMICA',
+        'CERTIFICADO_ACADEMICO', 'TITULO_UNIVERSITARIO', 'DIPLOMA', 'TITULO',
+        'ESPECIALIZACION', 'MAESTRIA', 'DOCTORADO', 'POSTDOCTORADO',
+        'PRODUCTIVIDAD_ACADEMICA', 'FORMACION_NO_FORMAL_ADICIONAL',
+      ],
+      resolucion: ['resolucion', 'RESOLUCION', 'RESOLUCION_NOMBRAMIENTO', 'ACTO_ADMINISTRATIVO'],
+      acta: ['acta', 'ACTA', 'ACTA_EVALUACION', 'EVALUACION_DOCENTE', 'ESTUDIO_DE_HOJA_DE_VIDA'],
+      certificado_idiomas: [
+        'certificado_idiomas', 'IDIOMAS', 'CERTIFICADO_IDIOMAS',
+        'SUFICIENCIA_IDIOMAS', 'CERTIFICACION_IDIOMAS',
+      ],
+    };
+    const TIPOS = [
+      { tipo: 'cedula',                label: 'Cédula' },
+      { tipo: 'certificado_laboral',   label: 'Cert. Laboral' },
+      { tipo: 'certificado_academico', label: 'Cert. Académico' },
+      { tipo: 'resolucion',            label: 'Resolución' },
+      { tipo: 'acta',                  label: 'Acta Evaluación' },
+      { tipo: 'certificado_idiomas',   label: 'Cert. Idiomas' },
+    ];
+    return TIPOS.map(t => ({
+      ...t,
+      presente: this.extraccionesDocente.some(d =>
+        (ALIASES[t.tipo] ?? [t.tipo]).includes(d.tipo_documento)
+      ),
+    }));
+  }
+  get coberturaTiposPresentes(): number {
+    return this.coberturaTipos.filter(t => t.presente).length;
+  }
   confianzaSeverity(score: number): 'success' | 'warn' | 'danger' {
     if (score > 85) return 'success';
     if (score > 60) return 'warn';
